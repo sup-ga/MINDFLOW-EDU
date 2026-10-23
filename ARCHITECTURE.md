@@ -38,6 +38,8 @@ Configurer les secrets dans Supabase Edge Functions Secrets — jamais dans HTML
 - `EBILLING_FAILED_URL` — URL publique de `confirmation.html`
 - `EBILLING_API_BASE_URL` — facultatif ; par défaut `https://lab.billing-easy.net`
 - `EBILLING_CALLBACK_TOKEN` — secret aléatoire long, utilisé comme paramètre `token` de l'URL du callback enregistrée dans le portail marchand E-Billing.
+- `MINDFLOW_MAIL_GATEWAY_URL` — URL HTTPS de la passerelle Apps Script de livraison, terminée par `/exec`.
+- `MINDFLOW_MAIL_SECRET` — secret partagé avec cette passerelle.
 
 Demander les scopes OAuth2 PAYIN nécessaires, notamment `ebilling-api/invoice:create` et `ebilling-api/invoice:read`. L'authentification API historique Basic n'est pas utilisée ; le backend utilise le flux OAuth2 Client Credentials de Cognito. Le portail LAB de paiement est `https://test.billing-easy.net`.
 

@@ -47,5 +47,5 @@ Demander les scopes OAuth2 PAYIN nécessaires, notamment `ebilling-api/invoice:c
 
 - Les pages et fonctions sont en place, mais le catalogue Supabase contient actuellement **0 produit** : aucune ressource de démonstration n'est inventée.
 - Le flux de paiement ne peut pas être validé de bout en bout avant la configuration des secrets E-Billing et l'enregistrement de l'URL de callback dans le compte marchand.
-- La livraison automatique du PDF après paiement reste à raccorder à une passerelle d'envoi fiable ; une commande payée ne doit pas être présentée comme livrée tant que `delivery_status` ne le confirme pas.
+- Le callback tente la livraison du PDF après paiement confirmé, en générant une URL signée courte depuis le bucket privé. Cette livraison ne fonctionnera qu'après configuration des deux secrets de passerelle ci-dessus et validation de son script Apps Script. Une commande payée ne doit pas être présentée comme livrée tant que `delivery_status` ne le confirme pas.
 - Les identifiants/secret E-Billing restent côté serveur. Les clés publiques Supabase ne donnent jamais le droit de marquer une commande payée.

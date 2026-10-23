@@ -18,7 +18,7 @@ Le projet Supabase actuel est `vzgmhdxxlgdiimqtincf`. Les anciennes références
 - `invoices` : référence de facture émise par E-Billing, reliée à une commande et à son montant. La table n'est accessible qu'au rôle serveur.
 - Storage `mindflow-products` : fichiers PDF payants privés. Ne jamais rendre le PDF intégral public ni placer de clé serveur dans le navigateur.
 
-Pour les aperçus, `products.preview_images` contient une liste JSON d'URL d'images publiques (couverture et pages d'exemple). Ne jamais y mettre l'URL du PDF payant intégral.
+Pour les aperçus, `products.image_url` et `products.preview_images` peuvent contenir des URL publiques d'images ou des chemins relatifs d'images dans le bucket privé `mindflow-products` (par exemple `mathematiques/equations/cover.jpg` et `mathematiques/equations/preview-01.jpg`). La fonction catalogue signe les chemins d'images côté serveur pour une durée limitée. Ne jamais y mettre le chemin du PDF payant intégral.
 
 ## Fonctions Supabase déployées
 

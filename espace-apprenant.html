@@ -12,7 +12,7 @@
 /* MindFlow learner portal */
 :root{--mint:#63e6ff;--acid:#9d8cff;--pink:#ff78c8;--line:#ffffff18;--panel:#171726}
 body{background:radial-gradient(ellipse at 12% 0%,#39d8ff18,transparent 35%),radial-gradient(ellipse at 92% 12%,#9d62ff20,transparent 34%),radial-gradient(ellipse at 70% 95%,#ff64c80c,transparent 32%),#0a0b13}
-header{background:#0a0b13d9}
+header{background:#0a0b13d9}.back-nav{display:flex;align-items:center;gap:18px;color:#b7b9d0;font-size:.88rem}.back-nav a:hover,.back-nav a[aria-current="page"]{color:#63e6ff}.back-nav .nav-space{font-weight:850;padding:8px 13px;border:1px solid #63e6ff55;border-radius:999px;white-space:nowrap}@media(max-width:560px){.back-nav{gap:9px;font-size:.75rem}.back-nav .nav-space{padding:7px 9px}}
 .logo span{background:linear-gradient(100deg,#63e6ff,#a58cff 60%,#ff78c8);-webkit-background-clip:text;background-clip:text;color:transparent}
 .dashboard{padding:32px 0 76px}
 .dash-shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:26px;align-items:start}
@@ -101,7 +101,7 @@ header{background:#0a0b13d9}
 </style>
 </head>
 <body>
-<header><div class="wrap nav"><a class="logo" href="index.html">Mind<span>Flow</span></a><a class="back" href="index.html">← Retour au site</a></div></header>
+<header><div class="wrap nav"><a class="logo" href="index.html">Mind<span>Flow</span></a><nav class="back-nav" aria-label="Navigation principale"><a href="index.html">Accueil</a><a href="catalogue.html">Catalogue</a><a href="catalogue.html#produits">Ressources</a><a class="nav-space" href="espace-apprenant.html" aria-current="page">Mon espace</a></nav></div></header>
 <main class="wrap">
 <section class="layout" id="authLayout">
 <div><span class="eyebrow">Ton espace personnel</span><h1>Continue à<br><span style="color:var(--mint);font-family:Georgia,serif;font-style:italic;font-weight:400">ton rythme.</span></h1><p class="intro">Crée ton compte quand tu souhaites aller plus loin. C’est simple, et tu peux toujours explorer les ressources publiques sans compte.</p>

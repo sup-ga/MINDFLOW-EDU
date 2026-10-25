@@ -45,7 +45,20 @@ document.getElementById('mf-cookie-reject').addEventListener('click',()=>save(fa
 document.getElementById('mf-cookie-customize').addEventListener('click',()=>{document.getElementById('mf-statistics').checked=!!consentNow()?.statistics;panel.style.display='block';});
 document.getElementById('mf-cookie-save').addEventListener('click',()=>save(document.getElementById('mf-statistics').checked));
 document.getElementById('mf-cookie-cancel').addEventListener('click',()=>{panel.style.display='none';const existingConsent=consentNow();if(!existingConsent)banner.style.display='block';else applyAnalyticsConsent(!!existingConsent.statistics);});
-if(!consentNow())banner.style.display='block';
+// Show the consent choices after a short delay on every visit until a choice is saved.
+// Never hide the banner automatically: users must be able to choose accept, reject, or customize.
+if(!consentNow()){
+  banner.style.display='block';
+  banner.style.opacity='0';
+  banner.style.transform='translateY(8px)';
+  banner.style.transition='opacity .25s ease, transform .25s ease';
+  window.setTimeout(()=>{
+    if(!consentNow()){
+      banner.style.display='block';
+      requestAnimationFrame(()=>{banner.style.opacity='1';banner.style.transform='translateY(0)';});
+    }
+  },1200);
+}
 document.addEventListener('click',e=>{const el=e.target.closest('[data-manage-cookies]');if(!el)return;e.preventDefault();const c=consentNow();document.getElementById('mf-statistics').checked=!!c?.statistics;panel.style.display='block';});
 document.querySelectorAll('footer').forEach(f=>{if(!f.querySelector('[data-legal-links]')){const nav=document.createElement('nav');nav.dataset.legalLinks='true';nav.setAttribute('aria-label','Informations légales');nav.style.cssText='display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:.92rem';nav.innerHTML='<a href="a-propos.html">À propos</a><a href="politique-confidentialite.html">Politique de confidentialité</a><a href="#" data-manage-cookies>Gérer mes cookies</a>';f.append(nav);}});
 document.querySelectorAll('nav').forEach(nav=>{if(nav.getAttribute('aria-label')==='Navigation principale'||nav.classList.contains('nav-links')||nav.classList.contains('navlinks')||nav.classList.contains('back-nav')){if(!nav.querySelector('a[href="a-propos.html"]')){const a=document.createElement('a');a.href='a-propos.html';a.textContent='À propos';nav.append(a);}}});

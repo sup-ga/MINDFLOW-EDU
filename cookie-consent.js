@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const KEY='mindflow_cookie_consent_v1';
+const KEY='mindflow_cookie_consent_v2';
 const style=document.createElement('style');style.textContent=`
 #mf-cookie-banner,#mf-cookie-panel{font:15px/1.5 system-ui,-apple-system,sans-serif;color:#f7f7fb;background:#171725;border:1px solid #ffffff2b;box-shadow:0 12px 50px #0008;border-radius:18px;z-index:99999}
 #mf-cookie-banner{position:fixed;left:16px;right:16px;bottom:16px;max-width:980px;margin:auto;padding:20px;display:none}
@@ -48,16 +48,10 @@ document.getElementById('mf-cookie-cancel').addEventListener('click',()=>{panel.
 // Show the consent choices after a short delay on every visit until a choice is saved.
 // Never hide the banner automatically: users must be able to choose accept, reject, or customize.
 if(!consentNow()){
+  // Show immediately on first visit with this consent version, then gently animate it in.
   banner.style.display='block';
-  banner.style.opacity='0';
-  banner.style.transform='translateY(8px)';
-  banner.style.transition='opacity .25s ease, transform .25s ease';
-  window.setTimeout(()=>{
-    if(!consentNow()){
-      banner.style.display='block';
-      requestAnimationFrame(()=>{banner.style.opacity='1';banner.style.transform='translateY(0)';});
-    }
-  },1200);
+  banner.style.opacity='1';
+  banner.style.transform='translateY(0)';
 }
 document.addEventListener('click',e=>{const el=e.target.closest('[data-manage-cookies]');if(!el)return;e.preventDefault();const c=consentNow();document.getElementById('mf-statistics').checked=!!c?.statistics;panel.style.display='block';});
 document.querySelectorAll('footer').forEach(f=>{if(!f.querySelector('[data-legal-links]')){const nav=document.createElement('nav');nav.dataset.legalLinks='true';nav.setAttribute('aria-label','Informations légales');nav.style.cssText='display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:.92rem';nav.innerHTML='<a href="a-propos.html">À propos</a><a href="politique-confidentialite.html">Politique de confidentialité</a><a href="#" data-manage-cookies>Gérer mes cookies</a>';f.append(nav);}});

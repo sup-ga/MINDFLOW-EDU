@@ -16,8 +16,26 @@ const style=document.createElement('style');style.textContent=`
 .mf-cookie-manage{cursor:pointer}
 @media(max-width:520px){#mf-cookie-banner{left:8px;right:8px;bottom:8px;padding:15px}.mf-cookie-actions button{flex:1}}
 `;document.head.appendChild(style);
+const GA_ID='G-3WCB9RPH3Y';
 const consentNow=()=>{try{return JSON.parse(localStorage.getItem(KEY)||'null')}catch{return null}};
-function save(stats){const value={essential:true,statistics:!!stats,updatedAt:new Date().toISOString()};localStorage.setItem(KEY,JSON.stringify(value));hide();window.dispatchEvent(new CustomEvent('mindflow:cookie-consent',{detail:value}));}
+function applyAnalyticsConsent(stats){
+  if(!stats){if(typeof window.gtag==='function')window.gtag('consent','update',{'analytics_storage':'denied'});return;}
+  if(!window.mindflowGAInitialized){
+    window.dataLayer=window.dataLayer||[];
+    window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};
+    window.gtag('js',new Date());
+    window.gtag('consent','default',{'analytics_storage':'denied'});
+    window.gtag('consent','update',{'analytics_storage':'granted'});
+    window.gtag('config',GA_ID,{'send_page_view':false,'anonymize_ip':true});
+    const script=document.createElement('script');script.async=true;script.src='https://www.googletagmanager.com/gtag/js?id='+encodeURIComponent(GA_ID);document.head.appendChild(script);
+    window.mindflowGAInitialized=true;
+    window.gtag('event','page_view',{'page_title':document.title,'page_location':location.href,'page_path':location.pathname});
+  }else if(typeof window.gtag==='function'){
+    window.gtag('consent','update',{'analytics_storage':'granted'});
+    window.gtag('event','page_view',{'page_title':document.title,'page_location':location.href,'page_path':location.pathname});
+  }
+}
+function save(stats){const value={essential:true,statistics:!!stats,updatedAt:new Date().toISOString()};localStorage.setItem(KEY,JSON.stringify(value));applyAnalyticsConsent(value.statistics);hide();window.dispatchEvent(new CustomEvent('mindflow:cookie-consent',{detail:value}));}
 function hide(){const b=document.getElementById('mf-cookie-banner'),p=document.getElementById('mf-cookie-panel');if(b)b.style.display='none';if(p)p.style.display='none';}
 const banner=document.createElement('section');banner.id='mf-cookie-banner';banner.setAttribute('aria-label','Consentement aux cookies');banner.innerHTML='<h2>Votre confidentialité compte</h2><p>MindFlow utilise uniquement le stockage essentiel au fonctionnement du site et de votre choix. Les statistiques sont désactivées par défaut. Aucun outil de statistiques ou de publicité n’est activé par ce bandeau. <a href="politique-confidentialite.html">Lire la politique de confidentialité</a>.</p><div class="mf-cookie-actions"><button type="button" class="mf-primary" id="mf-cookie-accept">Accepter</button><button type="button" id="mf-cookie-reject">Refuser</button><button type="button" id="mf-cookie-customize">Personnaliser</button></div>';
 const panel=document.createElement('section');panel.id='mf-cookie-panel';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','mf-cookie-title');panel.innerHTML='<h2 id="mf-cookie-title">Personnaliser mes cookies</h2><p>Les cookies et stockages essentiels sont toujours actifs pour les fonctions nécessaires, comme la mémorisation de votre choix et le fonctionnement du compte. Les statistiques restent facultatives.</p><div class="mf-cookie-option"><input type="checkbox" checked disabled id="mf-essential"><label for="mf-essential"><strong>Essentiels — toujours actifs</strong><small>Nécessaires au fonctionnement et à la sécurité du site.</small></label></div><div class="mf-cookie-option"><input type="checkbox" id="mf-statistics"><label for="mf-statistics"><strong>Statistiques — facultatives</strong><small>Désactivées par défaut. Si un outil est ajouté, il ne pourra être chargé qu’après votre accord.</small></label></div><div class="mf-cookie-actions"><button type="button" class="mf-primary" id="mf-cookie-save">Enregistrer mon choix</button><button type="button" id="mf-cookie-cancel">Annuler</button></div>';
@@ -26,7 +44,7 @@ document.getElementById('mf-cookie-accept').addEventListener('click',()=>save(tr
 document.getElementById('mf-cookie-reject').addEventListener('click',()=>save(false));
 document.getElementById('mf-cookie-customize').addEventListener('click',()=>{document.getElementById('mf-statistics').checked=!!consentNow()?.statistics;panel.style.display='block';});
 document.getElementById('mf-cookie-save').addEventListener('click',()=>save(document.getElementById('mf-statistics').checked));
-document.getElementById('mf-cookie-cancel').addEventListener('click',()=>{panel.style.display='none';if(!consentNow())banner.style.display='block';});
+document.getElementById('mf-cookie-cancel').addEventListener('click',()=>{panel.style.display='none';const existingConsent=consentNow();if(!existingConsent)banner.style.display='block';else applyAnalyticsConsent(!!existingConsent.statistics);});
 if(!consentNow())banner.style.display='block';
 document.addEventListener('click',e=>{const el=e.target.closest('[data-manage-cookies]');if(!el)return;e.preventDefault();const c=consentNow();document.getElementById('mf-statistics').checked=!!c?.statistics;panel.style.display='block';});
 document.querySelectorAll('footer').forEach(f=>{if(!f.querySelector('[data-legal-links]')){const nav=document.createElement('nav');nav.dataset.legalLinks='true';nav.setAttribute('aria-label','Informations légales');nav.style.cssText='display:flex;flex-wrap:wrap;gap:14px;margin-top:14px;font-size:.92rem';nav.innerHTML='<a href="a-propos.html">À propos</a><a href="politique-confidentialite.html">Politique de confidentialité</a><a href="#" data-manage-cookies>Gérer mes cookies</a>';f.append(nav);}});

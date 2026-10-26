@@ -116,7 +116,7 @@ header{background:#0a0b13d9}.back-nav{display:flex;align-items:center;gap:18px;c
 </div>
 <div class="field"><label for="email">Adresse e-mail</label><input id="email" type="email" autocomplete="email" required placeholder="toi@exemple.com"></div>
 <div class="field"><label for="password">Mot de passe</label><input id="password" type="password" autocomplete="current-password" minlength="8" required placeholder="8 caractères minimum"></div>
-<button class="subtle" id="forgotPasswordBtn" type="button">Mot de passe oublié ?</button>
+<button class="subtle" id="forgotPasswordBtn" type="button" hidden>Mot de passe oublié ?</button>
 <button class="primary" id="submitBtn" type="submit">Me connecter <span aria-hidden="true">↗</span></button>
 </form>
 <form id="resetPasswordForm" hidden>
@@ -189,10 +189,10 @@ const $=id=>document.getElementById(id);
 let mode="login",currentUser=null,profileData={},attempts=[],freeDownloadStarted=false;
 function message(text,type=""){const el=$("message");el.textContent=text;el.className="message show"+(type?" "+type:"")}
 function clearMessage(){$("message").className="message";$("message").textContent=""}
-function setMode(next){mode=next;clearMessage();$("loginTab").classList.toggle("active",mode==="login");$("signupTab").classList.toggle("active",mode==="signup");$("signupFields").hidden=mode!=="signup";$("fullName").required=mode==="signup";$("country").required=mode==="signup";$("submitBtn").innerHTML=mode==="login"?"Me connecter ↗":"Créer mon compte ↗";$("password").autocomplete=mode==="login"?"current-password":"new-password"}
+function setMode(next){mode=next;clearMessage();$("loginTab").classList.toggle("active",mode==="login");$("signupTab").classList.toggle("active",mode==="signup");$("signupFields").hidden=mode!=="signup";$("fullName").required=mode==="signup";$("country").required=mode==="signup";$("forgotPasswordBtn").hidden=mode!=="login";$("submitBtn").innerHTML=mode==="login"?"Me connecter ↗":"Créer mon compte ↗";$("password").autocomplete=mode==="login"?"current-password":"new-password"}
 function showResetForm(){clearMessage();$("authForm").hidden=true;$("googleBtn").hidden=true;document.querySelector(".separator").hidden=true;$("loginTab").parentElement.hidden=true;$("resetPasswordForm").hidden=false}
 function showLoginForm(){ $("resetPasswordForm").hidden=true;$("authForm").hidden=false;$("googleBtn").hidden=false;document.querySelector(".separator").hidden=false;$("loginTab").parentElement.hidden=false;setMode("login")}
-$("forgotPasswordBtn").addEventListener("click",async()=>{clearMessage();const email=$("email").value.trim();if(!email){message("Saisis d’abord ton adresse e-mail dans le champ ci-dessus.","error");$("email").focus();return}const btn=$("forgotPasswordBtn");btn.disabled=true;try{const {error}=await client.auth.resetPasswordForEmail(email,{redirectTo:"https://sup-ga.github.io/MINDFLOW-EDU/espace-apprenant.html?mode=reset"});if(error)throw error;message("Si un compte correspond à cette adresse, un e-mail de réinitialisation va être envoyé. Vérifie aussi tes courriers indésirables.","success")}catch(err){message("Impossible d’envoyer le lien pour le moment. Réessaie dans quelques instants.","error")}finally{btn.disabled=false}});
+$("forgotPasswordBtn").addEventListener("click",()=>{window.location.href="mot-de-passe-oublie.html"});
 $("backToLoginBtn").addEventListener("click",()=>{showLoginForm();history.replaceState({},"",location.pathname)});
 $("resetPasswordForm").addEventListener("submit",async e=>{e.preventDefault();clearMessage();const password=$("newPassword").value,confirm=$("confirmPassword").value,btn=$("saveNewPasswordBtn");if(password.length<8){message("Le nouveau mot de passe doit contenir au moins 8 caractères.","error");return}if(password!==confirm){message("Les deux mots de passe ne correspondent pas.","error");return}btn.disabled=true;try{const {error}=await client.auth.updateUser({password});if(error)throw error;await client.auth.signOut();showLoginForm();message("Ton mot de passe a été modifié. Tu peux maintenant te connecter avec ce nouveau mot de passe.","success")}catch(err){message("Le lien a peut-être expiré ou est invalide. Demande un nouveau lien de réinitialisation.","error")}finally{btn.disabled=false}});
 client.auth.onAuthStateChange((event)=>{if(event==="PASSWORD_RECOVERY"){showResetForm()}});

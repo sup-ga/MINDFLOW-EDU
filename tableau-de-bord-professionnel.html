@@ -75,7 +75,7 @@ async function loadAll(){
   sessions=classIds.length?await safeLoad("Séances",db.from("class_sessions").select("*").in("class_id",classIds).order("starts_at",{ascending:true})):[];
   resources=await safeLoad("Documents",db.from("professional_resources").select("*").eq("user_id",session.user.id).order("created_at",{ascending:false}));
   enrollments=classIds.length?await safeLoad("Inscriptions",db.from("class_enrollments").select("*").in("class_id",classIds).order("enrolled_at",{ascending:false})):[];
-  const learnerIds=[...new Set(enrollments.map(x=>x.learner_id))];
+  const learnerIds=[...new Set([...enrollments.map(x=>x.learner_id),...requests.filter(x=>["accepted","payment_pending","enrolled"].includes(x.status)).map(x=>x.learner_id)])];
   learners=learnerIds.length?await safeLoad("Profils des apprenants",db.from("learner_profiles").select("id,full_name,country,avatar_url").in("id",learnerIds)):[];
   const subjects=await safeLoad("Matières",db.from("subjects").select("id,name").eq("is_active",true).order("display_order"));
   optionsFill("offerSubject",subjects,s=>s.name);optionsFill("resourceSubject",subjects,s=>s.name);optionsFill("classOffer",offers,o=>o.title);optionsFill("sessionClass",classes,x=>x.title);
@@ -86,8 +86,19 @@ async function loadAll(){
  }catch(e){fail("Erreur de chargement : "+e.message)}
  finally{if(refreshBtn){refreshBtn.disabled=false;refreshBtn.textContent="↻ Actualiser"}}
 }
-function renderLearners(){const el=$("learnersList");if(!enrollments.length){empty("learnersList","Aucun apprenant inscrit pour le moment. Les inscriptions actives à tes classes apparaîtront ici.");return}el.className="";el.innerHTML=enrollments.map(e=>{const l=learners.find(x=>x.id===e.learner_id),cl=classes.find(x=>x.id===e.class_id);return '<article class="item"><div class="itemhead"><div><strong>'+esc(l?.full_name||"Apprenant MindFlow")+'</strong><p class="hint">'+esc(cl?.title||"Classe")+' · '+(l?.country?esc(l.country)+" · ":"")+"Inscription le "+dateText(e.enrolled_at)+'</p></div><span class="badge">'+esc(e.status)+'</span></div></article>'}).join("")}
-
+function renderLearners(){
+ const el=$("learnersList");
+ const rows=[];
+ for(const e of enrollments){const l=learners.find(x=>x.id===e.learner_id),cl=classes.find(x=>x.id===e.class_id);rows.push({key:"e-"+e.id,name:l?.full_name||"Apprenant MindFlow",course:cl?.title||"Classe",detail:"Inscription le "+dateText(e.enrolled_at),status:e.status==="active"?"Inscrit · paiement à vérifier":e.status,kind:"enrollment"})}
+ for(const r of requests.filter(x=>["accepted","payment_pending","enrolled"].includes(x.status))){
+  if(r.class_id&&enrollments.some(e=>e.class_id===r.class_id&&e.learner_id===r.learner_id))continue;
+  const l=learners.find(x=>x.id===r.learner_id),cl=classes.find(x=>x.id===r.class_id),of=offers.find(x=>x.id===r.offer_id);
+  rows.push({key:"r-"+r.id,name:l?.full_name||"Apprenant MindFlow",course:cl?.title||of?.title||"Demande acceptée",detail:"Demande acceptée le "+dateText(r.updated_at||r.created_at),status:r.status==="payment_pending"?"Paiement à effectuer":r.status==="enrolled"?"Inscription confirmée":"Acceptée · paiement à vérifier",kind:"request"})
+ }
+ if(!rows.length){empty("learnersList","Aucun apprenant accepté ou inscrit pour le moment. Les demandes acceptées et les inscriptions apparaîtront ici.");return}
+ el.className="";
+ el.innerHTML='<div class="hint">Le statut « paiement à vérifier » signifie que MindFlow ne confirme pas encore le règlement dans ce tableau. Ne le considère pas comme payé sans preuve ou intégration de paiement.</div>'+rows.map(r=>'<article class="item"><div class="itemhead"><div><strong>'+esc(r.name)+'</strong><p class="hint">'+esc(r.course)+' · '+esc(r.detail)+'</p></div><span class="badge">'+esc(r.status)+'</span></div></article>').join("");
+}
 function renderOffers(){if(!offers.length)return empty("offersList","Aucune offre pour le moment. Crée ta première offre ci-dessus.");$("offersList").className="";$("offersList").innerHTML=offers.map(o=>'<article class="item"><div class="itemhead"><div><strong>'+esc(o.title)+'</strong><p class="hint">'+esc(o.offer_type)+' · '+esc(o.delivery_mode)+' · '+(o.is_free?"Gratuit":Number(o.price||0).toLocaleString("fr-FR")+" FCFA")+'</p></div><span class="badge">'+esc(o.status)+'</span></div><p>'+esc(o.description||"Pas de description.")+'</p><div class="actions"><button class="btn" data-edit-offer="'+esc(o.id)+'">Modifier</button><button class="btn danger" data-archive-offer="'+esc(o.id)+'">Archiver</button></div></article>').join("");$("offersList").querySelectorAll("[data-edit-offer]").forEach(b=>b.onclick=()=>editOffer(b.dataset.editOffer));$("offersList").querySelectorAll("[data-archive-offer]").forEach(b=>b.onclick=()=>changeOfferStatus(b.dataset.archiveOffer,"archived"))}
 function editOffer(id){const o=offers.find(x=>x.id===id);if(!o)return;$("offerId").value=o.id;$("offerTitle").value=o.title;$("offerSubject").value=o.subject_id||"";$("offerDescription").value=o.description||"";$("offerType").value=o.offer_type;$("offerMode").value=o.delivery_mode;$("offerLevel").value=o.level||"";$("offerDuration").value=o.duration_minutes||"";$("offerCapacity").value=o.capacity||"";$("offerPrice").value=o.is_free?0:o.price||0;$("offerEnroll").value=o.enrollment_mode;$("offerStatus").value=o.status;$("saveOffer").textContent="Mettre à jour";$("pane-offers").scrollIntoView({behavior:"smooth"})}
 $("resetOffer").onclick=()=>{$("offerForm").reset();$("offerId").value="";$("offerPrice").value="0";$("saveOffer").textContent="Enregistrer l’offre"};

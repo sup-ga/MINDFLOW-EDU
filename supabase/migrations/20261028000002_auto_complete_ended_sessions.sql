@@ -2,6 +2,10 @@
 -- pg_cron runs this once per minute; UI labels also derive status from timestamps.
 create extension if not exists pg_cron with schema pg_catalog;
 
+select cron.unschedule(jobid)
+from cron.job
+where jobname = 'mindflow-auto-complete-ended-sessions';
+
 select cron.schedule(
   'mindflow-auto-complete-ended-sessions',
   '* * * * *',

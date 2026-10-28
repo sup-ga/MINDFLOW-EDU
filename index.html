@@ -71,5 +71,36 @@ document.getElementById("searchForm").addEventListener("submit",e=>{e.preventDef
 search.addEventListener("input",()=>{if(!search.value.trim()){renderSubjects();renderProducts(products.slice(0,6))}});
 document.querySelectorAll("[data-subject]").forEach(a=>a.addEventListener("click",()=>{search.value=a.dataset.subject;const q=norm(search.value);renderProducts(products.filter(p=>norm([p.title,p.description,p.category,p.level,...(p.tags||[])].join(" ")).includes(q)))}));
 const toggle=document.getElementById("menuToggle"),links=document.getElementById("navLinks");toggle.addEventListener("click",()=>{const open=links.classList.toggle("open");toggle.setAttribute("aria-expanded",String(open));toggle.setAttribute("aria-label",open?"Fermer le menu":"Ouvrir le menu");toggle.textContent=open?"×":"☰"});links.querySelectorAll("a").forEach(a=>a.addEventListener("click",()=>{links.classList.remove("open");toggle.setAttribute("aria-expanded","false");toggle.textContent="☰"}));init();
-</script><script src="cookie-consent.js?v=20261026-1"></script>
+</script><script src="cookie-consent.js?v=20261026-1">
+async function routeProfessionalAccess(event){
+  const link=event.currentTarget;
+  event.preventDefault();
+  const original=link.textContent;
+  link.setAttribute("aria-busy","true");
+  link.style.pointerEvents="none";
+  try{
+    const {data:{session},error:sessionError}=await authClient.auth.getSession();
+    if(sessionError)throw sessionError;
+    if(!session){
+      location.href="espace-professionnel.html";
+      return;
+    }
+    const {data:profile,error:profileError}=await authClient.from("professional_profiles").select("id,status").eq("user_id",session.user.id).maybeSingle();
+    if(profileError)throw profileError;
+    if(profile&&profile.status==="approved"){
+      location.href="tableau-de-bord-professionnel.html";
+      return;
+    }
+    location.href="espace-professionnel.html";
+  }catch(error){
+    console.warn("Vérification de l’accès professionnel impossible",error);
+    location.href="espace-professionnel.html";
+  }finally{
+    link.removeAttribute("aria-busy");
+    link.style.pointerEvents="";
+    if(link.isConnected)link.textContent=original;
+  }
+}
+document.querySelectorAll('a.professional-nav, a[href="tableau-de-bord-professionnel.html"].mobile-space').forEach(link=>link.addEventListener("click",routeProfessionalAccess));
+</script>
 </body></html>

@@ -18,7 +18,7 @@
 <div class="field"><label for="message">Message à l’enseignant</label><textarea class="control" id="message" maxlength="1500" placeholder="Matière, objectifs, disponibilités ou questions…"></textarea></div>
 <button class="btn primary" id="sendRequest" type="submit">Envoyer la demande</button></form></div>
 <aside class="help-tip" id="helpTip" role="note"><button type="button" class="help-tip-close" id="closeHelpTip" aria-label="Fermer les explications">×</button><div class="help-tip-heading"><span class="help-tip-bulb" aria-hidden="true">💡</span><span>À quoi sert cette page ?</span></div><p>Cette page est dédiée aux <strong>classes et aux cours avec les enseignants</strong> : explore les offres, envoie une demande et suis les réponses ici. Pour les livres, fiches et exercices, rends-toi dans le catalogue de ressources.</p><div class="help-tip-actions"><button type="button" class="help-tip-known" id="helpTipKnown">Je connais déjà</button></div></aside></section>
-</main><footer><div class="wrap">MindFlow · Apprendre autrement, ensemble.</div></footer>
+</main><footer><div class="wrap">MindFlow — Apprendre autrement.</div></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const SUPABASE_URL="https://vzgmhdxxlgdiimqtincf.supabase.co",PUBLIC_KEY="sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil";
 const db=window.supabase.createClient(SUPABASE_URL,PUBLIC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});

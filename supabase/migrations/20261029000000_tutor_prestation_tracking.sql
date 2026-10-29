@@ -150,7 +150,7 @@ begin
   where t.id=new.prestation_id;
   if tg_op='INSERT' then
     if not is_admin then raise exception 'Seule l’administration peut créer une séance.'; end if;
-    new.created_by:=auth.uid(); new.updated_at:=now(); return new;
+    new.created_by:=auth.uid();new.updated_at:=now();return new;
   end if;
   if not is_admin and payment_state <> 'paid' then raise exception 'La prestation ne peut pas démarrer avant la confirmation du paiement par MindFlow.'; end if;
   if old.locked and not is_admin then raise exception 'Cette séance est verrouillée après confirmation des deux parties.'; end if;
@@ -159,22 +159,24 @@ begin
        and (nullif(trim(new.admin_resolution_reason),'') is null or new.admin_resolution_reason is not distinct from old.admin_resolution_reason) then
       raise exception 'Toute correction administrative après verrouillage exige un nouveau motif explicite.';
     end if;
-    if old.locked and (to_jsonb(new)-'updated_at') is distinct from (to_jsonb(old)-'updated_at') then new.resolved_by:=auth.uid(); new.resolved_at:=now(); end if;
+    if old.locked and (to_jsonb(new)-'updated_at') is distinct from (to_jsonb(old)-'updated_at') then new.resolved_by:=auth.uid();new.resolved_at:=now();end if;
     if old.status='disputed' and new.status in ('completed','not_completed') then
-      if nullif(trim(new.admin_resolution_reason),'') is null then raise exception 'Ajoute le motif de résolution du désaccord.'; end if;
-      new.resolved_by:=auth.uid(); new.resolved_at:=now(); new.locked:=true;
+      if nullif(trim(new.admin_resolution_reason),'') is null then raise exception 'Ajoute le motif de résolution du désaccord.';end if;
+      new.resolved_by:=auth.uid();new.resolved_at:=now();new.locked:=true;
     end if;
   else
     if learner_owner=auth.uid() then
-      if old.learner_confirmed is not null and new.learner_confirmed is distinct from old.learner_confirmed then raise exception 'Ta confirmation est déjà enregistrée. Contacte MindFlow en cas d’erreur.'; end if;
-      if (to_jsonb(new)-array['learner_confirmed','learner_note','status','locked','updated_at']) is distinct from (to_jsonb(old)-array['learner_confirmed','learner_note','status','locked','updated_at']) then raise exception 'Tu peux uniquement confirmer ta séance ou ajouter un commentaire.'; end if;
-      if new.professional_confirmed is distinct from old.professional_confirmed or new.professional_note is distinct from old.professional_note or new.admin_resolution_reason is distinct from old.admin_resolution_reason or new.resolved_by is distinct from old.resolved_by or new.resolved_at is distinct from old.resolved_at then raise exception 'Modification non autorisée.'; end if;
+      if old.learner_confirmed is not null and new.learner_confirmed is distinct from old.learner_confirmed then raise exception 'Ta confirmation est déjà enregistrée. Contacte MindFlow en cas d’erreur.';end if;
+      if (to_jsonb(new)-array['learner_confirmed','learner_note','status','locked','updated_at']) is distinct from (to_jsonb(old)-array['learner_confirmed','learner_note','status','locked','updated_at']) then raise exception 'Tu peux uniquement confirmer ta séance ou ajouter un commentaire.';end if;
+      if new.professional_confirmed is distinct from old.professional_confirmed or new.professional_note is distinct from old.professional_note or new.admin_resolution_reason is distinct from old.admin_resolution_reason or new.resolved_by is distinct from old.resolved_by or new.resolved_at is distinct from old.resolved_at then raise exception 'Modification non autorisée.';end if;
     elsif professional_owner=auth.uid() then
-      if old.professional_confirmed is not null and new.professional_confirmed is distinct from old.professional_confirmed then raise exception 'Ta confirmation est déjà enregistrée. Contacte MindFlow en cas d’erreur.'; end if;
-      if (to_jsonb(new)-array['professional_confirmed','professional_note','status','locked','updated_at']) is distinct from (to_jsonb(old)-array['professional_confirmed','professional_note','status','locked','updated_at']) then raise exception 'Tu peux uniquement confirmer ta séance ou ajouter un commentaire.'; end if;
-      if new.learner_confirmed is distinct from old.learner_confirmed or new.learner_note is distinct from old.learner_note or new.admin_resolution_reason is distinct from old.admin_resolution_reason or new.resolved_by is distinct from old.resolved_by or new.resolved_at is distinct from old.resolved_at then raise exception 'Modification non autorisée.'; end if;
+      if old.professional_confirmed is not null and new.professional_confirmed is distinct from old.professional_confirmed then raise exception 'Ta confirmation est déjà enregistrée. Contacte MindFlow en cas d’erreur.';end if;
+      if (to_jsonb(new)-array['professional_confirmed','professional_note','status','locked','updated_at']) is distinct from (to_jsonb(old)-array['professional_confirmed','professional_note','status','locked','updated_at']) then raise exception 'Tu peux uniquement confirmer ta séance ou ajouter un commentaire.';end if;
+      if new.learner_confirmed is distinct from old.learner_confirmed or new.learner_note is distinct from old.learner_note or new.admin_resolution_reason is distinct from old.admin_resolution_reason or new.resolved_by is distinct from old.resolved_by or new.resolved_at is distinct from old.resolved_at then raise exception 'Modification non autorisée.';end if;
     else raise exception 'Accès non autorisé à cette séance.';
     end if;
+    if new.learner_confirmed is distinct from old.learner_confirmed and new.learner_confirmed is not null and new.ends_at>now() then raise exception 'La séance ne peut être confirmée ou contestée avant son heure de fin.';end if;
+    if new.professional_confirmed is distinct from old.professional_confirmed and new.professional_confirmed is not null and new.ends_at>now() then raise exception 'La séance ne peut être confirmée ou contestée avant son heure de fin.';end if;
     new.updated_at:=now();
     if new.learner_confirmed is false or new.professional_confirmed is false then new.status:='disputed';new.locked:=false;new.admin_resolution_reason:=null;new.resolved_by:=null;new.resolved_at:=null;
     elsif new.learner_confirmed is true and new.professional_confirmed is true then new.status:='completed';new.locked:=true;

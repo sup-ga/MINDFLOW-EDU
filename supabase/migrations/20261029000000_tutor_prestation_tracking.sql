@@ -134,6 +134,7 @@ create policy tutor_prestation_events_insert_participants on public.tutor_presta
 drop policy if exists tutor_requests_provider_read_linked_prestations on public.tutor_requests;
 create policy tutor_requests_provider_read_linked_prestations on public.tutor_requests for select to authenticated using (
  exists(select 1 from public.tutor_prestations t join public.professional_profiles p on p.id=t.professional_id where t.request_id=tutor_requests.id and p.user_id=(select auth.uid()))
+ or exists(select 1 from public.professional_contact_offers o where o.request_id=tutor_requests.id and o.professional_user_id=(select auth.uid()))
 );
 
 create or replace function private.guard_tutor_prestation_session()

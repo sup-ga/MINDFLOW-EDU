@@ -187,19 +187,49 @@ end $$;
 revoke all on function private.guard_tutor_prestation_session() from public,anon,authenticated;
 
 create or replace function private.recalculate_tutor_prestation(p_prestation_id uuid)
-returns void language plpgsql security definer set search_path=pg_catalog,public as $$
-declare expected_count integer; paid_state text; current_payout text; total_count integer; completed_count integer; dispute_count integer;
+returns void
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $$
+declare
+  expected_count integer;
+  paid_state text;
+  current_payout text;
+  total_count integer;
+  completed_count integer;
+  dispute_count integer;
 begin
- select session_count,payment_status,payout_status into expected_count,paid_state,current_payout from public.tutor_prestations where id=p_prestation_id;
- if not found then return; end if;
- select count(*),count(*) filter(where status='completed' and locked=true),count(*) filter(where status='disputed')
- into total_count,completed_count,dispute_count from public.tutor_prestation_sessions where prestation_id=p_prestation_id;
- update public.tutor_prestations set
-  payout_status=case when paid_state='refunded' then 'cancelled' when current_payout='paid' then 'paid' when paid_state<>'paid' then 'not_eligible' when dispute_count>0 then 'held' when total_count<expected_count or completed_count<expected_count then 'held' else 'eligible' end,
-  status=case when paid_state='refunded' then 'cancelled' when paid_state<>'paid' then 'awaiting_payment' when total_count>=expected_count and completed_count>=expected_count and dispute_count=0 then 'completed' else 'active' end,
-  updated_at=now()
- where id=p_prestation_id;
-end $$;
+  select session_count, payment_status, payout_status
+    into expected_count, paid_state, current_payout
+  from public.tutor_prestations where id = p_prestation_id;
+  if not found then return; end if;
+
+  select count(*),
+         count(*) filter (where status = 'completed' and locked = true),
+         count(*) filter (where status = 'disputed')
+    into total_count, completed_count, dispute_count
+  from public.tutor_prestation_sessions where prestation_id = p_prestation_id;
+
+  update public.tutor_prestations
+  set payout_status = case
+        when paid_state = 'refunded' then 'cancelled'
+        when current_payout = 'paid' then 'paid'
+        when paid_state <> 'paid' then 'not_eligible'
+        when dispute_count > 0 then 'held'
+        when total_count <> expected_count or completed_count <> expected_count then 'held'
+        else 'eligible'
+      end,
+      status = case
+        when paid_state = 'refunded' then 'cancelled'
+        when paid_state <> 'paid' then 'awaiting_payment'
+        when total_count = expected_count and completed_count = expected_count and dispute_count = 0 then 'completed'
+        else 'active'
+      end,
+      updated_at = now()
+  where id = p_prestation_id;
+end;
+$$;
 revoke all on function private.recalculate_tutor_prestation(uuid) from public,anon,authenticated;
 
 create or replace function private.recalculate_tutor_prestation_trigger()

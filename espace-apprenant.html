@@ -368,25 +368,21 @@ async function tutorLoadPlaces(countryOption){
  }
 }
 function initTutorRequestFields(){
- const country=$("tutorCountry"),phoneCode=$("tutorPhoneCode"),altCode=$("tutorAlternatePhoneCode"),commune=$("tutorCity"),search=$("tutorCommuneSearch");
- if(!country||!phoneCode||!altCode||!commune||!search)return;
+ const country=$("tutorCountry"),search=$("tutorCountrySearch"),suggestions=$("tutorCountrySuggestions"),phoneCode=$("tutorPhoneCode"),altCode=$("tutorAlternatePhoneCode"),commune=$("tutorCity"),communeSearch=$("tutorCommuneSearch");
+ if(!country||!search||!suggestions||!phoneCode||!altCode||!commune||!communeSearch)return;
  const countryOptions=TUTOR_COUNTRIES.map(([name,code,flag])=>({name,code,flag}));
- country.innerHTML='<option value="">Sélectionner un pays</option>'+countryOptions.map(c=>'<option value="'+esc(c.name)+'" '+(c.name==="Gabon"?'selected':'')+'>'+c.flag+' '+esc(c.name)+(c.name==="Gabon"?' — disponible':' — indisponible pour les demandes')+'</option>').join("");
- const dialOptions=countryOptions.map(c=>'<option value="'+esc(c.code)+'" data-country="'+esc(c.name)+'" '+(c.name==="Gabon"?'selected':'')+'>'+c.flag+' '+esc(c.code)+' · '+esc(c.name)+'</option>').join("");
+ const dialOptions=countryOptions.map(c=>'<option value="'+esc(c.code)+'" data-country="'+esc(c.name)+'">'+c.flag+' '+esc(c.code)+' · '+esc(c.name)+'</option>').join("");
  phoneCode.innerHTML=dialOptions;altCode.innerHTML=dialOptions;
  const updateCodes=selected=>{phoneCode.value=selected.code;altCode.value=selected.code};
- country.addEventListener("change",async()=>{
-  const selected=countryOptions.find(c=>c.name===country.value);
-  const out=$("tutorRequestFormMessage");
-  if(!selected){tutorCityRequestId++;tutorCurrentPlaces=[];commune.innerHTML='<option value="">Choisir un pays d’abord</option>';return}
-  updateCodes(selected);
-  out.textContent="";out.className="inline-message";
-  await tutorLoadPlaces(selected);
- });
- search.addEventListener("input",()=>tutorRenderPlaces(search.value));
- const gabon=countryOptions.find(c=>c.name==="Gabon");
- if(gabon){updateCodes(gabon);tutorLoadPlaces(gabon)}
+ function render(q=""){q=String(q).trim().toLocaleLowerCase("fr");const matches=countryOptions.filter(c=>!q||c.name.toLocaleLowerCase("fr").includes(q)).slice(0,30);suggestions.innerHTML=matches.map(c=>'<button type="button" class="country-suggestion" role="option" data-country-name="'+esc(c.name)+'"><span>'+c.flag+'</span><span class="country-name">'+esc(c.name)+'</span><span class="country-status '+(c.name==="Gabon"?"available":"unavailable")+'">'+(c.name==="Gabon"?"Disponible":"Indisponible")+'</span></button>').join("");suggestions.hidden=!q||!matches.length}
+ async function choose(name){const selected=countryOptions.find(c=>c.name===name);if(!selected)return;country.value=selected.name;search.value=selected.flag+" "+selected.name;suggestions.hidden=true;updateCodes(selected);const out=$("tutorRequestFormMessage");if(out){out.textContent="";out.className="inline-message"}await tutorLoadPlaces(selected)}
+ search.addEventListener("input",()=>{country.value="";render(search.value)});search.addEventListener("focus",()=>{if(search.value&&!country.value)render(search.value)});search.addEventListener("keydown",e=>{if(e.key==="Escape")suggestions.hidden=true;if(e.key==="Enter"&&!suggestions.hidden){const first=suggestions.querySelector("[data-country-name]");if(first){e.preventDefault();choose(first.dataset.countryName)}}});suggestions.addEventListener("click",e=>{const b=e.target.closest("[data-country-name]");if(b)choose(b.dataset.countryName)});document.addEventListener("click",e=>{if(!e.target.closest('[data-country-picker="tutorCountry"]'))suggestions.hidden=true});
+ communeSearch.addEventListener("input",()=>tutorRenderPlaces(communeSearch.value));choose("Gabon");
 }
+function initGeneralCountryPickers(){
+ for(const id of ["country","editCountry"]){const hidden=$(id),search=$(id==="country"?"countrySearch":"editCountrySearch"),list=$(id==="country"?"countrySuggestions":"editCountrySuggestions");if(!hidden||!search||!list)continue;const render=q=>{q=String(q||"").trim().toLocaleLowerCase("fr");const matches=TUTOR_COUNTRIES.filter(([name])=>!q||name.toLocaleLowerCase("fr").includes(q)).slice(0,30);list.innerHTML=matches.map(([name,dial,flag])=>'<button type="button" class="country-suggestion" role="option" data-country-name="'+esc(name)+'"><span>'+flag+'</span><span class="country-name">'+esc(name)+'</span><span class="country-status '+(name==="Gabon"?"available":"unavailable")+'">'+(name==="Gabon"?"Disponible":"Indisponible")+'</span></button>').join("");list.hidden=!q||!matches.length};search.addEventListener("input",()=>{hidden.value="";render(search.value)});search.addEventListener("focus",()=>{if(search.value&&!hidden.value)render(search.value)});search.addEventListener("keydown",e=>{if(e.key==="Escape")list.hidden=true;if(e.key==="Enter"&&!list.hidden){const first=list.querySelector("[data-country-name]");if(first){e.preventDefault();choose(first.dataset.countryName)}}});function choose(name){const entry=TUTOR_COUNTRIES.find(x=>x[0]===name);if(!entry)return;hidden.value=name;search.value=entry[2]+" "+name;list.hidden=true}list.addEventListener("click",e=>{const b=e.target.closest("[data-country-name]");if(b)choose(b.dataset.countryName)});document.addEventListener("click",e=>{if(!e.target.closest('[data-country-picker="'+id+'"]'))list.hidden=true});}
+}
+initGeneralCountryPickers();
 initTutorRequestFields();
 $("tutorRequestForm").addEventListener("submit",async e=>{
  e.preventDefault();if(!currentUser)return;const btn=$("submitTutorRequest"),out=$("tutorRequestFormMessage");btn.disabled=true;out.textContent="Envoi de ta demande…";

@@ -242,3 +242,30 @@ create trigger audit_tutor_prestation_sessions after insert or update or delete 
 comment on table public.tutor_prestations is 'Prestation de répétiteur payée par période; renouvellements conservés dans des périodes distinctes.';
 comment on table public.tutor_prestation_sessions is 'Une ligne par séance. Verrouillage automatique après double confirmation positive; litiges résolus et tracés par l’administration.';
 comment on table public.tutor_prestation_events is 'Journal d’audit des modifications de prestations et de séances.';
+
+
+create or replace function private.guard_tutor_prestation_financial_updates()
+returns trigger
+language plpgsql
+security invoker
+set search_path = pg_catalog, public
+as $$
+declare
+  jwt_role text := current_setting('request.jwt.claim.role', true);
+begin
+  if new.payment_status = 'paid' and old.payment_status is distinct from 'paid'
+     and coalesce(jwt_role, '') <> 'service_role' then
+    raise exception 'Le paiement doit être confirmé par une notification serveur de MindFlow.';
+  end if;
+  if new.payout_status = 'paid' and old.payout_status is distinct from 'paid'
+     and old.payout_status <> 'eligible' then
+    raise exception 'La rémunération ne peut être marquée versée que lorsque toutes les conditions sont réunies.';
+  end if;
+  return new;
+end;
+$$;
+revoke all on function private.guard_tutor_prestation_financial_updates() from public, anon, authenticated;
+drop trigger if exists guard_tutor_prestation_financial_updates on public.tutor_prestations;
+create trigger guard_tutor_prestation_financial_updates
+before update of payment_status, payout_status on public.tutor_prestations
+for each row execute function private.guard_tutor_prestation_financial_updates();

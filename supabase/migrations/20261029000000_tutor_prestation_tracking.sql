@@ -142,14 +142,16 @@ declare
   is_admin boolean := coalesce(public.is_professional_reviewer(),false);
   learner_owner uuid;
   professional_owner uuid;
+  payment_state text;
 begin
-  select t.learner_id,p.user_id into learner_owner,professional_owner
+  select t.learner_id,p.user_id,t.payment_status into learner_owner,professional_owner,payment_state
   from public.tutor_prestations t join public.professional_profiles p on p.id=t.professional_id
   where t.id=new.prestation_id;
   if tg_op='INSERT' then
     if not is_admin then raise exception 'Seule l’administration peut créer une séance.'; end if;
     new.created_by:=auth.uid(); new.updated_at:=now(); return new;
   end if;
+  if not is_admin and payment_state <> 'paid' then raise exception 'La prestation ne peut pas démarrer avant la confirmation du paiement par MindFlow.'; end if;
   if old.locked and not is_admin then raise exception 'Cette séance est verrouillée après confirmation des deux parties.'; end if;
   if is_admin then
     if old.locked and (to_jsonb(new)-'updated_at') is distinct from (to_jsonb(old)-'updated_at')

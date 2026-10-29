@@ -130,7 +130,41 @@ header{background:#0a0b13d9}.back-nav{display:flex;align-items:center;gap:18px;c
 #submitTutorRequest{min-width:210px;box-shadow:0 8px 28px #9d8cff22}
 #tutorRequestFormMessage{flex:1;min-width:180px}
 @media(max-width:650px){.phone-control{grid-template-columns:100px minmax(0,1fr)}.tutor-days .day-pill{min-width:calc(33.333% - 7px)}.tutor-days .day-pill span{padding:9px 7px}.tutor-form-actions{align-items:stretch}.tutor-form-actions #submitTutorRequest{width:100%}}
-</style></head>
+</style>
+<style id="mindflow-tutor-request-button-visibility">
+/* Bouton principal bien visible pour lancer une demande de prestataire */
+.side-link[data-view="tutor-new-request"],
+.action-link[data-view="tutor-new-request"]{
+  background:linear-gradient(105deg,#63e6ff 0%,#9d8cff 62%,#ff78c8 100%) !important;
+  color:#10111b !important;
+  border:1px solid #b6f4ff !important;
+  box-shadow:0 7px 22px #63e6ff26, inset 0 1px 0 #ffffff80;
+  font-weight:850 !important;
+  opacity:1 !important;
+  text-shadow:none !important;
+  transition:transform .18s ease,box-shadow .18s ease,filter .18s ease;
+}
+.side-link[data-view="tutor-new-request"] .nav-ico{color:#10111b !important}
+.side-link[data-view="tutor-new-request"]:hover,
+.side-link[data-view="tutor-new-request"]:focus-visible,
+.action-link[data-view="tutor-new-request"]:hover,
+.action-link[data-view="tutor-new-request"]:focus-visible{
+  filter:brightness(1.08);
+  transform:translateY(-1px);
+  box-shadow:0 10px 28px #63e6ff38;
+  outline:2px solid #ffffff70;
+  outline-offset:2px;
+}
+.side-link[data-view="tutor-new-request"].active{
+  background:linear-gradient(105deg,#63e6ff 0%,#9d8cff 62%,#ff78c8 100%) !important;
+  color:#10111b !important;
+}
+@media(max-width:920px){
+  .side-link[data-view="tutor-new-request"]{flex:0 0 auto;box-shadow:0 5px 18px #63e6ff25}
+}
+</style>
+
+</head>
 <body>
 <header><div class="wrap nav"><a class="logo" href="index.html">Mind<span>Flow</span></a><nav class="back-nav" aria-label="Navigation principale"><a href="index.html">Accueil</a><a href="catalogue.html">Catalogue</a><a href="catalogue.html#produits">Ressources</a><a class="nav-space" href="espace-apprenant.html" aria-current="page">Mon espace</a></nav></div></header>
 <main class="wrap">

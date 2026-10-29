@@ -327,7 +327,7 @@ function initTutorRequestFields(){
  const dialOptions=countryOptions.map(c=>'<option value="'+esc(c.code)+'" data-country="'+esc(c.name)+'" '+(c.name==="Gabon"?'selected':'')+'>'+c.flag+' '+esc(c.code)+' · '+esc(c.name)+'</option>').join("");
  phoneCode.innerHTML=dialOptions;altCode.innerHTML=dialOptions;
  const setGabonCode=()=>{phoneCode.value="+241";altCode.value="+241"};
- country.addEventListener("change",()=>{const out=$("tutorRequestFormMessage");if(country.value!=="Gabon"){out.textContent="Ce pays est affiché pour information, mais les demandes ne sont pas encore disponibles dans ce pays. Tu ne pourras envoyer la demande que pour le Gabon.";out.className="inline-message error"}else{setGabonCode();out.textContent="";out.className="inline-message"}});
+ country.addEventListener("change",()=>{if(country.value==="Gabon"){setGabonCode();const out=$("tutorRequestFormMessage");out.textContent="";out.className="inline-message"}});
  commune.innerHTML='<option value="">Choisir une commune du Gabon</option>'+GABON_COMMUNES.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");
  search.addEventListener("input",()=>{const q=search.value.trim().toLocaleLowerCase("fr");const matches=GABON_COMMUNES.filter(c=>c.toLocaleLowerCase("fr").includes(q));const previous=commune.value;commune.innerHTML='<option value="">'+(q?'Choisir dans les résultats':'Choisir une commune du Gabon')+'</option>'+matches.map(c=>'<option value="'+esc(c)+'">'+esc(c)+'</option>').join("");if(matches.includes(previous))commune.value=previous;});
  setGabonCode();

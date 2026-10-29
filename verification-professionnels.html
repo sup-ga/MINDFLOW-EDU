@@ -25,7 +25,7 @@
  <details id="adminProfessionalOffersDetails" class="panel admin-professional-offers-details" style="margin-top:14px"><summary>Propositions envoyées et réponses</summary><div id="adminProfessionalOffers" class="request-list" style="margin-top:12px"><p class="muted">Chargement des propositions…</p></div></details>
 </div>
 <select id="adminProfessionalPicker" class="hidden" aria-hidden="true" tabindex="-1"><option value="">Choisir un professionnel…</option></select>
-<form id="adminProfessionalOfferForm" class="panel hidden" style="margin-top:14px"><h3>Proposer une mission</h3><div class="field"><label for="adminOfferRequestId">Demande de répétiteur liée (facultatif)</label><select id="adminOfferRequestId"><option value="">Aucune demande liée</option></select></div><div class="field"><label for="adminOfferTitle">Intitulé de la mission</label><input id="adminOfferTitle" maxlength="180" required placeholder="Ex. : Soutien scolaire en français"></div><div class="field"><label for="adminOfferSubjects">Matières concernées</label><input id="adminOfferSubjects" maxlength="300" placeholder="Français, expression écrite"></div><div class="toolbar"><div class="field"><label for="adminOfferCity">Ville</label><input id="adminOfferCity" maxlength="100" placeholder="Ville"></div><div class="field"><label for="adminOfferNeighborhood">Quartier</label><input id="adminOfferNeighborhood" maxlength="120" placeholder="Quartier"></div><div class="field"><label for="adminOfferFee">Montant proposé (FCFA, facultatif)</label><input id="adminOfferFee" type="number" min="0" step="500" placeholder="Ex. : 15000"></div></div><div class="field"><label for="adminOfferDetails">Détails de la mission</label><textarea id="adminOfferDetails" maxlength="5000" rows="4" required placeholder="Besoins, disponibilités, durée, attentes…"></textarea></div><button class="btn primary" id="adminSendOffer" type="submit">Envoyer la proposition</button></form>
+<form id="adminProfessionalOfferForm" class="panel hidden" style="margin-top:14px"><h3>Proposer une mission</h3><div class="field"><label for="adminOfferRequestId">Demande de répétiteur liée (facultatif)</label><select id="adminOfferRequestId"><option value="">Aucune demande liée</option></select></div><div class="field"><label for="adminOfferTitle">Intitulé de la mission</label><input id="adminOfferTitle" maxlength="180" required placeholder="Ex. : Soutien scolaire en français"></div><div class="field"><label for="adminOfferSubjects">Matières concernées</label><input id="adminOfferSubjects" maxlength="300" placeholder="Français, expression écrite"></div><div class="toolbar"><div class="field"><label for="adminOfferCity">Ville</label><input id="adminOfferCity" maxlength="100" placeholder="Ville"></div><div class="field"><label for="adminOfferNeighborhood">Quartier</label><input id="adminOfferNeighborhood" maxlength="120" placeholder="Quartier"></div><div class="field"><label for="adminOfferFee">Montant proposé (FCFA, facultatif)</label><input id="adminOfferFee" type="number" min="0" step="500" placeholder="Ex. : 15000"></div></div><div class="field"><label for="adminOfferDetails">Résumé de la demande et détails de la mission</label><textarea id="adminOfferDetails" maxlength="5000" rows="8" required placeholder="Sélectionne une demande liée pour préremplir les informations, puis ajuste si nécessaire."></textarea><small class="hint">Lorsque tu sélectionnes une demande liée, ses besoins, son adresse, ses objectifs, ses horaires et ses coordonnées utiles sont repris ici.</small></div><div class="field"><label for="adminOfferExtraNote">Précision de l’administration (facultatif)</label><textarea id="adminOfferExtraNote" maxlength="2000" rows="2" placeholder="Ajoute un petit message ou une précision pour le professeur…"></textarea></div><button class="btn primary" id="adminSendOffer" type="submit">Envoyer la proposition</button></form>
 </section></section></div></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const db=window.supabase.createClient("https://vzgmhdxxlgdiimqtincf.supabase.co","sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil",{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});const $=id=>document.getElementById(id);let currentUser=null;let pendingFactorId=null;let pendingChallengeId=null;let enrollingFactorId=null;
 function msg(s,type="ok"){const n=$("notice");n.textContent=s;n.className="notice "+type;n.classList.remove("hidden")}function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
@@ -197,10 +197,49 @@ async function loadAdminProfessionalContactList(){
   root.querySelectorAll("[data-admin-open-contact]").forEach(b=>b.addEventListener("click",async()=>{try{await openAdminConversation(b.dataset.adminOpenContact)}catch(e){msg("Impossible d’ouvrir la conversation : "+e.message,"error")}}));
  }catch(e){root.innerHTML='<div class="panel"><p class="muted">Impossible de charger les conversations : '+esc(e.message)+'</p></div>';console.warn("Liste de messagerie administrative",e.message)}
 }
+let adminOfferRequestRows=[];
+function formatAdminOfferRequest(r){
+ const days={monday:"Lundi",tuesday:"Mardi",wednesday:"Mercredi",thursday:"Jeudi",friday:"Vendredi",saturday:"Samedi",sunday:"Dimanche"};
+ const additional=String(r.additional_notes||"").trim();
+ const lines=[
+  "Demande de : "+(r.learner_name||"Non renseigné"),
+  "Téléphone : "+(r.contact_phone||"Non renseigné"),
+  "E-mail : "+(r.learner_email||"Non renseigné"),
+  "Matière(s) : "+((r.subjects||[]).join(", ")||"Non renseignée(s)"),
+  "Classe / niveau : "+(r.school_level||"Non renseigné"),
+  "Âge de l’apprenant : "+(r.learner_age||"Non renseigné"),
+  "Adresse du cours en présentiel : "+[r.address_details,r.neighborhood,r.city,r.country].filter(Boolean).join(", "),
+  "Objectifs et difficultés : "+(r.learning_goals||"Non renseignés"),
+  "Durée d’une séance : "+(r.hours_per_session?r.hours_per_session+" heure(s)":"Non précisée"),
+  "Séances par semaine : "+(r.sessions_per_week||"Non précisé"),
+  "Jours souhaités : "+((r.days_available||[]).map(d=>days[d]||d).join(", ")||"Non précisés"),
+  "Horaire demandé et autres informations : "+(additional||"À convenir avec le prestataire"),
+  "Date souhaitée de début : "+(r.preferred_start_date||"Non précisée"),
+  "Budget indiqué par la famille : "+(r.budget_note||"Non renseigné")
+ ];
+ return lines.join("\n");
+}
 async function loadAdminOfferRequestChoices(){
  const select=$("adminOfferRequestId");if(!select)return;
- try{const {data,error}=await db.from("tutor_requests").select("id,learner_name,subjects,status").order("created_at",{ascending:false});if(error)throw error;const old=select.value;select.innerHTML='<option value="">Aucune demande liée</option>'+(data||[]).filter(r=>r.status!=="cancelled").map(r=>'<option value="'+esc(r.id)+'">'+esc(r.learner_name)+' — '+esc((r.subjects||[]).join(", "))+' · '+esc(r.status)+'</option>').join("");if((data||[]).some(r=>r.id===old))select.value=old}catch(e){console.warn("Demandes liées aux propositions",e.message)}
+ try{
+  const {data,error}=await db.from("tutor_requests").select("*").order("created_at",{ascending:false});if(error)throw error;
+  adminOfferRequestRows=(data||[]).filter(r=>r.status!=="cancelled");
+  const old=select.value;
+  select.innerHTML='<option value="">Aucune demande liée</option>'+adminOfferRequestRows.map(r=>'<option value="'+esc(r.id)+'">'+esc(r.learner_name||"Apprenant")+' — '+esc((r.subjects||[]).join(", "))+' · '+esc(r.status||"")+'</option>').join("");
+  if(adminOfferRequestRows.some(r=>r.id===old))select.value=old;
+ }catch(e){console.warn("Demandes liées aux propositions",e.message)}
 }
+$("adminOfferRequestId").addEventListener("change",()=>{
+ const r=adminOfferRequestRows.find(x=>x.id===$("adminOfferRequestId").value);if(!r)return;
+ $("adminOfferTitle").value="Soutien scolaire — "+((r.subjects||[]).join(", ")||"demande de prestataire");
+ $("adminOfferSubjects").value=(r.subjects||[]).join(", ");
+ $("adminOfferCity").value=r.city||"";
+ $("adminOfferNeighborhood").value=r.neighborhood||"";
+ const budgetDigits=String(r.budget_note||"").replace(/[^0-9]/g,"");
+ $("adminOfferFee").value=budgetDigits?String(Number(budgetDigits)):"";
+ $("adminOfferDetails").value=formatAdminOfferRequest(r);
+ $("adminOfferExtraNote").value="";
+});
 async function loadAdminProfessionalMessages(){
  await loadAdminOfferRequestChoices();
  const root=$("adminProfessionalThread");if(!root)return;
@@ -235,7 +274,7 @@ $("adminOpenMissionForm").addEventListener("click",()=>{const mount=$("adminMiss
 $("adminCloseMissionForm").addEventListener("click",()=>{const mount=$("adminMissionFormMount"),form=$("adminProfessionalOfferForm");if(form&&adminOfferFormPlaceholder?.parentNode){form.classList.add("hidden");adminOfferFormPlaceholder.parentNode.insertBefore(form,adminOfferFormPlaceholder);}if(adminOfferFormPlaceholder?.parentNode)adminOfferFormPlaceholder.parentNode.removeChild(adminOfferFormPlaceholder);adminOfferFormPlaceholder=null;mount.classList.add("hidden");$("adminOpenMissionForm").classList.remove("hidden");});
 $("adminProfessionalPicker").addEventListener("change",async()=>{adminActiveProfessional=null;adminActiveConversation=null;if($("adminProfessionalPicker").value){try{await openAdminConversation($("adminProfessionalPicker").value)}catch(e){msg(e.message,"error")}}});
 $("adminProfessionalMessageForm").addEventListener("submit",async e=>{e.preventDefault();if(!adminActiveConversation||!adminActiveProfessional)return;const input=$("adminProfessionalMessageText"),btn=$("adminSendProfessionalMessage"),message=input.value.trim();if(!message)return;btn.disabled=true;try{const {error}=await db.from("professional_messages").insert({conversation_id:adminActiveConversation.id,sender_id:currentUser.id,sender_role:"admin",message});if(error)throw error;input.value="";msg("Message envoyé au professionnel.");await loadAdminProfessionalMessages()}catch(err){msg("Envoi impossible : "+err.message,"error")}finally{btn.disabled=false}});
-$("adminProfessionalOfferForm").addEventListener("submit",async e=>{e.preventDefault();if(!adminActiveConversation||!adminActiveProfessional)return;const btn=$("adminSendOffer");btn.disabled=true;try{const title=$("adminOfferTitle").value.trim(),details=$("adminOfferDetails").value.trim();if(!title||!details)throw Error("Renseigne l’intitulé et les détails de la mission.");const rawFee=$("adminOfferFee").value,fee=rawFee===""?null:Number(rawFee);const {error}=await db.from("professional_contact_offers").insert({conversation_id:adminActiveConversation.id,professional_id:adminActiveProfessional.id,professional_user_id:adminActiveProfessional.user_id,created_by:currentUser.id,request_id:$("adminOfferRequestId").value||null,title,details,subjects:$("adminOfferSubjects").value.split(",").map(s=>s.trim()).filter(Boolean),city:$("adminOfferCity").value.trim()||adminActiveProfessional.city||null,neighborhood:$("adminOfferNeighborhood").value.trim()||adminActiveProfessional.neighborhood||null,proposed_fee:fee});if(error)throw error;msg("Proposition de mission envoyée au professionnel.");$("adminProfessionalOfferForm").reset();await loadAdminProfessionalMessages()}catch(err){msg("Impossible d’envoyer la proposition : "+err.message,"error")}finally{btn.disabled=false}});
+$("adminProfessionalOfferForm").addEventListener("submit",async e=>{e.preventDefault();if(!adminActiveConversation||!adminActiveProfessional)return;const btn=$("adminSendOffer");btn.disabled=true;try{const title=$("adminOfferTitle").value.trim(),baseDetails=$("adminOfferDetails").value.trim(),extraNote=$("adminOfferExtraNote").value.trim(),details=[baseDetails,extraNote?("Précision de l’administration : "+extraNote):""].filter(Boolean).join("\n\n");if(!title||!baseDetails)throw Error("Renseigne l’intitulé et les détails de la mission.");const rawFee=$("adminOfferFee").value,fee=rawFee===""?null:Number(rawFee);const {error}=await db.from("professional_contact_offers").insert({conversation_id:adminActiveConversation.id,professional_id:adminActiveProfessional.id,professional_user_id:adminActiveProfessional.user_id,created_by:currentUser.id,request_id:$("adminOfferRequestId").value||null,title,details,subjects:$("adminOfferSubjects").value.split(",").map(s=>s.trim()).filter(Boolean),city:$("adminOfferCity").value.trim()||adminActiveProfessional.city||null,neighborhood:$("adminOfferNeighborhood").value.trim()||adminActiveProfessional.neighborhood||null,proposed_fee:fee});if(error)throw error;msg("Proposition de mission envoyée au professionnel.");$("adminProfessionalOfferForm").reset();await loadAdminProfessionalMessages()}catch(err){msg("Impossible d’envoyer la proposition : "+err.message,"error")}finally{btn.disabled=false}});
 ["providerSearchText","providerSearchSubject","providerSearchNeighborhood","providerSearchCity","providerSearchLevel"].forEach(id=>$(id).addEventListener("input",()=>{}));
 
 setInterval(()=>{if(currentUser){adminUnreadCount();if(!$("professionalMessagesView").classList.contains("hidden")){if(adminActiveConversation)loadAdminProfessionalMessages();else loadAdminProfessionalContactList();}if(!$("tutorPrestationsView").classList.contains("hidden"))loadTutorPrestationsAdmin()}},30000);

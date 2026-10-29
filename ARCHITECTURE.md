@@ -49,3 +49,13 @@ Demander les scopes OAuth2 PAYIN nécessaires, notamment `ebilling-api/invoice:c
 - Le flux de paiement ne peut pas être validé de bout en bout avant la configuration des secrets E-Billing et l'enregistrement de l'URL de callback dans le compte marchand.
 - Le callback tente la livraison du PDF après paiement confirmé, en générant une URL signée courte depuis le bucket privé. Cette livraison ne fonctionnera qu'après configuration des deux secrets de passerelle ci-dessus et validation de son script Apps Script. Une commande payée ne doit pas être présentée comme livrée tant que `delivery_status` ne le confirme pas.
 - Les identifiants/secret E-Billing restent côté serveur. Les clés publiques Supabase ne donnent jamais le droit de marquer une commande payée.
+
+
+## Prestations de répétiteur — suivi partagé
+
+- `tutor_requests` reste la demande initiale de l’apprenant. Les propositions envoyées aux professionnels peuvent y être reliées par `professional_contact_offers.request_id`, afin de conserver un identifiant commun plutôt que de rapprocher les personnes par leur nom.
+- `tutor_prestations` représente une période officielle payée. Chaque renouvellement crée une nouvelle ligne et un nouveau numéro de période, tout en conservant `subscription_group_id` pour relier l’historique. Les tarifs stockent une commission MindFlow fixe de 33 % et une part prestataire de 67 %.
+- `tutor_prestation_sessions` contient une ligne par séance et les confirmations distinctes de l’apprenant et du professionnel. Une séance se verrouille seulement après deux confirmations positives. Un désaccord reste ouvert pour l’administration; une correction après verrouillage exige un motif.
+- `tutor_prestation_events` garde l’historique des changements avec acteur, date, anciennes/nouvelles valeurs et motif.
+- Les trois tableaux de bord lisent les mêmes tables. RLS limite les lignes aux parties concernées et à l’équipe administrative. La confirmation de paiement est protégée côté base pour n’être effectuée que par un rôle serveur; la rémunération ne peut être marquée comme versée qu’après son éligibilité.
+- **Limite d’intégration actuelle :** le nouveau suivi des prestations n’est pas encore relié au circuit de paiement E-Billing existant. Tant que le callback serveur n’actualise pas `tutor_prestations.payment_status`, une prestation reste en attente de paiement et les confirmations de séances restent désactivées. Ne pas la marquer payée manuellement depuis le navigateur.

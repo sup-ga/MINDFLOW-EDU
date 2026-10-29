@@ -104,7 +104,7 @@ $("adminCreateTutorPrestationForm")?.addEventListener("submit",async e=>{
  btn.disabled=true;out.className="notice";out.textContent="Création de la prestation…";out.classList.remove("hidden");
  const previous=adminTutorPrestationRows.find(p=>p.id===$("adminPrestationRenewal").value);const payload={request_id:previous?previous.request_id:req.id,learner_id:previous?previous.learner_id:req.learner_id,professional_id:previous?previous.professional_id:professionalId,subject:$("adminPrestationSubject").value.trim(),title:$("adminPrestationTitle").value.trim(),price:Number($("adminPrestationPrice").value),session_count:Number($("adminPrestationSessionCount").value),period_number:previous?Number(previous.period_number)+1:Number($("adminPrestationPeriod").value),created_by:currentUser.id};if(previous)payload.subscription_group_id=previous.subscription_group_id;\n try{const {data,error}=await db.from("tutor_prestations").insert(payload).select("id").single();if(error)throw error;
   out.className="notice ok";out.textContent="Prestation créée (ID : "+data.id+"). Ajoute maintenant les dates de séance dans sa fiche. Le paiement reste en attente de confirmation serveur.";
-  $("adminCreateTutorPrestationForm").reset();$("adminPrestationSessionCount").value="10";$("adminPrestationPeriod").value="1";await loadTutorPrestationsAdmin();
+  $("adminCreateTutorPrestationForm").reset();$("adminPrestationSessionCount").value="10";$("adminPrestationPeriod").value="1";syncTutorRenewalFields();await loadTutorPrestationsAdmin();
  }catch(err){out.className="notice error";out.textContent="Création impossible : "+err.message}finally{btn.disabled=false}
 });
 const tutorAdminStatusLabels={pending:"En attente",reviewing:"En cours de traitement",matched:"Répétiteur proposé",closed:"Clôturée",cancelled:"Annulée"};
@@ -161,7 +161,8 @@ async function loadAdminOfferRequestChoices(){
  const select=$("adminOfferRequestId");if(!select)return;
  try{const {data,error}=await db.from("tutor_requests").select("id,learner_name,subjects,status").order("created_at",{ascending:false});if(error)throw error;const old=select.value;select.innerHTML='<option value="">Aucune demande liée</option>'+(data||[]).filter(r=>r.status!=="cancelled").map(r=>'<option value="'+esc(r.id)+'">'+esc(r.learner_name)+' — '+esc((r.subjects||[]).join(", "))+' · '+esc(r.status)+'</option>').join("");if((data||[]).some(r=>r.id===old))select.value=old}catch(e){console.warn("Demandes liées aux propositions",e.message)}
 }
-async function loadAdminProfessionalMessages(){\n await loadAdminOfferRequestChoices();
+async function loadAdminProfessionalMessages(){
+ await loadAdminOfferRequestChoices();
  const root=$("adminProfessionalThread");if(!root)return;
  try{
   if(!adminActiveProfessional){const id=$("adminProfessionalPicker").value;if(id)await openAdminConversation(id);else{root.innerHTML='<p class="muted">Sélectionne un professionnel ou ouvre sa messagerie depuis la recherche.</p>';return}}

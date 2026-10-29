@@ -367,7 +367,7 @@ async function loadMyTutorPrestations(){
 $("refreshMyTutorPrestations")?.addEventListener("click",loadMyTutorPrestations);
 
 const tutorStatusLabels={pending:"En attente de traitement",reviewing:"En cours de traitement",matched:"Répétiteur proposé",closed:"Clôturée",cancelled:"Annulée par l’apprenant"};
-async function loadLearnerTutorOffers(){
+async function loadLearnerTutorOffers(markAsRead=false){
  const root=$("learnerTutorOffers"),dot=$("tutorOfferDot");if(!root||!currentUser)return;
  root.innerHTML='<div class="library-empty">Chargement de tes propositions…</div>';
  try{
@@ -376,7 +376,7 @@ async function loadLearnerTutorOffers(){
   const pending=(rows||[]).filter(r=>r.tutor_name||r.tutor_phone||r.admin_response),requestIds=pending.map(r=>r.id);
   let unreadCount=0;if(requestIds.length){const {data:unreadRows,error:unreadError}=await client.from("learner_notifications").select("id").eq("user_id",currentUser.id).is("read_at",null).in("request_id",requestIds);if(unreadError)throw unreadError;unreadCount=(unreadRows||[]).length}
   if(dot){dot.hidden=unreadCount===0;dot.textContent=unreadCount>99?"99+":String(unreadCount)}
-  if(requestIds.length&&unreadCount){const {error:markError}=await client.from("learner_notifications").update({read_at:new Date().toISOString()}).eq("user_id",currentUser.id).is("read_at",null).in("request_id",requestIds);if(markError)console.warn("Lecture des notifications de proposition",markError.message)}
+  if(markAsRead&&requestIds.length&&unreadCount){const {error:markError}=await client.from("learner_notifications").update({read_at:new Date().toISOString()}).eq("user_id",currentUser.id).is("read_at",null).in("request_id",requestIds);if(markError)console.warn("Lecture des notifications de proposition",markError.message);else if(dot)dot.hidden=true}
   if(!pending.length){root.innerHTML='<div class="empty-chart" style="height:auto"><strong>Aucune proposition en attente.</strong><p>Lorsqu’un prestataire aura été sélectionné pour ta demande, sa fiche officielle apparaîtra ici.</p></div>';return}
   root.innerHTML=pending.map(r=>{
    const amount=String(r.budget_note||"À confirmer"),start=r.preferred_start_date?new Date(r.preferred_start_date+"T12:00:00").toLocaleDateString("fr-FR"):"À convenir";
@@ -520,9 +520,9 @@ $("tutorRequestForm").addEventListener("submit",async e=>{
  }catch(err){out.textContent=err.message||"La demande n’a pas pu être envoyée. Réessaie.";out.className="inline-message error"}finally{btn.disabled=false}
 });
 $("refreshTutorRequests").addEventListener("click",loadTutorRequests);
-setInterval(()=>{if(currentUser){loadLearnerNotifications();if(!$("view-tutor-offers")?.hidden)loadLearnerTutorOffers()}},30000);
+setInterval(()=>{if(currentUser){loadLearnerNotifications();loadLearnerTutorOffers()}},30000);
 
-function switchView(view){document.querySelectorAll(".portal-view").forEach(el=>el.hidden=el.id!=="view-"+view);document.querySelectorAll(".side-link[data-view]").forEach(el=>el.classList.toggle("active",el.dataset.view===view));if(view==="training")loadActivity();if(view==="library")loadLibrary();if(view==="classes"&&currentUser)loadMyClasses(currentUser);if(view==="subscriptions"&&currentUser)loadSubscriptions();if(view==="messaging"&&currentUser)loadTutorRequests();if(view==="tutor-offers"&&currentUser)loadLearnerTutorOffers();if(view==="tutor-prestations"&&currentUser)loadMyTutorPrestations();if(view==="profile"&&currentUser){document.getElementById("view-profile")?.scrollIntoView({block:"start",behavior:"smooth"})}window.scrollTo({top:0,behavior:"smooth"})}
+function switchView(view){document.querySelectorAll(".portal-view").forEach(el=>el.hidden=el.id!=="view-"+view);document.querySelectorAll(".side-link[data-view]").forEach(el=>el.classList.toggle("active",el.dataset.view===view));if(view==="training")loadActivity();if(view==="library")loadLibrary();if(view==="classes"&&currentUser)loadMyClasses(currentUser);if(view==="subscriptions"&&currentUser)loadSubscriptions();if(view==="messaging"&&currentUser)loadTutorRequests();if(view==="tutor-request"&&currentUser)loadLearnerTutorOffers();if(view==="tutor-offers"&&currentUser)loadLearnerTutorOffers(true);if(view==="tutor-prestations"&&currentUser)loadMyTutorPrestations();if(view==="profile"&&currentUser){document.getElementById("view-profile")?.scrollIntoView({block:"start",behavior:"smooth"})}window.scrollTo({top:0,behavior:"smooth"})}
 // Échappement HTML utilisé par l’affichage des classes et des demandes.
 function esc(value){
  return String(value??"").replace(/[&<>"']/g,function(ch){

@@ -28,4 +28,6 @@ function render(){let list=allProducts.filter(p=>(!subject.value||p.subject_id==
 async function load(){try{const r=await fetch(API+"?limit=100",{headers:{apikey:PUBLIC_KEY}});const data=await r.json();if(!r.ok||!data.success)throw Error(data.error||"Catalogue indisponible");allProducts=Array.isArray(data.products)?data.products:[];allSubjects=Array.isArray(data.subjects)?data.subjects:[];for(const s of allSubjects){const o=document.createElement("option");o.value=s.id;o.textContent=s.name;subject.appendChild(o);}const wanted=new URLSearchParams(location.search).get("subject");if(wanted){const match=allSubjects.find(s=>s.slug===wanted);if(match)subject.value=match.id;}render();}catch(e){console.error(e);count.textContent="Le catalogue ne peut pas être chargé.";grid.innerHTML='<div class="state"><h2>Connexion temporairement indisponible</h2><p>Réessaie dans quelques instants. Aucun paiement ne sera lancé depuis cette page.</p></div>';}}
 search.addEventListener("input",render);subject.addEventListener("change",render);sort.addEventListener("change",render);load();
 </script><script src="cookie-consent.js?v=20261026-1"></script>
+
+<script src="guides-apprenant.js?v=20261030-1"></script>
 </body></html>

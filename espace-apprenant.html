@@ -391,6 +391,7 @@ async function loadLearnerTutorOffers(markAsRead=false){
     if(createError)throw createError;if(!created?.success||!created?.order?.id)throw Error(created?.error||"La commande n’a pas pu être créée.");
     const {data:payment,error:paymentError}=await client.functions.invoke("create-ebilling-payment",{body:{order_id:created.order.id}});
     if(paymentError)throw paymentError;if(!payment?.success||!payment?.payment_url)throw Error(payment?.error||"Le lien de paiement n’a pas pu être généré.");
+    sessionStorage.setItem("mindflow_order_id",created.order.id);sessionStorage.setItem("mindflow_order_email",String(row.learner_email||currentUser.email||"").trim().toLowerCase());sessionStorage.setItem("mindflow_order_product_id","tutor_request:"+requestId);sessionStorage.setItem("mindflow_order_user_id",currentUser.id);
     window.location.assign(payment.payment_url);
    }catch(err){alert("Paiement non démarré : "+(err.message||"Erreur inconnue"));btn.disabled=false;btn.textContent=label;}
   }));

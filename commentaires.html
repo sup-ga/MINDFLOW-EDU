@@ -20,4 +20,6 @@ const PUBLIC_KEY="sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil";
 const client=window.supabase.createClient(SUPABASE_URL,PUBLIC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const form=document.getElementById("commentForm"),status=document.getElementById("status"),sendBtn=document.getElementById("sendBtn");
 form.addEventListener("submit",async e=>{e.preventDefault();sendBtn.disabled=true;status.textContent="Envoi en cours…";try{const {data:{session},error:sessionError}=await client.auth.getSession();if(sessionError)throw sessionError;if(!session?.user){status.textContent="Connecte-toi à ton espace apprenant pour envoyer un commentaire.";return}const display_name=document.getElementById("displayName").value.trim();const message=document.getElementById("message").value.trim();const {error}=await client.from("testimonials").insert({user_id:session.user.id,display_name,message,is_published:false});if(error)throw error;form.reset();status.textContent="Merci ! Ton commentaire a bien été reçu. Il apparaîtra sur la page d’accueil après validation."}catch(err){console.info("Commentaire non envoyé",err.message);status.textContent="L’envoi n’a pas abouti. Vérifie ta connexion et réessaie."}finally{sendBtn.disabled=false}});
-</script></body></html>
+</script>
+<script src="navigation-retour.js?v=20261030-1"></script>
+</body></html>

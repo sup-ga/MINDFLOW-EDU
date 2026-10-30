@@ -533,7 +533,7 @@ $("tutorRequestForm").addEventListener("submit",async e=>{
  }catch(err){out.textContent=err.message||"La demande n’a pas pu être envoyée. Réessaie.";out.className="inline-message error"}finally{btn.disabled=false}
 });
 $("refreshTutorRequests").addEventListener("click",loadTutorRequests);
-setInterval(()=>{if(currentUser){loadLearnerNotifications();loadLearnerTutorOffers()}},30000);
+setInterval(()=>{if(currentUser){loadLearnerNotifications();loadLearnerTutorOffers();if(!$("view-tutor-prestations")?.hidden)loadMyTutorPrestations()}},20000);
 
 function switchView(view){document.querySelectorAll(".portal-view").forEach(el=>el.hidden=el.id!=="view-"+view);document.querySelectorAll(".side-link[data-view]").forEach(el=>el.classList.toggle("active",el.dataset.view===view));if(view==="training")loadActivity();if(view==="library")loadLibrary();if(view==="classes"&&currentUser)loadMyClasses(currentUser);if(view==="subscriptions"&&currentUser)loadSubscriptions();if(view==="messaging"&&currentUser)loadTutorRequests();if(view==="tutor-request"&&currentUser)loadLearnerTutorOffers();if(view==="tutor-offers"&&currentUser)loadLearnerTutorOffers(true);if(view==="tutor-prestations"&&currentUser)loadMyTutorPrestations();if(view==="profile"&&currentUser){document.getElementById("view-profile")?.scrollIntoView({block:"start",behavior:"smooth"})}window.scrollTo({top:0,behavior:"smooth"})}
 // Échappement HTML utilisé par l’affichage des classes et des demandes.

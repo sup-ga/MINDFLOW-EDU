@@ -28,7 +28,7 @@
   if (file === "index.html" && !sameSiteReferrer) return;
   const style = document.createElement("style");
   style.textContent = `
-    #mindflow-back-button{position:fixed;z-index:9997;top:calc(env(safe-area-inset-top,0px) + 82px);left:14px;display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid #8feee477;border-radius:999px;background:rgba(22,31,53,.94);color:#f4fbff;font:600 13px/1.2 inherit;letter-spacing:.01em;text-decoration:none;box-shadow:0 7px 24px #0005;backdrop-filter:blur(12px);cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}
+    #mindflow-back-button{position:fixed;z-index:9997;top:calc(env(safe-area-inset-top,0px) + 82px);left:14px;display:inline-flex;align-items:center;gap:8px;padding:9px 13px;border:1px solid #8feee477;border-radius:999px;background:rgba(22,31,53,.94);color:#f4fbff;font-family:inherit;font-size:13px;font-weight:600;line-height:1.2;letter-spacing:.01em;text-decoration:none;box-shadow:0 7px 24px #0005;backdrop-filter:blur(12px);cursor:pointer;transition:transform .18s ease,background .18s ease,border-color .18s ease}
     #mindflow-back-button:hover{transform:translateX(-2px);background:rgba(37,54,79,.98);border-color:#8ff8e9}
     #mindflow-back-button:focus-visible{outline:3px solid #9af6e8;outline-offset:3px}
     #mindflow-back-button .mf-arrow{font-size:18px;line-height:12px}

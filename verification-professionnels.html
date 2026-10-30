@@ -113,6 +113,7 @@ function renderTutorPrestationsAdmin(){
 }
 $("adminTutorPrestationSearch")?.addEventListener("input",renderTutorPrestationsAdmin);
 $("refreshTutorPrestationsAdmin")?.addEventListener("click",loadTutorPrestationsAdmin);
+setInterval(()=>{if(!$("tutorPrestationsView")?.classList.contains("hidden"))loadTutorPrestationsAdmin()},20000);
 $("adminPrestationRequest")?.addEventListener("change",()=>{const r=adminTutorRequests.find(x=>x.id===$("adminPrestationRequest").value);if(!r)return;if(!$("adminPrestationSubject").value.trim())$("adminPrestationSubject").value=(r.subjects||[])[0]||"";if(!$("adminPrestationTitle").value.trim())$("adminPrestationTitle").value="Soutien scolaire — "+((r.subjects||[])[0]||"Prestation")});
 $("adminCreateTutorPrestationForm")?.addEventListener("submit",async e=>{
  e.preventDefault();const out=$("adminCreateTutorPrestationNotice"),btn=$("adminCreateTutorPrestationBtn"),req=adminTutorRequests.find(r=>r.id===$("adminPrestationRequest").value),professionalId=$("adminPrestationProfessional").value;if(!req)return msg("Sélectionne une demande valide.","error");

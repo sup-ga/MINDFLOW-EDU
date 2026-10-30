@@ -110,4 +110,6 @@ if(existing.data&&existing.data.status==="rejected"){const {data:oldDocs,error:o
 window.location.href="demande-professionnelle-recue.html";
 }catch(err){console.error("Demande professionnelle non enregistrée",err.message);showStatus(err.message==="User already registered"?"Ce compte existe déjà. Connecte-toi avec ton mot de passe.":"La demande n’a pas pu être enregistrée. Si ton compte vient d’être créé, vérifie d’abord ton e-mail puis reconnecte-toi. Détail : "+err.message,"error")}finally{submitBtn.disabled=false}
 });
-</script></body></html>
+</script>
+<script src="navigation-retour.js?v=20261030-1"></script>
+</body></html>

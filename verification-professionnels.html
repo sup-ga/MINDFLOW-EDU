@@ -175,7 +175,7 @@ async function loadTutorRequestComparisons(){
     form.onsubmit=async e=>{e.preventDefault();const submit=form.querySelector("button[type=submit]");submit.disabled=true;try{
      const requestId=form.dataset.requestId,professionalId=form.dataset.professionalId,amount=Number(form.elements.amount.value),details=form.elements.details.value.trim();
      if(!Number.isSafeInteger(amount)||amount<=0)throw Error("Le montant doit être un nombre entier positif en FCFA.");
-     const {data:prof,error:profErr}=await db.from("professional_profiles").select("id,user_id,display_name,contact_phone").eq("id",professionalId).single();if(profErr)throw profErr;
+     const {data:prof,error:profErr}=await db.from("professional_profiles").select("id,user_id,display_name,contact_phone,status").eq("id",professionalId).single();if(profErr)throw profErr;
      const {data:request,error:reqErr}=await db.from("tutor_requests").select("id,learner_id,learner_name,learner_email,subjects,status").eq("id",requestId).single();if(reqErr)throw reqErr;
      if(!["searching","responses_received","matched"].includes(request.status))throw Error("Cette demande n’est plus dans un état permettant l’envoi d’une offre.");
      const now=new Date().toISOString();

@@ -409,4 +409,6 @@ document.addEventListener("click",e=>{if(!e.target.closest(".mf-notification-wra
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeProfessionalNotificationPanel()});
 document.addEventListener("click",e=>{const button=e.target.closest("[data-start-session]");if(!button)return;button.disabled=true;openMindFlowRoom(button.dataset.startSession,"start").finally(()=>{if(button.isConnected)button.disabled=false;});});// Le planning n’est plus reconstruit périodiquement ; renderSessions est appelé lors des mises à jour utiles.
 init();
-</script></body></html>
+</script>
+<script src="navigation-retour.js?v=20261030-1"></script>
+</body></html>

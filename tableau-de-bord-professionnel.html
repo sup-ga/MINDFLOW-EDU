@@ -102,19 +102,41 @@ function closeProfessionalNotificationPanel(){const panel=$("professionalNotific
 async function loadProfessionalNotificationPanel(){
  const root=$("professionalNotificationItems"),subtitle=$("notificationPanelSubtitle"),live=$("notificationPanelLive");if(!root||!session)return;
  root.innerHTML='<p class="muted">Chargement des notifications…</p>';
- try{const {data,error}=await db.from("professional_messages").select("id,message,sender_role,created_at,read_at").eq("sender_role","admin").is("read_at",null).order("created_at",{ascending:false}).limit(5);if(error)throw error;
- const rows=data||[];if(subtitle)subtitle.textContent=rows.length?rows.length+" message(s) non lu(s)":"Tu es à jour";live?.classList.toggle("hidden",!rows.length);
- root.innerHTML=rows.length?rows.map(m=>'<article class="mf-notification-item unread"><strong>Message de l’équipe MindFlow</strong><p>'+esc(String(m.message||"").replace(/\s+/g," ").slice(0,150))+'</p><time>'+dateText(m.created_at)+'</time></article>').join(""):'<div class="mf-notification-item"><strong>Aucune nouvelle notification</strong><p>Les nouveaux messages de MindFlow apparaîtront ici.</p></div>';
+ try{
+  const [messageRes,notificationRes]=await Promise.all([
+   db.from("professional_messages").select("id,message,created_at").eq("sender_role","admin").is("read_at",null).order("created_at",{ascending:false}).limit(10),
+   db.from("professional_notifications").select("id,title,body,created_at").is("read_at",null).order("created_at",{ascending:false}).limit(10)
+  ]);
+  if(messageRes.error)throw messageRes.error;if(notificationRes.error)throw notificationRes.error;
+  const rows=[
+   ...(messageRes.data||[]).map(m=>({kind:"message",title:"Message de l’équipe MindFlow",body:m.message,created_at:m.created_at})),
+   ...(notificationRes.data||[]).map(n=>({kind:"notification",title:n.title,body:n.body,created_at:n.created_at}))
+  ].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).slice(0,10);
+  if(subtitle)subtitle.textContent=rows.length?rows.length+" notification(s) non lue(s)":"Tu es à jour";live?.classList.toggle("hidden",!rows.length);
+  root.innerHTML=rows.length?rows.map(n=>'<article class="mf-notification-item unread"><strong>'+esc(n.title)+'</strong><p>'+esc(String(n.body||"").replace(/\s+/g," ").slice(0,180))+'</p><time>'+dateText(n.created_at)+'</time></article>').join(""):'<div class="mf-notification-item"><strong>Aucune nouvelle notification</strong><p>Les nouveaux messages et événements MindFlow apparaîtront ici.</p></div>';
  }catch(e){root.innerHTML='<p class="muted">Notifications indisponibles : '+esc(e.message)+'</p>'}
 }
 async function markAllProfessionalNotificationsRead(){
  const button=$("markAllProfessionalNotificationsRead");if(button)button.disabled=true;
- try{const {error}=await db.from("professional_messages").update({read_at:new Date().toISOString()}).eq("sender_role","admin").is("read_at",null);if(error)throw error;await refreshProfessionalUnread();await loadProfessionalNotificationPanel()}
- catch(e){const root=$("professionalNotificationItems");if(root)root.innerHTML='<p class="muted">Impossible de marquer les notifications comme lues : '+esc(e.message)+'</p>'}
+ try{
+  const readAt=new Date().toISOString();
+  const [messages,notifications]=await Promise.all([
+   db.from("professional_messages").update({read_at:readAt}).eq("sender_role","admin").is("read_at",null),
+   db.from("professional_notifications").update({read_at:readAt}).is("read_at",null)
+  ]);
+  if(messages.error)throw messages.error;if(notifications.error)throw notifications.error;
+  await refreshProfessionalUnread();await loadProfessionalNotificationPanel();
+ }catch(e){const root=$("professionalNotificationItems");if(root)root.innerHTML='<p class="muted">Impossible de marquer les notifications comme lues : '+esc(e.message)+'</p>'}
  finally{if(button)button.disabled=false}
 }
 async function refreshProfessionalUnread(){
- try{const {count,error}=await db.from("professional_messages").select("id",{count:"exact",head:true}).eq("sender_role","admin").is("read_at",null);if(error)throw error;const n=count||0;["professionalUnreadCount","headerUnreadCount"].forEach(id=>{const el=$(id);if(el){el.textContent=n?String(n):"";el.classList.toggle("hidden",!n);el.style.display=n?"grid":"none";}});const bell=$("professionalNotificationButton");if(bell){bell.setAttribute("aria-label",n? n+" notification(s) non lue(s)":"Notifications");bell.classList.toggle("has-unread",n>0);bell.title=n? n+" notification(s) non lue(s)":"Notifications";}const live=$("notificationPanelLive");live?.classList.toggle("hidden",!n);}catch(e){console.warn("Compteur de messages non lus indisponible",e.message)}
+ try{
+  const [messages,notifications]=await Promise.all([
+   db.from("professional_messages").select("id",{count:"exact",head:true}).eq("sender_role","admin").is("read_at",null),
+   db.from("professional_notifications").select("id",{count:"exact",head:true}).is("read_at",null)
+  ]);
+  if(messages.error)throw messages.error;if(notifications.error)throw notifications.error;
+  const n=(messages.count||0)+(notifications.count||0);["professionalUnreadCount","headerUnreadCount"].forEach(id=>{const el=$(id);if(el){el.textContent=n?String(n):"";el.classList.toggle("hidden",!n);el.style.display=n?"grid":"none";}});const bell=$("professionalNotificationButton");if(bell){bell.setAttribute("aria-label",n? n+" notification(s) non lue(s)":"Notifications");bell.classList.toggle("has-unread",n>0);bell.title=n? n+" notification(s) non lue(s)":"Notifications";}const live=$("notificationPanelLive");live?.classList.toggle("hidden",!n);}catch(e){console.warn("Compteur de messages non lus indisponible",e.message)}
 }
 async function loadProfessionalMessages(){
  professionalConversation=null;

@@ -21,6 +21,7 @@ create table if not exists public.organization_applications (
 alter table public.organization_applications enable row level security;
 revoke all on table public.organization_applications from anon, authenticated;
 grant insert on table public.organization_applications to anon, authenticated;
+drop policy if exists "Public can submit organization applications" on public.organization_applications;
 create policy "Public can submit organization applications"
 on public.organization_applications for insert to anon, authenticated
 with check (status = 'pending' and admin_note is null and reviewed_at is null and cardinality(collaboration_types) <= 8);

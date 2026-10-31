@@ -37,6 +37,40 @@
 </form></section></div>
 <section class="panel dash" id="dashboard"><span class="pill" id="statusPill">Demande reçue</span><h2 id="dashTitle">Ton profil professionnel</h2><p id="dashText" class="intro"></p><div id="documentFeedback" class="status show" style="margin:14px 0" aria-live="polite">Chargement des retours sur tes documents…</div><p class="small">Reviens sur cette page pour consulter les décisions et les motifs laissés par l’équipe MindFlow.</p><a class="btn" id="editRequestBtn" href="#" style="display:none;margin-right:8px">Modifier ma demande</a><a class="btn" href="index.html">Retour à MindFlow</a><a class="btn" id="dashboardLink" href="tableau-de-bord-professionnel.html" style="display:none;margin-left:8px">Ouvrir mon tableau de bord ↗</a></section>
 </main>
+<script>
+/* Bascule de connexion indépendante du script Supabase principal. */
+(function(){
+  function switchProfessionalLogin(login){
+    const area=document.getElementById("applicationArea");
+    const form=document.getElementById("proForm");
+    if(!area||!form)return;
+    const requestIds=["name","gender","headline","subjects","levels","country","citySearch","city","neighborhood","phoneCode","contactPhone","deliveryModes","bio","identityDoc","qualificationDocs","extraDocs","privacyConsent"];
+    requestIds.forEach(function(id){
+      const el=document.getElementById(id); if(!el)return;
+      const field=el.closest(".field")||el.closest("label"); if(field)field.style.display=login?"none":"";
+      el.required=!login&&["name","gender","subjects","identityDoc","qualificationDocs","privacyConsent"].includes(id);
+    });
+    const first=area.querySelector("section.panel:first-child");
+    const last=area.querySelector("section.panel:last-child");
+    if(first)first.style.display=login?"none":"";
+    area.style.gridTemplateColumns=login?"minmax(0,620px)":"";
+    area.style.justifyContent=login?"center":"";
+    document.getElementById("pageTitle").innerHTML=login?"Connecte-toi<br>à MindFlow.":"Fais grandir<br>ton savoir.";
+    document.getElementById("pageIntro").textContent=login?"Accède à ton compte avec ton adresse e-mail et ton mot de passe, ou continue avec Google.":"Présente tes compétences, propose des cours ou des classes et accompagne les apprenants. Ton profil sera vérifié par MindFlow avant que tes offres puissent être publiées.";
+    if(last){const h=last.querySelector("h2");if(h)h.textContent=login?"Me connecter":"Demander l’accès professionnel";const p=last.querySelector("p.small");if(p)p.style.display=login?"none":"";}
+    ["modeNote","submitBtn","loginBtn"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=login?"none":"";});
+    ["loginSubmitBtn","googleLoginBtn","backToRequestBtn"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=login?"inline-flex":"none";});
+    const pass=document.getElementById("password");if(pass)pass.autocomplete=login?"current-password":"new-password";
+    const email=document.getElementById("email");if(login&&email)email.focus({preventScroll:true});
+    form.dataset.view=login?"login":"request";
+  }
+  document.addEventListener("click",function(event){
+    if(event.target.closest("#loginBtn")){event.preventDefault();switchProfessionalLogin(true);}
+    if(event.target.closest("#backToRequestBtn")){event.preventDefault();switchProfessionalLogin(false);}
+  });
+  if(new URLSearchParams(location.search).get("mode")==="login")switchProfessionalLogin(true);
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 const SUPABASE_URL="https://vzgmhdxxlgdiimqtincf.supabase.co";

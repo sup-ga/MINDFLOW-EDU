@@ -9,9 +9,9 @@
 
 /* MindFlow country autocomplete */
 .country-autocomplete{position:relative;display:grid;gap:7px}.country-autocomplete input{width:100%;border:1px solid #ffffff2c;background:#0e0f19;color:var(--text);padding:13px 14px;border-radius:12px;font:inherit}.country-autocomplete input:focus{outline:2px solid #63e6ff80;border-color:var(--mint)}.country-suggestions{position:absolute;z-index:50;top:calc(100% + 5px);left:0;right:0;max-height:250px;overflow:auto;border:1px solid #ffffff24;border-radius:14px;background:#171726;box-shadow:0 18px 44px #0008;padding:5px}.country-suggestions[hidden]{display:none}.country-suggestion{display:flex;align-items:center;gap:11px;width:100%;padding:11px 12px;border:0;border-radius:9px;background:transparent;color:var(--text);text-align:left;cursor:pointer;font:inherit}.country-suggestion:hover,.country-suggestion:focus{background:#ffffff10;outline:none}.country-suggestion .country-name{flex:1}.country-suggestion .country-status{font-size:.78rem;color:var(--muted)}.country-suggestion .country-status.available{color:#63e6ff}.country-suggestion .country-status.unavailable{color:#b7b9d0}
-</style></head>
+ .professional-heading{display:flex;align-items:center;justify-content:space-between;gap:22px}.professional-heading>div{min-width:0}.top-login-btn{flex-shrink:0;margin:14px 0 0 12px;white-space:nowrap;text-decoration:none}.top-login-btn:hover{filter:brightness(1.08);transform:translateY(-1px)}@media(max-width:560px){.professional-heading{align-items:flex-start;gap:12px}.professional-heading h1{font-size:clamp(2.15rem,10vw,3.2rem)}.top-login-btn{padding:11px 14px;margin-top:24px;font-size:.88rem}}</style></head>
 <body><header><div class="wrap nav"><a class="logo" href="index.html">Mind<span>Flow</span></a><a href="index.html">← Retour au site</a></div></header>
-<main class="wrap"><span class="eyebrow" id="pageEyebrow">Espace professionnel</span><h1 id="pageTitle">Fais grandir<br>ton savoir.</h1><p class="intro" id="pageIntro">Présente tes compétences, propose des cours ou des classes et accompagne les apprenants. Ton profil sera vérifié par MindFlow avant que tes offres puissent être publiées.</p>
+<main class="wrap"><div class="professional-heading"><div><span class="eyebrow" id="pageEyebrow">Espace professionnel</span><h1 id="pageTitle">Fais grandir<br>ton savoir.</h1></div><a class="btn top-login-btn" id="topLoginBtn" href="espace-professionnel.html?mode=login">Me connecter ↗</a></div><p class="intro" id="pageIntro">Présente tes compétences, propose des cours ou des classes et accompagne les apprenants. Ton profil sera vérifié par MindFlow avant que tes offres puissent être publiées.</p>
 <div class="grid" id="applicationArea"><section class="panel"><h2>Ton espace, étape par étape</h2><div class="benefit"><strong>01 · Créer ton profil</strong><span>Présente tes matières, tes niveaux et ton expérience.</span></div><div class="benefit"><strong>02 · Attendre la validation</strong><span>MindFlow vérifie ta demande avant d’activer les publications.</span></div><div class="benefit"><strong>03 · Publier tes offres</strong><span>La prochaine étape ouvrira la gestion des cours, des classes et des demandes.</span></div><p class="small">Tu as déjà un compte apprenant ? Utilise le même compte : pas besoin de créer une deuxième identité.</p></section>
 <section class="panel"><h2>Demander l’accès professionnel</h2><p class="small">Connecte-toi avec ton compte MindFlow. Si tu n’as pas encore de compte, tu peux en créer un ici.</p>
 <div id="modeNote" class="small">Tu as déjà un compte ? Clique sur « Me connecter » pour afficher uniquement les champs de connexion.</div><form id="proForm" novalidate>
@@ -33,7 +33,7 @@
 <div class="field"><label for="qualificationDocs">Diplôme(s), attestation(s) ou preuve(s) d’expérience (obligatoire)</label><input id="qualificationDocs" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" multiple required><small>Ajoute au moins un justificatif de qualification. Tu peux en sélectionner plusieurs.</small></div>
 <div class="field"><label for="extraDocs">Autres justificatifs (facultatif)</label><input id="extraDocs" type="file" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" multiple><small>Ex. : attestation professionnelle, autorisation d’exercer ou références.</small></div>
 <label class="small"><input id="privacyConsent" type="checkbox" required> J’autorise MindFlow à examiner ces documents pour vérifier mon identité et mes qualifications, selon la politique de confidentialité applicable.</label>
-<button class="btn" id="submitBtn" type="submit">Envoyer mon dossier ↗</button><button class="btn secondary" id="loginBtn" type="button">Me connecter</button><button class="btn" id="loginSubmitBtn" type="button" style="display:none">Se connecter ↗</button><button class="btn secondary" id="googleLoginBtn" type="button" style="display:none">Continuer avec Google</button><button class="btn secondary" id="backToRequestBtn" type="button" style="display:none">Demander un accès professionnel</button><div id="status" class="status" role="status"></div>
+<button class="btn" id="submitBtn" type="submit">Envoyer mon dossier ↗</button><button class="btn" id="loginSubmitBtn" type="button" style="display:none">Se connecter ↗</button><button class="btn secondary" id="googleLoginBtn" type="button" style="display:none">Continuer avec Google</button><button class="btn secondary" id="backToRequestBtn" type="button" style="display:none">Demander un accès professionnel</button><div id="status" class="status" role="status"></div>
 </form></section></div>
 <section class="panel dash" id="dashboard"><span class="pill" id="statusPill">Demande reçue</span><h2 id="dashTitle">Ton profil professionnel</h2><p id="dashText" class="intro"></p><div id="documentFeedback" class="status show" style="margin:14px 0" aria-live="polite">Chargement des retours sur tes documents…</div><p class="small">Reviens sur cette page pour consulter les décisions et les motifs laissés par l’équipe MindFlow.</p><a class="btn" id="editRequestBtn" href="#" style="display:none;margin-right:8px">Modifier ma demande</a><a class="btn" href="index.html">Retour à MindFlow</a><a class="btn" id="dashboardLink" href="tableau-de-bord-professionnel.html" style="display:none;margin-left:8px">Ouvrir mon tableau de bord ↗</a></section>
 </main>
@@ -58,14 +58,13 @@
     document.getElementById("pageTitle").innerHTML=login?"Connecte-toi<br>à MindFlow.":"Fais grandir<br>ton savoir.";
     document.getElementById("pageIntro").textContent=login?"Accède à ton compte avec ton adresse e-mail et ton mot de passe, ou continue avec Google.":"Présente tes compétences, propose des cours ou des classes et accompagne les apprenants. Ton profil sera vérifié par MindFlow avant que tes offres puissent être publiées.";
     if(last){const h=last.querySelector("h2");if(h)h.textContent=login?"Me connecter":"Demander l’accès professionnel";const p=last.querySelector("p.small");if(p)p.style.display=login?"none":"";}
-    ["modeNote","submitBtn","loginBtn"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=login?"none":"";});
+    ["modeNote","submitBtn","topLoginBtn"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=login?"none":"";});
     ["loginSubmitBtn","googleLoginBtn","backToRequestBtn"].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=login?"inline-flex":"none";});
     const pass=document.getElementById("password");if(pass)pass.autocomplete=login?"current-password":"new-password";
     const email=document.getElementById("email");if(login&&email)email.focus({preventScroll:true});
     form.dataset.view=login?"login":"request";
   }
   document.addEventListener("click",function(event){
-    if(event.target.closest("#loginBtn")){event.preventDefault();switchProfessionalLogin(true);}
     if(event.target.closest("#backToRequestBtn")){event.preventDefault();switchProfessionalLogin(false);}
   });
   if(new URLSearchParams(location.search).get("mode")==="login")switchProfessionalLogin(true);
@@ -108,7 +107,6 @@ function setMode(mode){
  $("applicationArea").querySelector("section.panel:last-child p.small").style.display=login?"none":"";
  $("modeNote").style.display=login?"none":"";
  submitBtn.style.display=login?"none":"";
- $("loginBtn").style.display=login?"none":"";
  $("backToRequestBtn").style.display=login?"inline-flex":"none";
  $("loginSubmitBtn").style.display=login?"inline-flex":"none";
  $("googleLoginBtn").style.display=login?"inline-flex":"none";

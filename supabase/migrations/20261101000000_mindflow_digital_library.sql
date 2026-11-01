@@ -245,3 +245,83 @@ set allowed_mime_types = (
   from unnest(coalesce(allowed_mime_types, array[]::text[]) || array['application/epub+zip']::text[]) as mime_type
 )
 where id='mindflow-products';
+
+-- Editorial credits and reading quizzes (answers remain server-side).
+create table if not exists public.library_book_credits (
+  id uuid primary key default gen_random_uuid(),
+  book_id uuid not null references public.library_books(id) on delete cascade,
+  partner_id uuid references public.library_partners(id) on delete set null,
+  contributor_name text not null,
+  contribution_role text not null default 'author',
+  display_order integer not null default 100
+);
+
+create table if not exists public.library_quizzes (
+  id uuid primary key default gen_random_uuid(),
+  book_id uuid not null references public.library_books(id) on delete cascade,
+  title text not null,
+  description text,
+  passing_score numeric(5,2) not null default 50 check (passing_score between 0 and 100),
+  is_published boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.library_quiz_questions (
+  id uuid primary key default gen_random_uuid(),
+  quiz_id uuid not null references public.library_quizzes(id) on delete cascade,
+  question_text text not null,
+  question_type text not null default 'single_choice' check (question_type in ('single_choice','multiple_choice','true_false','short_answer')),
+  explanation text,
+  display_order integer not null default 100
+);
+
+create table if not exists public.library_quiz_answers (
+  id uuid primary key default gen_random_uuid(),
+  question_id uuid not null references public.library_quiz_questions(id) on delete cascade,
+  answer_text text not null,
+  is_correct boolean not null default false,
+  display_order integer not null default 100
+);
+
+create table if not exists public.library_quiz_attempts (
+  id uuid primary key default gen_random_uuid(),
+  quiz_id uuid not null references public.library_quizzes(id) on delete cascade,
+  learner_id uuid not null references auth.users(id) on delete cascade,
+  score numeric(5,2) check (score between 0 and 100),
+  answers jsonb not null default '{}'::jsonb,
+  completed_at timestamptz,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists library_quizzes_book_idx on public.library_quizzes(book_id,is_published);
+create index if not exists library_quiz_questions_order_idx on public.library_quiz_questions(quiz_id,display_order);
+create index if not exists library_quiz_answers_order_idx on public.library_quiz_answers(question_id,display_order);
+create index if not exists library_quiz_attempts_owner_idx on public.library_quiz_attempts(learner_id,created_at desc);
+
+alter table public.library_book_credits enable row level security;
+alter table public.library_quizzes enable row level security;
+alter table public.library_quiz_questions enable row level security;
+alter table public.library_quiz_answers enable row level security;
+alter table public.library_quiz_attempts enable row level security;
+
+create policy "Published book credits are public" on public.library_book_credits
+  for select to anon,authenticated using (
+    exists(select 1 from public.library_books b where b.id=book_id and b.status='published')
+  );
+create policy "Published quizzes are public" on public.library_quizzes
+  for select to anon,authenticated using (
+    is_published=true and exists(select 1 from public.library_books b where b.id=book_id and b.status='published')
+  );
+create policy "Questions of published quizzes are public" on public.library_quiz_questions
+  for select to anon,authenticated using (
+    exists(select 1 from public.library_quizzes q join public.library_books b on b.id=q.book_id
+      where q.id=quiz_id and q.is_published=true and b.status='published')
+  );
+-- Correct-answer rows are intentionally inaccessible to browser clients.
+revoke all on public.library_quiz_answers from anon,authenticated;
+grant select on public.library_book_credits,public.library_quizzes,public.library_quiz_questions to anon,authenticated;
+grant select,insert on public.library_quiz_attempts to authenticated;
+create policy "Learners see their own quiz attempts" on public.library_quiz_attempts
+  for select to authenticated using ((select auth.uid())=learner_id);
+create policy "Learners submit their own quiz attempts" on public.library_quiz_attempts
+  for insert to authenticated with check ((select auth.uid())=learner_id);

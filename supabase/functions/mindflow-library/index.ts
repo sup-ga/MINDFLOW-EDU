@@ -19,6 +19,13 @@ async function signed(path:string,download=false){
   if(!s)throw new Error("Lien sécurisé indisponible.");
   return /^https?:\/\//i.test(s)?s:new URL(s.startsWith("/storage/v1/")?s:"/storage/v1"+(s.startsWith("/")?s:"/"+s),SUPABASE_URL).toString();
 }
+async function adminAllowed(req:Request){
+  const token=(req.headers.get("Authorization")??"").replace(/^Bearer\\s+/i,"");
+  if(!token)return false;
+  const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/is_professional_reviewer",{method:"POST",headers:{apikey:PUBLIC||SERVICE,Authorization:"Bearer "+token,"Content-Type":"application/json"},body:"{}"});
+  if(!r.ok)return false;
+  return await r.json()===true;
+}
 async function identify(req:Request){
   const token=(req.headers.get("Authorization")??"").replace(/^Bearer\s+/i,"");
   if(!token)return null;
@@ -46,8 +53,52 @@ Deno.serve(async(req:Request)=>{
       return reply({success:true,books,categories:c});
     }
     if(req.method!=="POST")return reply({success:false,error:"Méthode non autorisée."},405);
+    const body=await req.json().catch(()=>({}));
+    const action=String(body?.action??"");
+    if(action.startsWith("admin_")){
+      const userId=await identify(req);
+      if(!userId)return reply({success:false,error:"Connexion requise."},401);
+      if(!await adminAllowed(req))return reply({success:false,error:"Accès réservé à l’équipe administrative autorisée."},403);
+      if(action==="admin_list"){
+        const tables=["library_books?select=*&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc"];
+        const results=await Promise.all(tables.map(db));
+        if(results.some(r=>!r.ok))return reply({success:false,error:"Impossible de charger les données administratives."},502);
+        const [books,partners,licenses,files,categories]=await Promise.all(results.map(r=>r.json()));
+        return reply({success:true,books,partners,licenses,files,categories});
+      }
+      if(action==="admin_save_book"){
+        const x=body.book??{};
+        const payload={...(x.id?{id:x.id}:{}),slug:String(x.slug??"").trim(),title:String(x.title??"").trim(),author_name:String(x.author_name??"").trim(),description:String(x.description??""),publisher_name:x.publisher_name||null,publication_year:x.publication_year?Number(x.publication_year):null,isbn:x.isbn||null,language:x.language||"fr",country_of_origin:x.country_of_origin||"GA",book_type:x.book_type||"literary_work",access_mode:x.access_mode||"paid",status:x.status||"draft",featured:!!x.featured,cover_path:x.cover_path||null,product_id:x.product_id||null,updated_at:new Date().toISOString()};
+        if(!payload.slug||!payload.title||!payload.author_name)return reply({success:false,error:"Titre, auteur et identifiant URL obligatoires."},400);
+        const r=await db("library_books?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
+        if(!r.ok)return reply({success:false,error:"Enregistrement du livre impossible."},400);
+        return reply({success:true,book:(await r.json())[0]});
+      }
+      if(action==="admin_save_partner"){
+        const x=body.partner??{},payload={...(x.id?{id:x.id}:{}),partner_type:x.partner_type||"author",display_name:String(x.display_name??"").trim(),country:x.country||null,website_url:x.website_url||null,contact_email:x.contact_email||null,notes:x.notes||null,status:x.status||"pending",updated_at:new Date().toISOString()};
+        if(!payload.display_name)return reply({success:false,error:"Nom de l’auteur ou partenaire obligatoire."},400);
+        const r=await db("library_partners?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
+        if(!r.ok)return reply({success:false,error:"Enregistrement du partenaire impossible."},400);
+        return reply({success:true,partner:(await r.json())[0]});
+      }
+      if(action==="admin_save_license"){
+        const x=body.license??{},payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,partner_id:x.partner_id||null,rights_type:x.rights_type||"public_domain",territory:x.territory||["GA"],valid_from:x.valid_from||null,valid_until:x.valid_until||null,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,allow_sale:!!x.allow_sale,revenue_share_percent:x.revenue_share_percent===""||x.revenue_share_percent==null?null:Number(x.revenue_share_percent),contract_reference:x.contract_reference||null,status:x.status||"pending"};
+        if(!payload.book_id)return reply({success:false,error:"Choisis un ouvrage pour associer les droits."},400);
+        const r=await db("library_licenses?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
+        if(!r.ok)return reply({success:false,error:"Enregistrement des droits impossible."},400);
+        return reply({success:true,license:(await r.json())[0]});
+      }
+      if(action==="admin_save_file"){
+        const x=body.file??{},payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,file_kind:x.file_kind||"pdf",storage_path:String(x.storage_path??"").trim(),file_name:x.file_name||null,mime_type:x.mime_type||null,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,is_primary:!!x.is_primary,display_order:Number(x.display_order||100)};
+        if(!payload.book_id||!payload.storage_path)return reply({success:false,error:"Livre et chemin de stockage obligatoires."},400);
+        const r=await db("library_files?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
+        if(!r.ok)return reply({success:false,error:"Enregistrement du fichier impossible."},400);
+        return reply({success:true,file:(await r.json())[0]});
+      }
+      return reply({success:false,error:"Action administrative inconnue."},400);
+    }
     const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour accéder à ce livre."},401);
-    const body=await req.json().catch(()=>({})),bookId=String(body?.book_id??""),action=String(body?.action??"open");
+    const bookId=String(body?.book_id??""),action=String(body?.action??"open");
     if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Livre invalide."},400);
     const br=await db("library_books?select=id,title,slug,access_mode,product_id,status&id=eq."+bookId+"&status=eq.published&limit=1");
     const book=(await br.json().catch(()=>[]))?.[0];if(!br.ok||!book)return reply({success:false,error:"Livre introuvable."},404);

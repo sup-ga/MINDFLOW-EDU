@@ -42,7 +42,7 @@ $("bookForm").onsubmit=async e=>{
  e.preventDefault();
  const requestedStatus=$("status").value,existingId=$("bookId").value||undefined,mainFile=$("bookFile").files[0],coverFile=$("coverUpload").files[0],previewFiles=[...$("previewUploads").files];
  if(previewFiles.length>3){notice("Tu peux ajouter trois images d’aperçu au maximum.","error");return;}
- const payload={...(existingId?{id:existingId}:{}),title:$("title").value,author_name:$("author").value,slug:$("slug").value,description:$("description").value,publisher_name:$("publisher").value,publication_year:$("year").value,book_type:$("bookType").value,access_mode:$("access").value,status:(!existingId&&requestedStatus==="published"&&(mainFile||coverFile))?"draft":requestedStatus,cover_path:$("coverPath").value||null,product_id:$("productId").value||null,category_ids:[...$("bookCategories").selectedOptions].map(o=>o.value),featured:$("featured").checked};
+ const payload={...(existingId?{id:existingId}:{}),title:$("title").value,author_name:$("author").value,slug:$("slug").value,description:$("description").value,publisher_name:$("publisher").value,publication_year:$("year").value,book_type:$("bookType").value,access_mode:$("access").value,status:(!existingId&&requestedStatus==="published")?"draft":requestedStatus,cover_path:$("coverPath").value||null,product_id:$("productId").value||null,category_ids:[...$("bookCategories").selectedOptions].map(o=>o.value),featured:$("featured").checked};
  try{
   const first=await api({action:"admin_save_book",book:payload}),bookId=first.book.id;
   if(coverFile){const cover=await uploadBookAsset(bookId,coverFile,"cover",false,false,true);$("coverPath").value=cover.storage_path;payload.cover_path=cover.storage_path;}

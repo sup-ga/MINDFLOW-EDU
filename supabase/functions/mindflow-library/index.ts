@@ -113,9 +113,10 @@ Deno.serve(async(req:Request)=>{
       }
       if(action==="admin_set_book_status"){
         const id=String(body.id??""),status=String(body.status??"");
-        if(!/^[0-9a-f-]{36}$/i.test(id)||!["draft","archived"].includes(status))return reply({success:false,error:"Ouvrage ou statut invalide."},400);
+        if(!/^[0-9a-f-]{36}$/i.test(id)||!["draft","published","archived"].includes(status))return reply({success:false,error:"Ouvrage ou statut invalide."},400);
         const patch:Record<string,any>={status,updated_at:new Date().toISOString()};
         if(status==="draft")patch.published_at=null;
+        if(status==="published")patch.published_at=new Date().toISOString();
         const r=await db("library_books?id=eq."+encodeURIComponent(id),"PATCH",patch,"return=representation");
         if(!r.ok){const detail=await r.text();console.error("admin_set_book_status",detail);return reply({success:false,error:"Impossible de modifier le statut de cet ouvrage."},400);}
         const rows=await r.json();if(!rows.length)return reply({success:false,error:"Ouvrage introuvable."},404);

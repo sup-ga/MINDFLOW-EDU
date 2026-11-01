@@ -62,6 +62,16 @@ Deno.serve(async(req:Request)=>{
       }
       let validRights:Record<string,any>[]=[];
       let files:Record<string,any>[]=[];
+      let activeEntitlements=new Set<string>(),partnerGrants=new Set<string>();
+      const viewerId=mineUserId||await identify(req);
+      if(viewerId){
+        const [entRes,grantRes]=await Promise.all([
+          db("learner_entitlements?select=product_id&learner_id=eq."+encodeURIComponent(viewerId)+"&status=eq.active"),
+          db("learner_library_books?select=book_id&learner_id=eq."+encodeURIComponent(viewerId)+"&access_origin=eq.partner_grant")
+        ]);
+        if(entRes.ok)activeEntitlements=new Set((await entRes.json()).map((x:Record<string,any>)=>x.product_id));
+        if(grantRes.ok)partnerGrants=new Set((await grantRes.json()).map((x:Record<string,any>)=>x.book_id));
+      }
       if(books.length){
         const rightsRes=await db("library_licenses?select=book_id,valid_from,valid_until,allow_online_reading,allow_download&status=eq.active");
         const filesRes=await db("library_files?select=book_id,file_kind,allow_online_reading,allow_download");
@@ -70,8 +80,6 @@ Deno.serve(async(req:Request)=>{
         validRights=rights.filter((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today));
         const activeRights=new Set(validRights.filter((l:Record<string,any>)=>l.allow_online_reading||l.allow_download).map((l:Record<string,any>)=>l.book_id));
         const readableFiles=new Set(files.filter((f:Record<string,any>)=>["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)).map((f:Record<string,any>)=>f.book_id));
-        let activeEntitlements=new Set<string>();
-        if(mine){const er=await db("learner_entitlements?select=product_id&learner_id=eq."+encodeURIComponent(mineUserId??"")+"&status=eq.active");if(er.ok)activeEntitlements=new Set((await er.json()).map((x:Record<string,any>)=>x.product_id));}
         books=books.filter((book:Record<string,any>)=>{
           if(!activeRights.has(book.id)||!readableFiles.has(book.id))return false;
           if(!mine)return true;
@@ -84,7 +92,7 @@ Deno.serve(async(req:Request)=>{
       if(category)books=books.filter((x:Record<string,any>)=>(x.library_book_categories??[]).some((c:any)=>c.category?.slug===category));
       books=await Promise.all(books.map(async(x:Record<string,any>)=>{
         const bookRights=validRights.filter((l:Record<string,any>)=>l.book_id===x.id),bookFiles=files.filter((f:Record<string,any>)=>f.book_id===x.id&&["pdf","epub"].includes(f.file_kind));
-        return {...x,can_read:bookRights.some((l:Record<string,any>)=>l.allow_online_reading)&&bookFiles.some((f:Record<string,any>)=>f.allow_online_reading),can_download:bookRights.some((l:Record<string,any>)=>l.allow_download)&&bookFiles.some((f:Record<string,any>)=>f.allow_download),cover_url:x.cover_path?await signed(x.cover_path).catch(()=>null):null};
+        return {...x,has_access:x.access_mode==="free"||(x.access_mode==="paid"&&!!x.product_id&&activeEntitlements.has(x.product_id))||(x.access_mode==="partner"&&partnerGrants.has(x.id)),can_read:bookRights.some((l:Record<string,any>)=>l.allow_online_reading)&&bookFiles.some((f:Record<string,any>)=>f.allow_online_reading),can_download:bookRights.some((l:Record<string,any>)=>l.allow_download)&&bookFiles.some((f:Record<string,any>)=>f.allow_download),cover_url:x.cover_path?await signed(x.cover_path).catch(()=>null):null};
       }));
       const c=mine?[]:await db("library_categories?select=id,slug,name,description&is_active=eq.true&order=display_order.asc").then(async r=>r.ok?await r.json():[]);
       return reply({success:true,books,categories:c});

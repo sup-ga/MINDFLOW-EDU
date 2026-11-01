@@ -90,11 +90,11 @@ Deno.serve(async(req:Request)=>{
       if(!userId)return reply({success:false,error:"Connexion requise."},401);
       if(!await adminAllowed(req,userId))return reply({success:false,error:"Accès refusé : compte bibliothèque autorisé et authentification renforcée (MFA) requis."},403);
       if(action==="admin_list"){
-        const tables=["library_books?select=*,library_book_categories(category_id)&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc","products?select=id,title,price,is_free&is_active=eq.true&order=title.asc","library_quiz_questions?select=*,library_quiz_answers(*)&order=display_order.asc"];
+        const tables=["library_books?select=*,library_book_categories(category_id)&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc","products?select=id,title,price,is_free&is_active=eq.true&order=title.asc","library_quiz_questions?select=*,library_quiz_answers(*)&order=display_order.asc","library_guides?select=*&order=updated_at.desc"];
         const results=await Promise.all(tables.map(db));
         if(results.some(r=>!r.ok))return reply({success:false,error:"Impossible de charger les données administratives."},502);
-        const [books,partners,licenses,files,categories,quizzes,products,quizQuestions]=await Promise.all(results.map(r=>r.json()));
-        return reply({success:true,books,partners,licenses,files,categories,quizzes,products,quizQuestions});
+        const [books,partners,licenses,files,categories,quizzes,products,quizQuestions,guides]=await Promise.all(results.map(r=>r.json()));
+        return reply({success:true,books,partners,licenses,files,categories,quizzes,products,quizQuestions,guides});
       }
       if(action==="admin_save_book"){
         const x=body.book??{};
@@ -156,6 +156,16 @@ Deno.serve(async(req:Request)=>{
         const uploadToken=String(ud.token??"");if(!uploadToken)return reply({success:false,error:"Jeton de téléversement indisponible."},502);
         return reply({success:true,storage_path:path,token:uploadToken,expires_in:7200});
       }
+      if(action==="admin_save_guide"){
+        const x=body.guide??{},title=String(x.title??"").trim(),content=String(x.content_markdown??"");
+        if(!/^[0-9a-f-]{36}$/i.test(String(x.book_id??""))||!title||!content.trim()||content.length>60000)return reply({success:false,error:"Ouvrage, titre et contenu (60 000 caractères maximum) obligatoires."},400);
+        const types=["reading_sheet","summary","analysis","vocabulary","exercise","context"];
+        if(!types.includes(x.guide_type))return reply({success:false,error:"Type de fiche invalide."},400);
+        const payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,guide_type:x.guide_type,title,content_markdown:content,is_published:!!x.is_published,updated_at:new Date().toISOString()};
+        const r=await db("library_guides?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
+        if(!r.ok)return reply({success:false,error:"Enregistrement de la fiche impossible."},400);
+        return reply({success:true,guide:(await r.json())[0]});
+      }
       if(action==="admin_save_quiz"){
         const x=body.quiz??{},bookId=String(x.book_id??""),title=String(x.title??"").trim(),questions=Array.isArray(x.questions)?x.questions:[];
         if(!/^[0-9a-f-]{36}$/i.test(bookId)||!title||!questions.length)return reply({success:false,error:"Livre, titre et au moins une question sont obligatoires."},400);
@@ -167,9 +177,9 @@ Deno.serve(async(req:Request)=>{
         for(let i=0;i<questions.length;i++){const q=questions[i],ins=await db("library_quiz_questions","POST",{quiz_id:quiz.id,question_text:String(q.question_text).trim(),question_type:q.question_type||"single_choice",explanation:String(q.explanation??""),display_order:i+1},"return=representation");if(!ins.ok)throw new Error("Impossible d’enregistrer les questions du quiz.");const question=(await ins.json())[0];const answers=q.answers.map((a:any,j:number)=>({question_id:question.id,answer_text:String(a.answer_text??"").trim(),is_correct:!!a.is_correct,display_order:j+1}));const ar=await db("library_quiz_answers","POST",answers);if(!ar.ok)throw new Error("Impossible d’enregistrer les réponses du quiz.");}
         return reply({success:true,quiz});
       }
-      if(action==="admin_delete_file"||action==="admin_revoke_license"||action==="admin_delete_quiz"){
+      if(action==="admin_delete_file"||action==="admin_revoke_license"||action==="admin_delete_quiz"||action==="admin_delete_guide"){
         const id=String(body.id??"");if(!/^[0-9a-f-]{36}$/i.test(id))return reply({success:false,error:"Identifiant invalide."},400);
-        const table=action==="admin_delete_file"?"library_files":action==="admin_delete_quiz"?"library_quizzes":"library_licenses";const method=action==="admin_revoke_license"?"PATCH":"DELETE";const path=table+"?id=eq."+encodeURIComponent(id);
+        const table=action==="admin_delete_file"?"library_files":action==="admin_delete_quiz"?"library_quizzes":action==="admin_delete_guide"?"library_guides":"library_licenses";const method=action==="admin_revoke_license"?"PATCH":"DELETE";const path=table+"?id=eq."+encodeURIComponent(id);
         const result=await db(path,method,method==="PATCH"?{status:"revoked"}:undefined,"return=minimal");if(!result.ok)return reply({success:false,error:"Modification impossible."},400);return reply({success:true});
       }
       if(action==="admin_save_file"){
@@ -184,6 +194,19 @@ Deno.serve(async(req:Request)=>{
     const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour accéder à ce livre."},401);
     const learnerId=await identify(req);if(!learnerId)return reply({success:false,error:"Connecte-toi pour accéder à cette fonctionnalité."},401);
     const learnerAction=String(body?.action??"");
+    if(learnerAction==="guide_list"){
+      const bookId=String(body.book_id??"");if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Ouvrage invalide."},400);
+      const br=await db("library_books?select=id,access_mode,product_id,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1"),book=(await br.json().catch(()=>[]))?.[0];
+      if(!br.ok||!book)return reply({success:false,error:"Ouvrage indisponible."},404);
+      let entitled=book.access_mode==="free";
+      if(book.access_mode==="paid"){const er=await db("learner_entitlements?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&product_id=eq."+encodeURIComponent(book.product_id??"")+"&status=eq.active");entitled=!!book.product_id&&er.ok&&(await er.json()).length>0;}
+      if(book.access_mode==="partner"){const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(bookId)+"&access_origin=eq.partner_grant&limit=1");entitled=er.ok&&(await er.json()).length>0;}
+      if(!entitled)return reply({success:false,error:"Cet ouvrage n’est pas dans ta bibliothèque."},403);
+      const lr=await db("library_licenses?select=id,valid_from,valid_until,allow_online_reading&book_id=eq."+encodeURIComponent(bookId)+"&status=eq.active"),today=new Date().toISOString().slice(0,10),licenses=lr.ok?await lr.json():[];
+      if(!licenses.some((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&l.allow_online_reading))return reply({success:false,error:"Les droits de consultation des fiches ne sont pas disponibles."},403);
+      const r=await db("library_guides?select=id,guide_type,title,content_markdown,updated_at&book_id=eq."+encodeURIComponent(bookId)+"&is_published=eq.true&order=created_at.asc");
+      return r.ok?reply({success:true,guides:await r.json()}):reply({success:false,error:"Fiches pédagogiques indisponibles."},502);
+    }
     if(learnerAction==="quiz_list"){
       const bookId=String(body.book_id??"");if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Ouvrage invalide."},400);
       const br=await db("library_books?select=id,access_mode,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1"),book=(await br.json().catch(()=>[]))?.[0];

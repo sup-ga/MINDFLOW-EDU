@@ -183,8 +183,11 @@ Deno.serve(async(req:Request)=>{
         const result=await db(path,method,method==="PATCH"?{status:"revoked"}:undefined,"return=minimal");if(!result.ok)return reply({success:false,error:"Modification impossible."},400);return reply({success:true});
       }
       if(action==="admin_save_file"){
-        const x=body.file??{},payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,file_kind:x.file_kind||"pdf",storage_path:String(x.storage_path??"").trim(),file_name:x.file_name||null,mime_type:x.mime_type||null,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,is_primary:!!x.is_primary,display_order:Number(x.display_order||100)};
-        if(!payload.book_id||!payload.storage_path||!safePath(payload.storage_path)||!payload.storage_path.startsWith("library/"+payload.book_id+"/"))return reply({success:false,error:"Livre et chemin de stockage valide dans le dossier de cet ouvrage obligatoires."},400);
+        const x=body.file??{},storagePath=String(x.storage_path??"").trim(),fileKind=String(x.file_kind||"pdf"),fileName=String(x.file_name||storagePath.split("/").pop()||"");
+        const ext=fileName.toLowerCase().split(".").pop()||"",inferredMime=({pdf:"application/pdf",epub:"application/epub+zip",jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp"})[ext]||"",mime=String(x.mime_type||inferredMime);
+        const payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,file_kind:fileKind,storage_path:storagePath,file_name:fileName,mime_type:mime,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,is_primary:!!x.is_primary,display_order:Number(x.display_order||100)};
+        if(!payload.book_id||!payload.storage_path||!safePath(payload.storage_path)||!payload.storage_path.startsWith("library/"+payload.book_id+"/")||!validMime(fileKind,mime,fileName))return reply({success:false,error:"Livre, chemin, nom et type MIME valides obligatoires. Le fichier doit être dans le dossier de cet ouvrage."},400);
+        try{await signed(payload.storage_path)}catch{return reply({success:false,error:"Ce fichier n’existe pas dans le stockage privé. Vérifie son téléversement et son chemin."},404);}
         const r=await db("library_files?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement du fichier impossible."},400);
         return reply({success:true,file:(await r.json())[0]});

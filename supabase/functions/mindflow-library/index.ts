@@ -4,7 +4,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const PUBLIC = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? "";
 const BUCKET = "mindflow-products";
-const headers = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"content-type, apikey, authorization","Access-Control-Allow-Methods":"GET, POST, OPTIONS","Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"};
+const headers = {"Access-Control-Allow-Origin":"https://sup-ga.github.io","Vary":"Origin","Access-Control-Allow-Headers":"content-type, apikey, authorization, x-client-info","Access-Control-Allow-Methods":"GET, POST, OPTIONS","Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"};
 const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers});
 const rest=(path:string)=>SUPABASE_URL+"/rest/v1/"+path;
 async function db(path:string,method="GET",body?:unknown,prefer?:string){
@@ -19,12 +19,20 @@ async function signed(path:string,download=false){
   if(!s)throw new Error("Lien sécurisé indisponible.");
   return /^https?:\/\//i.test(s)?s:new URL(s.startsWith("/storage/v1/")?s:"/storage/v1"+(s.startsWith("/")?s:"/"+s),SUPABASE_URL).toString();
 }
-async function adminAllowed(req:Request){
+function tokenClaims(req:Request){
   const token=(req.headers.get("Authorization")??"").replace(/^Bearer\\s+/i,"");
-  if(!token)return false;
-  const r=await fetch(SUPABASE_URL+"/rest/v1/rpc/is_professional_reviewer",{method:"POST",headers:{apikey:PUBLIC||SERVICE,Authorization:"Bearer "+token,"Content-Type":"application/json"},body:"{}"});
-  if(!r.ok)return false;
-  return await r.json()===true;
+  try{const part=token.split(".")[1];if(!part)return null;const normalized=part.replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(atob(normalized.padEnd(Math.ceil(normalized.length/4)*4,"=")));}catch{return null;}
+}
+async function adminAllowed(req:Request,userId:string){
+  const claims=tokenClaims(req);if(claims?.aal!=="aal2")return false;
+  const r=await db("library_admins?select=user_id&user_id=eq."+encodeURIComponent(userId)+"&is_active=eq.true&limit=1");
+  return r.ok&&(await r.json()).length===1;
+}
+function validMime(kind:string,mime:string,name:string){
+  const ext=name.toLowerCase().split(".").pop()||"";
+  const map:Record<string,string[]>={pdf:["application/pdf"],epub:["application/epub+zip","application/octet-stream"],cover:["image/jpeg","image/png","image/webp"],preview:["image/jpeg","image/png","image/webp"],supplement:["application/pdf","image/jpeg","image/png"]};
+  const extensions:Record<string,string[]>={pdf:["pdf"],epub:["epub"],cover:["jpg","jpeg","png","webp"],preview:["jpg","jpeg","png","webp"],supplement:["pdf","jpg","jpeg","png"]};
+  return (map[kind]??[]).includes(mime)&&(extensions[kind]??[]).includes(ext);
 }
 async function identify(req:Request){
   const token=(req.headers.get("Authorization")??"").replace(/^Bearer\s+/i,"");
@@ -58,13 +66,13 @@ Deno.serve(async(req:Request)=>{
     if(action.startsWith("admin_")){
       const userId=await identify(req);
       if(!userId)return reply({success:false,error:"Connexion requise."},401);
-      if(!await adminAllowed(req))return reply({success:false,error:"Accès réservé à l’équipe administrative autorisée."},403);
+      if(!await adminAllowed(req,userId))return reply({success:false,error:"Accès refusé : compte bibliothèque autorisé et authentification renforcée (MFA) requis."},403);
       if(action==="admin_list"){
-        const tables=["library_books?select=*&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc"];
+        const tables=["library_books?select=*&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc"];
         const results=await Promise.all(tables.map(db));
         if(results.some(r=>!r.ok))return reply({success:false,error:"Impossible de charger les données administratives."},502);
-        const [books,partners,licenses,files,categories]=await Promise.all(results.map(r=>r.json()));
-        return reply({success:true,books,partners,licenses,files,categories});
+        const [books,partners,licenses,files,categories,quizzes]=await Promise.all(results.map(r=>r.json()));
+        return reply({success:true,books,partners,licenses,files,categories,quizzes});
       }
       if(action==="admin_save_book"){
         const x=body.book??{};
@@ -84,13 +92,45 @@ Deno.serve(async(req:Request)=>{
       if(action==="admin_save_license"){
         const x=body.license??{},payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,partner_id:x.partner_id||null,rights_type:x.rights_type||"public_domain",territory:x.territory||["GA"],valid_from:x.valid_from||null,valid_until:x.valid_until||null,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,allow_sale:!!x.allow_sale,revenue_share_percent:x.revenue_share_percent===""||x.revenue_share_percent==null?null:Number(x.revenue_share_percent),contract_reference:x.contract_reference||null,status:x.status||"pending"};
         if(!payload.book_id)return reply({success:false,error:"Choisis un ouvrage pour associer les droits."},400);
+        const bookCheck=await db("library_books?select=id,product_id&id=eq."+encodeURIComponent(payload.book_id)+"&limit=1");const linkedBook=(await bookCheck.json().catch(()=>[]))?.[0];
+        if(!linkedBook)return reply({success:false,error:"Ouvrage introuvable."},404);
+        if(payload.status==="active"&&payload.rights_type==="public_domain"&&!String(x.evidence_reference??"").trim())return reply({success:false,error:"Ajoute une référence vérifiable justifiant le domaine public avant activation."},400);
+        if(payload.status==="active"&&payload.rights_type!=="public_domain"&&(!String(payload.contract_reference??"").trim()||!payload.partner_id))return reply({success:false,error:"Un ayant droit et une référence de contrat sont obligatoires pour activer ces droits."},400);
+        if(payload.allow_sale&&!linkedBook.product_id)return reply({success:false,error:"Associe d’abord un produit MindFlow à cet ouvrage avant d’autoriser sa vente."},400);
+        payload.evidence_reference=String(x.evidence_reference??"").trim()||null;
         const r=await db("library_licenses?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement des droits impossible."},400);
         return reply({success:true,license:(await r.json())[0]});
       }
+      if(action==="admin_create_upload"){
+        const x=body.file??{},bookId=String(x.book_id??""),kind=String(x.file_kind??""),name=String(x.file_name??"").trim().replace(/[^a-zA-Z0-9._-]+/g,"-").slice(0,140),mime=String(x.mime_type??"");
+        if(!/^[0-9a-f-]{36}$/i.test(bookId)||!name||!validMime(kind,mime,name))return reply({success:false,error:"Livre, nom ou type de fichier invalide."},400);
+        const bookCheck=await db("library_books?select=id&id=eq."+encodeURIComponent(bookId)+"&limit=1");if(!bookCheck.ok||(await bookCheck.json()).length!==1)return reply({success:false,error:"Ouvrage introuvable."},404);
+        const path="library/"+bookId+"/"+kind+"/"+crypto.randomUUID()+"-"+name;
+        const upload=await fetch(SUPABASE_URL+"/storage/v1/object/upload/sign/"+BUCKET+"/"+path.split("/").map(encodeURIComponent).join("/"),{method:"POST",headers:{apikey:SERVICE,Authorization:"Bearer "+SERVICE,"Content-Type":"application/json"},body:JSON.stringify({upsert:false})});
+        const ud=await upload.json().catch(()=>({}));if(!upload.ok)return reply({success:false,error:"Impossible de préparer le téléversement sécurisé."},502);
+        const uploadToken=String(ud.token??"");if(!uploadToken)return reply({success:false,error:"Jeton de téléversement indisponible."},502);
+        return reply({success:true,storage_path:path,token:uploadToken,expires_in:7200});
+      }
+      if(action==="admin_save_quiz"){
+        const x=body.quiz??{},bookId=String(x.book_id??""),title=String(x.title??"").trim(),questions=Array.isArray(x.questions)?x.questions:[];
+        if(!/^[0-9a-f-]{36}$/i.test(bookId)||!title||!questions.length)return reply({success:false,error:"Livre, titre et au moins une question sont obligatoires."},400);
+        if(questions.length>50||questions.some((q:any)=>!String(q.question_text??"").trim()||!Array.isArray(q.answers)||q.answers.length<2||q.answers.length>8||!q.answers.some((a:any)=>a.is_correct)))return reply({success:false,error:"Chaque question doit contenir 2 à 8 réponses et au moins une bonne réponse (maximum 50 questions)."},400);
+        const quizPayload={...(x.id?{id:x.id}:{}),book_id:bookId,title,description:String(x.description??""),passing_score:Math.min(100,Math.max(0,Number(x.passing_score??50))),is_published:!!x.is_published};
+        const qr=await db("library_quizzes?on_conflict=id","POST",quizPayload,"resolution=merge-duplicates,return=representation");if(!qr.ok)return reply({success:false,error:"Enregistrement du quiz impossible."},400);
+        const quiz=(await qr.json())[0];
+        await db("library_quiz_questions?quiz_id=eq."+quiz.id,"DELETE");
+        for(let i=0;i<questions.length;i++){const q=questions[i],ins=await db("library_quiz_questions","POST",{quiz_id:quiz.id,question_text:String(q.question_text).trim(),question_type:q.question_type||"single_choice",explanation:String(q.explanation??""),display_order:i+1},"return=representation");if(!ins.ok)throw new Error("Impossible d’enregistrer les questions du quiz.");const question=(await ins.json())[0];const answers=q.answers.map((a:any,j:number)=>({question_id:question.id,answer_text:String(a.answer_text??"").trim(),is_correct:!!a.is_correct,display_order:j+1}));const ar=await db("library_quiz_answers","POST",answers);if(!ar.ok)throw new Error("Impossible d’enregistrer les réponses du quiz.");}
+        return reply({success:true,quiz});
+      }
+      if(action==="admin_delete_file"||action==="admin_revoke_license"){
+        const id=String(body.id??"");if(!/^[0-9a-f-]{36}$/i.test(id))return reply({success:false,error:"Identifiant invalide."},400);
+        const table=action==="admin_delete_file"?"library_files":"library_licenses";const method=action==="admin_delete_file"?"DELETE":"PATCH";const path=table+"?id=eq."+encodeURIComponent(id);
+        const result=await db(path,method,method==="PATCH"?{status:"revoked"}:undefined,"return=minimal");if(!result.ok)return reply({success:false,error:"Modification impossible."},400);return reply({success:true});
+      }
       if(action==="admin_save_file"){
         const x=body.file??{},payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,file_kind:x.file_kind||"pdf",storage_path:String(x.storage_path??"").trim(),file_name:x.file_name||null,mime_type:x.mime_type||null,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,is_primary:!!x.is_primary,display_order:Number(x.display_order||100)};
-        if(!payload.book_id||!payload.storage_path)return reply({success:false,error:"Livre et chemin de stockage obligatoires."},400);
+        if(!payload.book_id||!payload.storage_path||!safePath(payload.storage_path)||!payload.storage_path.startsWith("library/"+payload.book_id+"/"))return reply({success:false,error:"Livre et chemin de stockage valide dans le dossier de cet ouvrage obligatoires."},400);
         const r=await db("library_files?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement du fichier impossible."},400);
         return reply({success:true,file:(await r.json())[0]});

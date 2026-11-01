@@ -213,6 +213,23 @@ create or replace function public.sync_library_book_entitlement()
 returns trigger language plpgsql security definer set search_path=public
 as $$
 begin
+  if tg_op='DELETE' then
+    if old.product_id is not null then
+      delete from public.learner_library_books llb
+      using public.library_books b
+      where llb.book_id=b.id
+        and llb.learner_id=old.learner_id
+        and llb.access_origin='purchase'
+        and b.product_id=old.product_id
+        and not exists (
+          select 1 from public.learner_entitlements e
+          where e.learner_id=old.learner_id
+            and e.product_id=old.product_id
+            and e.status='active'
+        );
+    end if;
+    return old;
+  end if;
   if new.product_id is not null and new.status='active' then
     insert into public.learner_library_books(learner_id,book_id,access_origin,entitlement_id)
     select new.learner_id,b.id,'purchase',new.id
@@ -241,6 +258,10 @@ revoke all on function public.sync_library_book_entitlement() from public, anon,
 drop trigger if exists trg_sync_library_book_entitlement on public.learner_entitlements;
 create trigger trg_sync_library_book_entitlement
 after insert or update of status on public.learner_entitlements
+for each row execute function public.sync_library_book_entitlement();
+drop trigger if exists trg_delete_library_book_entitlement on public.learner_entitlements;
+create trigger trg_delete_library_book_entitlement
+after delete on public.learner_entitlements
 for each row execute function public.sync_library_book_entitlement();
 
 -- Backfill any already-confirmed purchases for books linked to a product.

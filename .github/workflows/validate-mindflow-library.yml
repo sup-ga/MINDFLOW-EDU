@@ -1,0 +1,30 @@
+name: Validate MindFlow digital library
+
+on:
+  push:
+    branches:
+      - feature/bibliotheque-numerique
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  edge-function:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Type-check secure library Edge Function
+        run: deno check supabase/functions/mindflow-library/index.ts
+
+  browser-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check inline JavaScript on library pages
+        run: node scripts/check-library-pages.mjs

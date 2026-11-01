@@ -333,11 +333,10 @@ create policy "Questions of published quizzes are public" on public.library_quiz
 -- Correct-answer rows are intentionally inaccessible to browser clients.
 revoke all on public.library_quiz_answers from anon,authenticated;
 grant select on public.library_book_credits,public.library_quizzes,public.library_quiz_questions to anon,authenticated;
-grant select,insert on public.library_quiz_attempts to authenticated;
+grant select on public.library_quiz_attempts to authenticated;
 create policy "Learners see their own quiz attempts" on public.library_quiz_attempts
   for select to authenticated using ((select auth.uid())=learner_id);
-create policy "Learners submit their own quiz attempts" on public.library_quiz_attempts
-  for insert to authenticated with check ((select auth.uid())=learner_id);
+-- Quiz attempts are written only by the Edge Function after server-side grading.
 
 
 -- Dedicated least-privilege administration for the digital library.

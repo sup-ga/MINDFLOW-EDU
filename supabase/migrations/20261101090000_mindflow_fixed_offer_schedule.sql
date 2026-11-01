@@ -98,3 +98,10 @@ drop trigger if exists trg_prevent_unpublishing_scheduled_offer on public.profes
 create trigger trg_prevent_unpublishing_scheduled_offer
 before update of status on public.professional_offers
 for each row execute function public.prevent_unpublishing_scheduled_offer();
+
+-- Store the schedule while an offer is still a draft; sessions are generated on publication.
+alter table public.professional_offers
+  add column if not exists schedule_first_start_at timestamptz,
+  add column if not exists schedule_first_end_at timestamptz,
+  add column if not exists schedule_session_count integer,
+  add column if not exists schedule_repeat_days integer;

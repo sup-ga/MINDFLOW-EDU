@@ -325,3 +325,26 @@ create policy "Learners see their own quiz attempts" on public.library_quiz_atte
   for select to authenticated using ((select auth.uid())=learner_id);
 create policy "Learners submit their own quiz attempts" on public.library_quiz_attempts
   for insert to authenticated with check ((select auth.uid())=learner_id);
+
+
+-- Dedicated least-privilege administration for the digital library.
+-- Only the account explicitly authorized for this workspace is seeded here.
+create table if not exists public.library_admins (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+alter table public.library_admins enable row level security;
+drop policy if exists "Library admins can read their own access" on public.library_admins;
+create policy "Library admins can read their own access"
+  on public.library_admins for select to authenticated
+  using ((select auth.uid())=user_id and is_active=true);
+grant select on public.library_admins to authenticated;
+revoke insert,update,delete on public.library_admins from anon,authenticated;
+insert into public.library_admins(user_id,is_active)
+values ('8f3c8c2a-3d3a-41c2-99bc-da0198f65959',true)
+on conflict(user_id) do update set is_active=excluded.is_active;
+
+-- Keep a verifiable evidence reference for public-domain determinations.
+alter table public.library_licenses
+  add column if not exists evidence_reference text;

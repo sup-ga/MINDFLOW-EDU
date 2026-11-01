@@ -1,43 +1,49 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
-const URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SERVICE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 const PUBLIC = Deno.env.get("SUPABASE_ANON_KEY") ?? Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? "";
 const BUCKET = "mindflow-products";
 const headers = {"Access-Control-Allow-Origin":"*","Access-Control-Allow-Headers":"content-type, apikey, authorization","Access-Control-Allow-Methods":"GET, POST, OPTIONS","Content-Type":"application/json; charset=utf-8","Cache-Control":"no-store"};
 const reply=(data:unknown,status=200)=>new Response(JSON.stringify(data),{status,headers});
-const rest=(path:string)=>URL+"/rest/v1/"+path;
+const rest=(path:string)=>SUPABASE_URL+"/rest/v1/"+path;
 async function db(path:string,method="GET",body?:unknown,prefer?:string){
   return fetch(rest(path),{method,headers:{apikey:SERVICE,Authorization:"Bearer "+SERVICE,"Content-Type":"application/json",...(prefer?{Prefer:prefer}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
 }
-function safePath(path:string){const p=String(path||"").replace(/^\/+ /,"").replace(/^\/+ /,"");return p&&!p.split("/").some(x=>!x||x==="."||x==="..");}
+function safePath(path:string){const p=String(path||"").replace(/^\/+/, "");return Boolean(p)&&!p.split("/").some(x=>!x||x==="."||x==="..");}
 async function signed(path:string,download=false){
   if(!safePath(path))throw new Error("Fichier non configuré.");
-  const r=await fetch(URL+"/storage/v1/object/sign/"+BUCKET+"/"+path.split("/").map(encodeURIComponent).join("/"),{method:"POST",headers:{apikey:SERVICE,Authorization:"Bearer "+SERVICE,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:180,download:download||false})});
+  const r=await fetch(SUPABASE_URL+"/storage/v1/object/sign/"+BUCKET+"/"+path.split("/").map(encodeURIComponent).join("/"),{method:"POST",headers:{apikey:SERVICE,Authorization:"Bearer "+SERVICE,"Content-Type":"application/json"},body:JSON.stringify({expiresIn:180,download:download||false})});
   if(!r.ok)throw new Error("Fichier momentanément indisponible.");
   const d=await r.json(),s=String(d.signedURL??d.signedUrl??"");
   if(!s)throw new Error("Lien sécurisé indisponible.");
-  return /^https?:\/\//i.test(s)?s:new URL(s.startsWith("/storage/v1/")?s:"/storage/v1"+(s.startsWith("/")?s:"/"+s),URL).toString();
+  return /^https?:\/\//i.test(s)?s:new URL(s.startsWith("/storage/v1/")?s:"/storage/v1"+(s.startsWith("/")?s:"/"+s),SUPABASE_URL).toString();
 }
 async function identify(req:Request){
   const token=(req.headers.get("Authorization")??"").replace(/^Bearer\s+/i,"");
-  if(!token) return null;
-  const r=await fetch(URL+"/auth/v1/user",{headers:{apikey:PUBLIC||SERVICE,Authorization:"Bearer "+token}});
+  if(!token)return null;
+  const r=await fetch(SUPABASE_URL+"/auth/v1/user",{headers:{apikey:PUBLIC||SERVICE,Authorization:"Bearer "+token}});
   if(!r.ok)return null;const u=await r.json();return u?.id?String(u.id):null;
 }
 Deno.serve(async(req:Request)=>{
   if(req.method==="OPTIONS")return new Response("ok",{headers});
-  if(!URL||!SERVICE)return reply({success:false,error:"Bibliothèque indisponible."},503);
+  if(!SUPABASE_URL||!SERVICE)return reply({success:false,error:"Bibliothèque indisponible."},503);
   try{
     if(req.method==="GET"){
-      const u=new URL(req.url),q=(u.searchParams.get("q")??"").trim().slice(0,100),category=u.searchParams.get("category");
-      const b=await db("library_books?select=id,slug,title,subtitle,author_name,description,publisher_name,publication_year,language,country_of_origin,book_type,access_mode,cover_path,featured,library_book_categories(category:library_categories(id,slug,name))&status=eq.published&order=featured.desc,published_at.desc&limit=80");
+      const u=new URL(req.url),q=(u.searchParams.get("q")??"").trim().slice(0,100),category=u.searchParams.get("category"),mine=u.searchParams.get("mine")==="1";
+      let endpoint="library_books?select=id,slug,title,subtitle,author_name,description,publisher_name,publication_year,language,country_of_origin,book_type,access_mode,product_id,cover_path,featured,library_book_categories(category:library_categories(id,slug,name)),product:products(id,price,is_free)&status=eq.published&order=featured.desc,published_at.desc&limit=80";
+      if(mine){
+        const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour consulter ta bibliothèque."},401);
+        endpoint="library_books?select=id,slug,title,subtitle,author_name,description,book_type,access_mode,product_id,cover_path,learner_library_books!inner(learner_id,added_at)&learner_library_books.learner_id=eq."+userId+"&status=eq.published&order=title.asc";
+      }
+      const b=await db(endpoint);
       if(!b.ok)return reply({success:false,error:"Impossible de charger les livres."},502);
       let books=await b.json();
       if(q){const n=q.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();books=books.filter((x:Record<string,unknown>)=>[x.title,x.author_name,x.description,x.publisher_name].join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().includes(n));}
       if(category)books=books.filter((x:Record<string,any>)=>(x.library_book_categories??[]).some((c:any)=>c.category?.slug===category));
-      const c=await db("library_categories?select=id,slug,name,description&is_active=eq.true&order=display_order.asc");
-      return reply({success:true,books,categories:c.ok?await c.json():[]});
+      books=await Promise.all(books.map(async(x:Record<string,any>)=>({...x,cover_url:x.cover_path?await signed(x.cover_path).catch(()=>null):null})));
+      const c=mine?[]:await db("library_categories?select=id,slug,name,description&is_active=eq.true&order=display_order.asc").then(async r=>r.ok?await r.json():[]);
+      return reply({success:true,books,categories:c});
     }
     if(req.method!=="POST")return reply({success:false,error:"Méthode non autorisée."},405);
     const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour accéder à ce livre."},401);
@@ -50,23 +56,22 @@ Deno.serve(async(req:Request)=>{
     const today=new Date().toISOString().slice(0,10);
     const license=licenses.find((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today));
     if(!license)return reply({success:false,error:"Les droits de diffusion de ce livre ne sont pas encore validés."},403);
-    const canRead=license.allow_online_reading===true,canDownload=license.allow_download===true;
     const access=book.access_mode==="free";
     let entitled=access;
     if(!entitled){
       const er=await db("learner_library_books?select=id&learner_id=eq."+userId+"&book_id=eq."+bookId+"&limit=1");
       entitled=er.ok&&(await er.json()).length>0;
     }
-    if(!entitled)return reply({success:false,error:"Ce livre n’est pas encore dans ta bibliothèque. Achète-le pour y accéder."},403);
+    if(!entitled)return reply({success:false,error:"Ce livre n’est pas encore dans ta bibliothèque. Achète-le pour y accéder.",product_id:book.product_id},403);
     if(action!=="open"&&action!=="download")return reply({success:false,error:"Action inconnue."},400);
-    if(action==="open"&&!canRead)return reply({success:false,error:"La lecture en ligne n’est pas autorisée pour ce livre."},403);
-    if(action==="download"&&!canDownload)return reply({success:false,error:"Le téléchargement n’est pas autorisé pour ce livre."},403);
+    if(action==="open"&&!license.allow_online_reading)return reply({success:false,error:"La lecture en ligne n’est pas autorisée pour ce livre."},403);
+    if(action==="download"&&!license.allow_download)return reply({success:false,error:"Le téléchargement n’est pas autorisé pour ce livre."},403);
     const fr=await db("library_files?select=id,file_kind,storage_path,file_name,mime_type,allow_online_reading,allow_download,is_primary&book_id=eq."+bookId+"&order=is_primary.desc,display_order.asc");
     if(!fr.ok)return reply({success:false,error:"Fichiers indisponibles."},502);
     const files=await fr.json(),file=files.find((f:Record<string,any>)=>action==="open"?f.allow_online_reading&&["pdf","epub"].includes(f.file_kind):f.allow_download&&["pdf","epub"].includes(f.file_kind));
     if(!file)return reply({success:false,error:"Aucun fichier compatible avec ce mode d’accès."},404);
     const url=await signed(file.storage_path,action==="download");
-    const entry=await db("learner_library_books?on_conflict=learner_id,book_id","POST",{learner_id:userId,book_id:bookId,access_origin:access?"free":"purchase"},"resolution=merge-duplicates");
-    return reply({success:true,url,file_name:file.file_name??book.title,mode:action,expires_in:180});
+    await db("learner_library_books?on_conflict=learner_id,book_id","POST",{learner_id:userId,book_id:bookId,access_origin:access?"free":"purchase"},"resolution=merge-duplicates");
+    return reply({success:true,url,file_name:file.file_name??book.title,file_kind:file.file_kind,mode:action,expires_in:180});
   }catch(e){console.error("library api",e instanceof Error?e.message:String(e));return reply({success:false,error:e instanceof Error?e.message:"Erreur interne."},500);}
 });

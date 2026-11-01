@@ -169,7 +169,8 @@ Deno.serve(async(req:Request)=>{
       const br=await db("library_books?select=id,access_mode,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1"),book=(await br.json().catch(()=>[]))?.[0];
       if(!br.ok||!book)return reply({success:false,error:"Ouvrage indisponible."},404);
       let entitled=book.access_mode==="free";
-      if(!entitled){const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(bookId)+"&limit=1");entitled=er.ok&&(await er.json()).length>0;}
+      if(book.access_mode==="paid"){const er=await db("learner_entitlements?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&product_id=eq."+encodeURIComponent(book.product_id??"")+"&status=eq.active");entitled=!!book.product_id&&er.ok&&(await er.json()).length>0;}
+      if(book.access_mode==="partner"){const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(bookId)+"&access_origin=eq.partner_grant&limit=1");entitled=er.ok&&(await er.json()).length>0;}
       if(!entitled)return reply({success:false,error:"Cet ouvrage n’est pas dans ta bibliothèque."},403);
       const lr=await db("library_licenses?select=id,valid_from,valid_until,allow_online_reading&book_id=eq."+encodeURIComponent(bookId)+"&status=eq.active"),today=new Date().toISOString().slice(0,10),licenses=lr.ok?await lr.json():[];
       if(!licenses.some((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&l.allow_online_reading))return reply({success:false,error:"Les droits de quiz ne sont pas disponibles."},403);
@@ -187,7 +188,8 @@ Deno.serve(async(req:Request)=>{
       const today=new Date().toISOString().slice(0,10),licenses=lr.ok?await lr.json():[];
       if(!licenses.some((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&l.allow_online_reading))return reply({success:false,error:"Les droits de cet ouvrage ne permettent plus le quiz."},403);
       let entitled=book.access_mode==="free";
-      if(!entitled){const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(book.id)+"&limit=1");entitled=er.ok&&(await er.json()).length>0;}
+      if(book.access_mode==="paid"){const er=await db("learner_entitlements?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&product_id=eq."+encodeURIComponent(book.product_id??"")+"&status=eq.active");entitled=!!book.product_id&&er.ok&&(await er.json()).length>0;}
+      if(book.access_mode==="partner"){const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(book.id)+"&access_origin=eq.partner_grant&limit=1");entitled=er.ok&&(await er.json()).length>0;}
       if(!entitled)return reply({success:false,error:"Cet ouvrage n’est pas encore dans ta bibliothèque."},403);
       const qs=await db("library_quiz_questions?select=id,question_text,question_type,explanation,display_order&quiz_id=eq."+encodeURIComponent(quizId)+"&order=display_order.asc");
       if(!qs.ok)return reply({success:false,error:"Questions indisponibles."},502);
@@ -238,8 +240,12 @@ Deno.serve(async(req:Request)=>{
     if(!license)return reply({success:false,error:"Les droits de diffusion de ce livre ne sont pas encore validés."},403);
     const access=book.access_mode==="free";
     let entitled=access;
-    if(!entitled){
-      const er=await db("learner_library_books?select=id&learner_id=eq."+userId+"&book_id=eq."+bookId+"&limit=1");
+    if(book.access_mode==="paid"){
+      const er=await db("learner_entitlements?select=id&learner_id=eq."+encodeURIComponent(userId)+"&product_id=eq."+encodeURIComponent(book.product_id??"")+"&status=eq.active");
+      entitled=!!book.product_id&&er.ok&&(await er.json()).length>0;
+    }
+    if(book.access_mode==="partner"){
+      const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(userId)+"&book_id=eq."+encodeURIComponent(bookId)+"&access_origin=eq.partner_grant&limit=1");
       entitled=er.ok&&(await er.json()).length>0;
     }
     if(!entitled)return reply({success:false,error:"Ce livre n’est pas encore dans ta bibliothèque. Achète-le pour y accéder.",product_id:book.product_id},403);

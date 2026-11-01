@@ -209,7 +209,7 @@ Deno.serve(async(req:Request)=>{
     }
     if(learnerAction==="quiz_list"){
       const bookId=String(body.book_id??"");if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Ouvrage invalide."},400);
-      const br=await db("library_books?select=id,access_mode,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1"),book=(await br.json().catch(()=>[]))?.[0];
+      const br=await db("library_books?select=id,access_mode,product_id,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1"),book=(await br.json().catch(()=>[]))?.[0];
       if(!br.ok||!book)return reply({success:false,error:"Ouvrage indisponible."},404);
       let entitled=book.access_mode==="free";
       if(book.access_mode==="paid"){const er=await db("learner_entitlements?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&product_id=eq."+encodeURIComponent(book.product_id??"")+"&status=eq.active");entitled=!!book.product_id&&er.ok&&(await er.json()).length>0;}
@@ -223,7 +223,7 @@ Deno.serve(async(req:Request)=>{
     if(learnerAction==="quiz_get"||learnerAction==="quiz_submit"){
       const quizId=String(body.quiz_id??"");
       if(!/^[0-9a-f-]{36}$/i.test(quizId))return reply({success:false,error:"Quiz invalide."},400);
-      const qr=await db("library_quizzes?select=id,book_id,title,description,passing_score,is_published& id=eq.".replace("& ","&")+encodeURIComponent(quizId)+"&is_published=eq.true&limit=1");
+      const qr=await db("library_quizzes?select=id,book_id,title,description,passing_score,is_published&id=eq."+encodeURIComponent(quizId)+"&is_published=eq.true&limit=1");
       const quiz=(await qr.json().catch(()=>[]))?.[0];if(!qr.ok||!quiz)return reply({success:false,error:"Quiz indisponible."},404);
       const br=await db("library_books?select=id,access_mode,product_id,status&id=eq."+encodeURIComponent(quiz.book_id)+"&status=eq.published&limit=1");
       const book=(await br.json().catch(()=>[]))?.[0];if(!br.ok||!book)return reply({success:false,error:"Ouvrage indisponible."},404);

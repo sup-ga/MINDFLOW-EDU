@@ -23,7 +23,10 @@ La migration SQL et la fonction Edge sont déjà déployées sur le projet Supab
 - [ ] Un compte autorisé sans MFA `aal2` ne peut pas appeler les actions admin de la fonction Edge.
 - [ ] Le compte autorisé avec MFA `aal2` ouvre l’administration.
 - [ ] La liste des produits actifs s’affiche dans le champ de liaison produit.
-- [ ] Création d’un ouvrage en brouillon, puis modification de ses métadonnées.
+- [ ] Création d’un ouvrage depuis un seul formulaire : métadonnées, PDF/EPUB principal, couverture et jusqu’à trois images d’aperçu téléversés depuis l’appareil ; vérification que les fichiers sont automatiquement classés sous `library/<id-ouvrage>/...`.
+- [ ] Vérifier que le slug se génère automatiquement à partir du titre et reste modifiable.
+- [ ] Vérifier que le nouveau livre est d’abord sauvegardé en brouillon, que les fichiers sont associés, puis que la publication n’est possible qu’après validation des droits.
+- [ ] Modification des métadonnées d’un ouvrage existant sans effacer sa couverture déjà enregistrée.
 - [ ] Association à une ou plusieurs collections éditoriales.
 - [ ] Ajout et modification d’un auteur / partenaire.
 - [ ] Activation d’un droit domaine public sans justificatif : refus attendu.

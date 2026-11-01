@@ -105,3 +105,30 @@ alter table public.professional_offers
   add column if not exists schedule_first_end_at timestamptz,
   add column if not exists schedule_session_count integer,
   add column if not exists schedule_repeat_days integer;
+
+-- Protect the schedule metadata stored on the offer itself after publication.
+create or replace function public.prevent_published_offer_schedule_metadata_changes()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if old.status in ('published', 'archived')
+     and (
+       new.schedule_first_start_at is distinct from old.schedule_first_start_at
+       or new.schedule_first_end_at is distinct from old.schedule_first_end_at
+       or new.schedule_session_count is distinct from old.schedule_session_count
+       or new.schedule_repeat_days is distinct from old.schedule_repeat_days
+     ) then
+    raise exception 'Le calendrier de cette offre est verrouillé depuis sa publication.'
+      using errcode = '55000';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_prevent_published_offer_schedule_metadata_changes on public.professional_offers;
+create trigger trg_prevent_published_offer_schedule_metadata_changes
+before update of schedule_first_start_at, schedule_first_end_at, schedule_session_count, schedule_repeat_days
+on public.professional_offers
+for each row execute function public.prevent_published_offer_schedule_metadata_changes();

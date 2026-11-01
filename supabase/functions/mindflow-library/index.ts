@@ -54,6 +54,12 @@ Deno.serve(async(req:Request)=>{
       const b=await db(endpoint);
       if(!b.ok)return reply({success:false,error:"Impossible de charger les livres."},502);
       let books=await b.json();
+      if(mine&&books.length){
+        const owner=await identify(req);
+        const pr=owner?await db("library_reading_progress?select=book_id,progress_percent,last_opened_at,completed_at&learner_id=eq."+encodeURIComponent(owner)):null;
+        const progress=pr?.ok?await pr.json():[];
+        books=books.map((book:Record<string,any>)=>({...book,reading_progress:progress.find((p:Record<string,any>)=>p.book_id===book.id)||null}));
+      }
       if(books.length){
         const rightsRes=await db("library_licenses?select=book_id,valid_from,valid_until,allow_online_reading,allow_download&status=eq.active");
         const filesRes=await db("library_files?select=book_id,file_kind,allow_online_reading,allow_download");

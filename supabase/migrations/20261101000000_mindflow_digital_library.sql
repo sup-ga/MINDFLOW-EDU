@@ -223,7 +223,8 @@ begin
   end if;
   return new;
 end;
-$$;
+$;
+revoke all on function public.sync_library_book_entitlement() from public, anon, authenticated;
 drop trigger if exists trg_sync_library_book_entitlement on public.learner_entitlements;
 create trigger trg_sync_library_book_entitlement
 after insert or update of status on public.learner_entitlements

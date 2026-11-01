@@ -186,7 +186,7 @@ Deno.serve(async(req:Request)=>{
     const files=await fr.json(),file=files.find((f:Record<string,any>)=>action==="open"?f.allow_online_reading&&["pdf","epub"].includes(f.file_kind):f.allow_download&&["pdf","epub"].includes(f.file_kind));
     if(!file)return reply({success:false,error:"Aucun fichier compatible avec ce mode d’accès."},404);
     const url=await signed(file.storage_path,action==="download");
-    await db("learner_library_books?on_conflict=learner_id,book_id","POST",{learner_id:userId,book_id:bookId,access_origin:access?"free":"purchase"},"resolution=merge-duplicates");
+    await db("learner_library_books?on_conflict=learner_id,book_id","POST",{learner_id:userId,book_id:bookId,access_origin:access?"free":book.access_mode==="partner"?"partner_grant":"purchase"},"resolution=merge-duplicates");
     return reply({success:true,url,file_name:file.file_name??book.title,file_kind:file.file_kind,mode:action,expires_in:180});
   }catch(e){console.error("library api",e instanceof Error?e.message:String(e));return reply({success:false,error:e instanceof Error?e.message:"Erreur interne."},500);}
 });

@@ -164,6 +164,18 @@ Deno.serve(async(req:Request)=>{
     const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour accéder à ce livre."},401);
     const learnerId=await identify(req);if(!learnerId)return reply({success:false,error:"Connecte-toi pour accéder à cette fonctionnalité."},401);
     const learnerAction=String(body?.action??"");
+    if(learnerAction==="quiz_list"){
+      const bookId=String(body.book_id??"");if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Ouvrage invalide."},400);
+      const br=await db("library_books?select=id,access_mode,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1"),book=(await br.json().catch(()=>[]))?.[0];
+      if(!br.ok||!book)return reply({success:false,error:"Ouvrage indisponible."},404);
+      let entitled=book.access_mode==="free";
+      if(!entitled){const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(bookId)+"&limit=1");entitled=er.ok&&(await er.json()).length>0;}
+      if(!entitled)return reply({success:false,error:"Cet ouvrage n’est pas dans ta bibliothèque."},403);
+      const lr=await db("library_licenses?select=id,valid_from,valid_until,allow_online_reading&book_id=eq."+encodeURIComponent(bookId)+"&status=eq.active"),today=new Date().toISOString().slice(0,10),licenses=lr.ok?await lr.json():[];
+      if(!licenses.some((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&l.allow_online_reading))return reply({success:false,error:"Les droits de quiz ne sont pas disponibles."},403);
+      const list=await db("library_quizzes?select=id,title,description,passing_score&book_id=eq."+encodeURIComponent(bookId)+"&is_published=eq.true&order=created_at.asc");
+      return list.ok?reply({success:true,quizzes:await list.json()}):reply({success:false,error:"Quiz indisponibles."},502);
+    }
     if(learnerAction==="quiz_get"||learnerAction==="quiz_submit"){
       const quizId=String(body.quiz_id??"");
       if(!/^[0-9a-f-]{36}$/i.test(quizId))return reply({success:false,error:"Quiz invalide."},400);

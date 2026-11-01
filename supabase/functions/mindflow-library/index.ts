@@ -162,6 +162,59 @@ Deno.serve(async(req:Request)=>{
       return reply({success:false,error:"Action administrative inconnue."},400);
     }
     const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour accéder à ce livre."},401);
+    const learnerId=await identify(req);if(!learnerId)return reply({success:false,error:"Connecte-toi pour accéder à cette fonctionnalité."},401);
+    const learnerAction=String(body?.action??"");
+    if(learnerAction==="quiz_get"||learnerAction==="quiz_submit"){
+      const quizId=String(body.quiz_id??"");
+      if(!/^[0-9a-f-]{36}$/i.test(quizId))return reply({success:false,error:"Quiz invalide."},400);
+      const qr=await db("library_quizzes?select=id,book_id,title,description,passing_score,is_published& id=eq.".replace("& ","&")+encodeURIComponent(quizId)+"&is_published=eq.true&limit=1");
+      const quiz=(await qr.json().catch(()=>[]))?.[0];if(!qr.ok||!quiz)return reply({success:false,error:"Quiz indisponible."},404);
+      const br=await db("library_books?select=id,access_mode,product_id,status&id=eq."+encodeURIComponent(quiz.book_id)+"&status=eq.published&limit=1");
+      const book=(await br.json().catch(()=>[]))?.[0];if(!br.ok||!book)return reply({success:false,error:"Ouvrage indisponible."},404);
+      const lr=await db("library_licenses?select=id,valid_from,valid_until,allow_online_reading&book_id=eq."+encodeURIComponent(book.id)+"&status=eq.active");
+      const today=new Date().toISOString().slice(0,10),licenses=lr.ok?await lr.json():[];
+      if(!licenses.some((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&l.allow_online_reading))return reply({success:false,error:"Les droits de cet ouvrage ne permettent plus le quiz."},403);
+      let entitled=book.access_mode==="free";
+      if(!entitled){const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(book.id)+"&limit=1");entitled=er.ok&&(await er.json()).length>0;}
+      if(!entitled)return reply({success:false,error:"Cet ouvrage n’est pas encore dans ta bibliothèque."},403);
+      const qs=await db("library_quiz_questions?select=id,question_text,question_type,explanation,display_order&quiz_id=eq."+encodeURIComponent(quizId)+"&order=display_order.asc");
+      if(!qs.ok)return reply({success:false,error:"Questions indisponibles."},502);
+      const questions=await qs.json();
+      if(learnerAction==="quiz_get"){
+        const safeQuestions=[];
+        for(const q of questions){const ar=await db("library_quiz_answers?select=id,answer_text,display_order&question_id=eq."+encodeURIComponent(q.id)+"&order=display_order.asc");safeQuestions.push({...q,answers:ar.ok?await ar.json():[]});}
+        return reply({success:true,quiz:{id:quiz.id,title:quiz.title,description:quiz.description,passing_score:quiz.passing_score,questions:safeQuestions}});
+      }
+      const submitted=body.answers&&typeof body.answers==="object"?body.answers:{};
+      let correct=0;const results=[];
+      for(const q of questions){
+        const ar=await db("library_quiz_answers?select=id,answer_text,is_correct&question_id=eq."+encodeURIComponent(q.id));
+        if(!ar.ok)return reply({success:false,error:"Correction temporairement indisponible."},502);
+        const answerRows=await ar.json(),expected=answerRows.filter((a:Record<string,any>)=>a.is_correct).map((a:Record<string,any>)=>String(a.id)).sort();
+        const raw=submitted[q.id],provided=(Array.isArray(raw)?raw:[raw]).filter((v:unknown)=>v!==undefined&&v!==null&&String(v)!=="").map(String).sort();
+        let ok=false;
+        if(q.question_type==="short_answer"){
+          const expectedText=answerRows.filter((a:Record<string,any>)=>a.is_correct).map((a:Record<string,any>)=>String(a.answer_text).normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLocaleLowerCase("fr"));
+          const entered=String(Array.isArray(raw)?raw[0]??"":raw??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim().toLocaleLowerCase("fr");
+          ok=!!entered&&expectedText.includes(entered);
+        }else ok=expected.length>0&&expected.length===provided.length&&expected.every((v:string,i:number)=>v===provided[i]);
+        if(ok)correct++;
+        results.push({question_id:q.id,correct:ok,explanation:q.explanation||null});
+      }
+      const score=questions.length?Math.round(correct/questions.length*10000)/100:0,passed=score>=Number(quiz.passing_score);
+      const save=await db("library_quiz_attempts","POST",{quiz_id:quizId,learner_id:learnerId,score,answers:{submitted:submitted,results},completed_at:new Date().toISOString()},"return=representation");
+      if(!save.ok)return reply({success:false,error:"Impossible d’enregistrer ton résultat."},502);
+      return reply({success:true,score,passed,passing_score:Number(quiz.passing_score),correct,total:questions.length,results,attempt:(await save.json())[0]});
+    }
+    if(learnerAction==="progress_save"){
+      const bookId=String(body.book_id??""),progress=Math.max(0,Math.min(100,Number(body.progress_percent??0)));
+      if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Ouvrage invalide."},400);
+      const access=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(bookId)+"&limit=1");
+      if(!access.ok||(await access.json()).length!==1)return reply({success:false,error:"Accès à cet ouvrage non confirmé."},403);
+      const saved=await db("library_reading_progress?on_conflict=learner_id,book_id","POST",{learner_id:learnerId,book_id:bookId,progress_percent:progress,current_location:body.current_location??{},last_opened_at:new Date().toISOString(),completed_at:progress>=100?new Date().toISOString():null},"resolution=merge-duplicates,return=representation");
+      if(!saved.ok)return reply({success:false,error:"Progression non enregistrée."},502);
+      return reply({success:true,progress_percent:progress});
+    }
     const bookId=String(body?.book_id??"");const accessAction=String(body?.action??"open");
     if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Livre invalide."},400);
     const br=await db("library_books?select=id,title,slug,access_mode,product_id,status&id=eq."+bookId+"&status=eq.published&limit=1");

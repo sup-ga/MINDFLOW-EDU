@@ -111,6 +111,34 @@ Deno.serve(async(req:Request)=>{
         const [books,partners,licenses,files,categories,quizzes,products,quizQuestions,guides]=await Promise.all(results.map(r=>r.json()));
         return reply({success:true,books,partners,licenses,files,categories,quizzes,products,quizQuestions,guides});
       }
+      if(action==="admin_set_book_status"){
+        const id=String(body.id??""),status=String(body.status??"");
+        if(!/^[0-9a-f-]{36}$/i.test(id)||!["draft","archived"].includes(status))return reply({success:false,error:"Ouvrage ou statut invalide."},400);
+        const patch:Record<string,any>={status,updated_at:new Date().toISOString()};
+        if(status==="draft")patch.published_at=null;
+        const r=await db("library_books?id=eq."+encodeURIComponent(id),"PATCH",patch,"return=representation");
+        if(!r.ok){const detail=await r.text();console.error("admin_set_book_status",detail);return reply({success:false,error:"Impossible de modifier le statut de cet ouvrage."},400);}
+        const rows=await r.json();if(!rows.length)return reply({success:false,error:"Ouvrage introuvable."},404);
+        return reply({success:true,book:rows[0]});
+      }
+      if(action==="admin_delete_book"){
+        const id=String(body.id??"");
+        if(!/^[0-9a-f-]{36}$/i.test(id))return reply({success:false,error:"Identifiant d’ouvrage invalide."},400);
+        const check=await db("library_books?select=id,cover_path&id=eq."+encodeURIComponent(id)+"&limit=1");
+        const book=(await check.json().catch(()=>[]))?.[0];
+        if(!check.ok||!book)return reply({success:false,error:"Ouvrage introuvable."},404);
+        const fr=await db("library_files?select=storage_path&book_id=eq."+encodeURIComponent(id));
+        if(!fr.ok)return reply({success:false,error:"Impossible de vérifier les fichiers associés."},502);
+        const rows=await fr.json(),paths=[...new Set([...rows.map((f:Record<string,any>)=>String(f.storage_path??"")),String(book.cover_path??"")].filter(Boolean))];
+        for(const path of paths){
+          if(!safePath(path)||!path.startsWith("library/"+id+"/"))return reply({success:false,error:"Chemin de fichier associé invalide. Suppression interrompue par sécurité."},400);
+          const removed=await fetch(SUPABASE_URL+"/storage/v1/object/"+BUCKET+"/"+path.split("/").map(encodeURIComponent).join("/"),{method:"DELETE",headers:{apikey:SERVICE,Authorization:"Bearer "+SERVICE}});
+          if(!removed.ok&&removed.status!==404){const detail=await removed.text();console.error("admin_delete_book storage",detail);return reply({success:false,error:"Impossible de supprimer un fichier associé. L’ouvrage a été conservé."},502);}
+        }
+        const deleted=await db("library_books?id=eq."+encodeURIComponent(id),"DELETE",undefined,"return=representation");
+        if(!deleted.ok){const detail=await deleted.text();console.error("admin_delete_book database",detail);return reply({success:false,error:"Les fichiers ont été retirés, mais la suppression de la fiche a échoué."},502);}
+        return reply({success:true});
+      }
       if(action==="admin_save_book"){
         const x=body.book??{};
         const payload={...(x.id?{id:x.id}:{}),slug:String(x.slug??"").trim(),title:String(x.title??"").trim(),author_name:String(x.author_name??"").trim(),description:String(x.description??""),publisher_name:x.publisher_name||null,publication_year:x.publication_year?Number(x.publication_year):null,isbn:x.isbn||null,language:x.language||"fr",country_of_origin:x.country_of_origin||"GA",book_type:x.book_type||"literary_work",access_mode:x.access_mode||"paid",status:x.status||"draft",featured:!!x.featured,cover_path:x.cover_path||null,product_id:x.product_id||null,updated_at:new Date().toISOString()};
@@ -125,7 +153,7 @@ Deno.serve(async(req:Request)=>{
           if(!files.some((f:Record<string,any>)=>["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)))return reply({success:false,error:"Ajoute au moins un fichier PDF ou EPUB autorisé avant publication."},400);
         }
         const r=await db("library_books?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
-        if(!r.ok)return reply({success:false,error:"Enregistrement du livre impossible."},400);
+        if(!r.ok){const detail=await r.text();console.error("admin_save_book database error",detail);return reply({success:false,error:"La base de données a refusé l’enregistrement : "+detail.slice(0,260)},400);}
         const saved=(await r.json())[0];
         if(saved.status==="published"&&saved.product_id){
           const er=await db("learner_entitlements?select=id,learner_id&product_id=eq."+encodeURIComponent(saved.product_id)+"&status=eq.active");

@@ -20,7 +20,7 @@ async function signed(path:string,download=false){
   return /^https?:\/\//i.test(s)?s:new URL(s.startsWith("/storage/v1/")?s:"/storage/v1"+(s.startsWith("/")?s:"/"+s),SUPABASE_URL).toString();
 }
 function tokenClaims(req:Request){
-  const token=(req.headers.get("Authorization")??"").replace(/^Bearer\\s+/i,"");
+  const token=(req.headers.get("Authorization")??"").replace(/^Bearer\s+/i,"");
   try{const part=token.split(".")[1];if(!part)return null;const normalized=part.replace(/-/g,"+").replace(/_/g,"/");return JSON.parse(atob(normalized.padEnd(Math.ceil(normalized.length/4)*4,"=")));}catch{return null;}
 }
 async function adminAllowed(req:Request,userId:string){

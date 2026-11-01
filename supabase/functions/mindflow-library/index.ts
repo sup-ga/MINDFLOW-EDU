@@ -84,11 +84,11 @@ Deno.serve(async(req:Request)=>{
       if(!userId)return reply({success:false,error:"Connexion requise."},401);
       if(!await adminAllowed(req,userId))return reply({success:false,error:"Accès refusé : compte bibliothèque autorisé et authentification renforcée (MFA) requis."},403);
       if(action==="admin_list"){
-        const tables=["library_books?select=*,library_book_categories(category_id)&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc","products?select=id,title,price,is_free&is_active=eq.true&order=title.asc"];
+        const tables=["library_books?select=*,library_book_categories(category_id)&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc","products?select=id,title,price,is_free&is_active=eq.true&order=title.asc","library_quiz_questions?select=*,library_quiz_answers(*)&order=display_order.asc"];
         const results=await Promise.all(tables.map(db));
         if(results.some(r=>!r.ok))return reply({success:false,error:"Impossible de charger les données administratives."},502);
-        const [books,partners,licenses,files,categories,quizzes,products]=await Promise.all(results.map(r=>r.json()));
-        return reply({success:true,books,partners,licenses,files,categories,quizzes,products});
+        const [books,partners,licenses,files,categories,quizzes,products,quizQuestions]=await Promise.all(results.map(r=>r.json()));
+        return reply({success:true,books,partners,licenses,files,categories,quizzes,products,quizQuestions});
       }
       if(action==="admin_save_book"){
         const x=body.book??{};
@@ -161,9 +161,9 @@ Deno.serve(async(req:Request)=>{
         for(let i=0;i<questions.length;i++){const q=questions[i],ins=await db("library_quiz_questions","POST",{quiz_id:quiz.id,question_text:String(q.question_text).trim(),question_type:q.question_type||"single_choice",explanation:String(q.explanation??""),display_order:i+1},"return=representation");if(!ins.ok)throw new Error("Impossible d’enregistrer les questions du quiz.");const question=(await ins.json())[0];const answers=q.answers.map((a:any,j:number)=>({question_id:question.id,answer_text:String(a.answer_text??"").trim(),is_correct:!!a.is_correct,display_order:j+1}));const ar=await db("library_quiz_answers","POST",answers);if(!ar.ok)throw new Error("Impossible d’enregistrer les réponses du quiz.");}
         return reply({success:true,quiz});
       }
-      if(action==="admin_delete_file"||action==="admin_revoke_license"){
+      if(action==="admin_delete_file"||action==="admin_revoke_license"||action==="admin_delete_quiz"){
         const id=String(body.id??"");if(!/^[0-9a-f-]{36}$/i.test(id))return reply({success:false,error:"Identifiant invalide."},400);
-        const table=action==="admin_delete_file"?"library_files":"library_licenses";const method=action==="admin_delete_file"?"DELETE":"PATCH";const path=table+"?id=eq."+encodeURIComponent(id);
+        const table=action==="admin_delete_file"?"library_files":action==="admin_delete_quiz"?"library_quizzes":"library_licenses";const method=action==="admin_revoke_license"?"PATCH":"DELETE";const path=table+"?id=eq."+encodeURIComponent(id);
         const result=await db(path,method,method==="PATCH"?{status:"revoked"}:undefined,"return=minimal");if(!result.ok)return reply({success:false,error:"Modification impossible."},400);return reply({success:true});
       }
       if(action==="admin_save_file"){

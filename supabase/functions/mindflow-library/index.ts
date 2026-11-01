@@ -54,6 +54,12 @@ Deno.serve(async(req:Request)=>{
       const b=await db(endpoint);
       if(!b.ok)return reply({success:false,error:"Impossible de charger les livres."},502);
       let books=await b.json();
+      if(!mine&&books.length){
+        const rightsRes=await db("library_licenses?select=book_id,valid_from,valid_until,allow_online_reading,allow_download&status=eq.active");
+        const filesRes=await db("library_files?select=book_id,file_kind,allow_online_reading,allow_download");
+        const rights=rightsRes.ok?await rightsRes.json():[],files=filesRes.ok?await filesRes.json():[],today=new Date().toISOString().slice(0,10);
+        books=books.filter((book:Record<string,any>)=>rights.some((l:Record<string,any>)=>l.book_id===book.id&&(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&(l.allow_online_reading||l.allow_download))&&files.some((f:Record<string,any>)=>f.book_id===book.id&&["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)));
+      }
       if(q){const n=q.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();books=books.filter((x:Record<string,unknown>)=>[x.title,x.author_name,x.description,x.publisher_name].join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().includes(n));}
       if(category)books=books.filter((x:Record<string,any>)=>(x.library_book_categories??[]).some((c:any)=>c.category?.slug===category));
       books=await Promise.all(books.map(async(x:Record<string,any>)=>({...x,cover_url:x.cover_path?await signed(x.cover_path).catch(()=>null):null})));
@@ -78,6 +84,15 @@ Deno.serve(async(req:Request)=>{
         const x=body.book??{};
         const payload={...(x.id?{id:x.id}:{}),slug:String(x.slug??"").trim(),title:String(x.title??"").trim(),author_name:String(x.author_name??"").trim(),description:String(x.description??""),publisher_name:x.publisher_name||null,publication_year:x.publication_year?Number(x.publication_year):null,isbn:x.isbn||null,language:x.language||"fr",country_of_origin:x.country_of_origin||"GA",book_type:x.book_type||"literary_work",access_mode:x.access_mode||"paid",status:x.status||"draft",featured:!!x.featured,cover_path:x.cover_path||null,product_id:x.product_id||null,updated_at:new Date().toISOString()};
         if(!payload.slug||!payload.title||!payload.author_name)return reply({success:false,error:"Titre, auteur et identifiant URL obligatoires."},400);
+        if(payload.status==="published"){
+          const today=new Date().toISOString().slice(0,10);
+          const lr=await db("library_licenses?select=id,valid_from,valid_until,allow_online_reading,allow_download,allow_sale&book_id=eq."+encodeURIComponent(x.id||"00000000-0000-0000-0000-000000000000")+"&status=eq.active");
+          const fr=await db("library_files?select=id,file_kind,allow_online_reading,allow_download&book_id=eq."+encodeURIComponent(x.id||"00000000-0000-0000-0000-000000000000"));
+          const licenses=lr.ok?await lr.json():[],files=fr.ok?await fr.json():[];
+          const valid=licenses.find((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&(l.allow_online_reading||l.allow_download)&&((payload.access_mode!=="paid")||l.allow_sale));
+          if(!valid)return reply({success:false,error:"Avant publication, valide les droits de lecture/téléchargement et, pour un livre payant, la vente."},400);
+          if(!files.some((f:Record<string,any>)=>["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)))return reply({success:false,error:"Ajoute au moins un fichier PDF ou EPUB autorisé avant publication."},400);
+        }
         const r=await db("library_books?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement du livre impossible."},400);
         return reply({success:true,book:(await r.json())[0]});

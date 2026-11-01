@@ -68,11 +68,11 @@ Deno.serve(async(req:Request)=>{
       if(!userId)return reply({success:false,error:"Connexion requise."},401);
       if(!await adminAllowed(req,userId))return reply({success:false,error:"Accès refusé : compte bibliothèque autorisé et authentification renforcée (MFA) requis."},403);
       if(action==="admin_list"){
-        const tables=["library_books?select=*&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc"];
+        const tables=["library_books?select=*&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc","products?select=id,title,price,is_free&is_active=eq.true&order=title.asc"];
         const results=await Promise.all(tables.map(db));
         if(results.some(r=>!r.ok))return reply({success:false,error:"Impossible de charger les données administratives."},502);
-        const [books,partners,licenses,files,categories,quizzes]=await Promise.all(results.map(r=>r.json()));
-        return reply({success:true,books,partners,licenses,files,categories,quizzes});
+        const [books,partners,licenses,files,categories,quizzes,products]=await Promise.all(results.map(r=>r.json()));
+        return reply({success:true,books,partners,licenses,files,categories,quizzes,products});
       }
       if(action==="admin_save_book"){
         const x=body.book??{};

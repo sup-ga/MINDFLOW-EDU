@@ -60,11 +60,14 @@ Deno.serve(async(req:Request)=>{
         const progress=pr?.ok?await pr.json():[];
         books=books.map((book:Record<string,any>)=>({...book,reading_progress:progress.find((p:Record<string,any>)=>p.book_id===book.id)||null}));
       }
+      let validRights:Record<string,any>[]=[];
+      let files:Record<string,any>[]=[];
       if(books.length){
         const rightsRes=await db("library_licenses?select=book_id,valid_from,valid_until,allow_online_reading,allow_download&status=eq.active");
         const filesRes=await db("library_files?select=book_id,file_kind,allow_online_reading,allow_download");
-        const rights=rightsRes.ok?await rightsRes.json():[],files=filesRes.ok?await filesRes.json():[],today=new Date().toISOString().slice(0,10);
-        const validRights=rights.filter((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today));
+        const rights=rightsRes.ok?await rightsRes.json():[],today=new Date().toISOString().slice(0,10);
+        files=filesRes.ok?await filesRes.json():[];
+        validRights=rights.filter((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today));
         const activeRights=new Set(validRights.filter((l:Record<string,any>)=>l.allow_online_reading||l.allow_download).map((l:Record<string,any>)=>l.book_id));
         const readableFiles=new Set(files.filter((f:Record<string,any>)=>["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)).map((f:Record<string,any>)=>f.book_id));
         let activeEntitlements=new Set<string>();

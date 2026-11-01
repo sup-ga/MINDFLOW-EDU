@@ -1,30 +1,42 @@
-# Mise en service contrôlée — Bibliothèque numérique MindFlow
+# Mise en service — Bibliothèque numérique MindFlow
 
-Ce guide est destiné au passage vers un environnement de test puis à la mise en production. À ce stade, la migration et la fonction Edge ne sont volontairement pas déployées sur le projet Supabase actif.
+## État de déploiement (1er novembre 2026)
 
-## Éléments à livrer ensemble
+- Migration `mindflow_digital_library` appliquée au projet Supabase actif `vzgmhdxxlgdiimqtincf`.
+- Fonction Edge `mindflow-library` déployée et signalée active avec `verify_jwt=false`. Ce réglage est nécessaire au GET public du catalogue ; le code valide les jetons pour les opérations privées et exige le rôle dédié ainsi que MFA `aal2` pour l'administration.
+- Bucket `mindflow-products` privé ; les fichiers de livres ne sont pas exposés publiquement.
+- Les pages du site sont dans cette branche et seront publiées par GitHub Pages après fusion dans `main` (si la source Pages du dépôt est bien configurée sur `main`).
 
-- Migration SQL : `supabase/migrations/20261101000000_mindflow_digital_library.sql`
-- Fonction Edge : `supabase/functions/mindflow-library/index.ts`
-- Pages : `bibliotheque.html`, `ma-bibliotheque.html`, `admin-bibliotheque.html`, ainsi que le lien d’accès conditionnel dans `verification-professionnels.html`.
-- Le paiement des ouvrages continue d’utiliser `paiement.html?id=<product_id>` et le parcours E-Billing existant.
+## Fonctionnalités livrées
 
-## Ordre d’exécution recommandé
+- Catalogue public avec trois collections, recherche et filtres.
+- « Ma bibliothèque » réservée aux livres, lecteur PDF/EPUB, téléchargement autorisé et suivi de progression EPUB.
+- Administration dédiée via `library_admins`, avec vérification MFA `aal2`.
+- Gestion des ouvrages, auteurs/partenaires, licences, fichiers, fiches pédagogiques et quiz.
+- Téléversement contrôlé dans le bucket privé.
+- Contrôle des droits via `learner_entitlements`, liens signés temporaires et révocation des accès.
+- Paiement des ouvrages via le parcours existant `paiement.html?id=<product_id>` et E-Billing.
 
-1. Faire une sauvegarde de la base avant toute migration.
-2. Vérifier le compte `curtislouis93@gmail.com` et lui faire terminer l’enrôlement MFA. Le contrôle d’administration exige `aal2`.
-3. Vérifier que le bucket `mindflow-products` est privé et limité à 100 Mo.
-4. Appliquer une seule fois la migration SQL. Elle crée les tables de bibliothèque, ses règles RLS, le rôle dédié `library_admins`, les collections initiales et le déclencheur de synchronisation/révocation des droits d’achat.
-5. Déployer la fonction `mindflow-library` avec les secrets Supabase standards. **Le paramètre de déploiement `verify_jwt` doit être `false`** : la route GET du catalogue doit rester publique. Toutes les actions POST privées valident elles-mêmes le jeton via Supabase Auth ; les actions admin vérifient en plus le rôle dédié et le claim MFA `aal2`. Ne pas désactiver ces contrôles dans le code.
-6. Publier les pages sur l’environnement de test.
-7. Exécuter tous les scénarios de `BIBLIOTHEQUE-TESTS.md`, notamment le refus d’accès après révocation d’un entitlement et l’absence d’exposition des réponses correctes des quiz.
-8. Vérifier les Security Advisors Supabase et les journaux de la fonction Edge.
-9. Après validation seulement, planifier le passage en production.
+## Vérifications déjà réalisées
 
-## Contraintes à préserver
+- GitHub Actions : succès sur le commit de tête — vérification Deno de la fonction Edge et syntaxe JavaScript des pages.
+- Migration : tables, rôle administrateur, déclencheur de synchronisation et bucket privé vérifiés.
+- Fonction Edge : déploiement confirmé et état actif dans Supabase.
 
-- Ne pas créer de nouveau projet ni de branche Supabase payante pour ce chantier.
-- Ne pas modifier le parcours de paiement existant.
-- Ne pas rendre public le bucket de livres.
-- Ne pas confondre l’administration de la bibliothèque MindFlow EDU avec celle de MindFlow Réseau.
-- Ne pas fusionner cette branche dans `main` ni déployer la migration/fonction sans validation explicite de la recette.
+## Recette fonctionnelle restant à exécuter après publication
+
+1. Ouvrir le catalogue sans session et vérifier son chargement.
+2. Se connecter comme apprenant et vérifier « Ma bibliothèque » sans droit d'accès.
+3. Depuis l'administration, vérifier l'accès avec le compte autorisé et une session MFA `aal2`.
+4. Téléverser un ouvrage de test (PDF et EPUB), sa couverture et ses éléments pédagogiques.
+5. Vérifier lecture, téléchargement, progression, quiz et fiches pédagogiques.
+6. Vérifier achat E-Billing de bout en bout avec un produit de test, attribution du droit et révocation après retrait du dernier entitlement.
+7. Confirmer qu'un apprenant sans droit ne peut ni obtenir de lien signé ni lire/télécharger le fichier.
+
+## Contraintes de sécurité
+
+- Ne jamais rendre public le bucket de livres.
+- Ne pas exposer la clé `service_role` au navigateur.
+- Ne pas retirer la validation interne des jetons, le rôle `library_admins` ou l'exigence MFA `aal2`.
+- Ne pas confondre l'administration de la bibliothèque MindFlow EDU avec celle de MindFlow Réseau.
+- Ne pas distribuer d'ouvrages protégés sans autorisation/licence.

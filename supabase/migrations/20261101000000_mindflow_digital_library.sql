@@ -348,3 +348,10 @@ on conflict(user_id) do update set is_active=excluded.is_active;
 -- Keep a verifiable evidence reference for public-domain determinations.
 alter table public.library_licenses
   add column if not exists evidence_reference text;
+
+-- Starter shelves for the three editorial collections.
+insert into public.library_categories(slug,name,description,display_order,is_active) values
+ ('classiques-domaine-public','Classiques & domaine public','Œuvres dont la diffusion a été vérifiée comme relevant du domaine public.',10,true),
+ ('auteurs-locaux-contemporains','Auteurs locaux & contemporains','Voix gabonaises, africaines et auteurs contemporains diffusés avec les autorisations nécessaires.',20,true),
+ ('lectures-scolaires','Lectures scolaires & pédagogiques','Lectures recommandées, fiches et accompagnement pédagogique.',30,true)
+on conflict(slug) do nothing;

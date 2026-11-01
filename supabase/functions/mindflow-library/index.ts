@@ -46,17 +46,17 @@ Deno.serve(async(req:Request)=>{
   try{
     if(req.method==="GET"){
       const u=new URL(req.url),q=(u.searchParams.get("q")??"").trim().slice(0,100),category=u.searchParams.get("category"),mine=u.searchParams.get("mine")==="1";
+      let mineUserId:string|null=null;
       let endpoint="library_books?select=id,slug,title,subtitle,author_name,description,publisher_name,publication_year,language,country_of_origin,book_type,access_mode,product_id,cover_path,featured,library_book_categories(category:library_categories(id,slug,name)),product:products(id,price,is_free)&status=eq.published&order=featured.desc,published_at.desc&limit=80";
       if(mine){
-        const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour consulter ta bibliothèque."},401);
-        endpoint="library_books?select=id,slug,title,subtitle,author_name,description,book_type,access_mode,product_id,cover_path,learner_library_books!inner(learner_id,added_at,access_origin)&learner_library_books.learner_id=eq."+userId+"&status=eq.published&order=title.asc";
+        mineUserId=await identify(req);if(!mineUserId)return reply({success:false,error:"Connecte-toi pour consulter ta bibliothèque."},401);
+        endpoint="library_books?select=id,slug,title,subtitle,author_name,description,book_type,access_mode,product_id,cover_path,learner_library_books!inner(learner_id,added_at,access_origin)&learner_library_books.learner_id=eq."+mineUserId+"&status=eq.published&order=title.asc";
       }
       const b=await db(endpoint);
       if(!b.ok)return reply({success:false,error:"Impossible de charger les livres."},502);
       let books=await b.json();
       if(mine&&books.length){
-        const owner=await identify(req);
-        const pr=owner?await db("library_reading_progress?select=book_id,progress_percent,last_opened_at,completed_at&learner_id=eq."+encodeURIComponent(owner)):null;
+        const pr=mineUserId?await db("library_reading_progress?select=book_id,progress_percent,last_opened_at,completed_at&learner_id=eq."+encodeURIComponent(mineUserId)):null;
         const progress=pr?.ok?await pr.json():[];
         books=books.map((book:Record<string,any>)=>({...book,reading_progress:progress.find((p:Record<string,any>)=>p.book_id===book.id)||null}));
       }
@@ -67,7 +67,7 @@ Deno.serve(async(req:Request)=>{
         const activeRights=new Set(rights.filter((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&(l.allow_online_reading||l.allow_download)).map((l:Record<string,any>)=>l.book_id));
         const readableFiles=new Set(files.filter((f:Record<string,any>)=>["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)).map((f:Record<string,any>)=>f.book_id));
         let activeEntitlements=new Set<string>();
-        if(mine){const er=await db("learner_entitlements?select=product_id&learner_id=eq."+encodeURIComponent(await identify(req)??"")+"&status=eq.active");if(er.ok)activeEntitlements=new Set((await er.json()).map((x:Record<string,any>)=>x.product_id));}
+        if(mine){const er=await db("learner_entitlements?select=product_id&learner_id=eq."+encodeURIComponent(mineUserId??"")+"&status=eq.active");if(er.ok)activeEntitlements=new Set((await er.json()).map((x:Record<string,any>)=>x.product_id));}
         books=books.filter((book:Record<string,any>)=>{
           if(!activeRights.has(book.id)||!readableFiles.has(book.id))return false;
           if(!mine)return true;

@@ -130,6 +130,10 @@ Deno.serve(async(req:Request)=>{
         if(!linkedBook)return reply({success:false,error:"Ouvrage introuvable."},404);
         if(payload.status==="active"&&payload.rights_type==="public_domain"&&!String(x.evidence_reference??"").trim())return reply({success:false,error:"Ajoute une référence vérifiable justifiant le domaine public avant activation."},400);
         if(payload.status==="active"&&payload.rights_type!=="public_domain"&&(!String(payload.contract_reference??"").trim()||!payload.partner_id))return reply({success:false,error:"Un ayant droit et une référence de contrat sont obligatoires pour activer ces droits."},400);
+        if(payload.status==="active"&&payload.rights_type!=="public_domain"){
+          const pr=await db("library_partners?select=id,status&id=eq."+encodeURIComponent(payload.partner_id??"")+"&status=eq.verified&limit=1");
+          if(!pr.ok||(await pr.json()).length!==1)return reply({success:false,error:"Le partenaire ou ayant droit doit d’abord être vérifié dans la fiche partenaire."},400);
+        }
         if(payload.allow_sale&&!linkedBook.product_id)return reply({success:false,error:"Associe d’abord un produit MindFlow à cet ouvrage avant d’autoriser sa vente."},400);
         payload.evidence_reference=String(x.evidence_reference??"").trim()||null;
         const r=await db("library_licenses?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");

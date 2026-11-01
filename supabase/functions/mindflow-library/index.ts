@@ -95,7 +95,12 @@ Deno.serve(async(req:Request)=>{
         }
         const r=await db("library_books?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement du livre impossible."},400);
-        return reply({success:true,book:(await r.json())[0]});
+        const saved=(await r.json())[0];
+        if(Array.isArray(x.category_ids)){
+          await db("library_book_categories?book_id=eq."+saved.id,"DELETE");
+          if(x.category_ids.length){const links=x.category_ids.filter((id:string)=>/^[0-9a-f-]{36}$/i.test(id)).map((category_id:string)=>({book_id:saved.id,category_id}));if(links.length){const cr=await db("library_book_categories","POST",links);if(!cr.ok)return reply({success:false,error:"Ouvrage enregistré, mais ses collections n’ont pas pu être associées."},502);}}
+        }
+        return reply({success:true,book:saved});
       }
       if(action==="admin_save_partner"){
         const x=body.partner??{},payload={...(x.id?{id:x.id}:{}),partner_type:x.partner_type||"author",display_name:String(x.display_name??"").trim(),country:x.country||null,website_url:x.website_url||null,contact_email:x.contact_email||null,notes:x.notes||null,status:x.status||"pending",updated_at:new Date().toISOString()};

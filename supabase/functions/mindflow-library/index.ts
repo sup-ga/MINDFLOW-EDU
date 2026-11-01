@@ -204,7 +204,12 @@ Deno.serve(async(req:Request)=>{
         try{await signed(payload.storage_path)}catch{return reply({success:false,error:"Ce fichier n’existe pas dans le stockage privé. Vérifie son téléversement et son chemin."},404);}
         const r=await db("library_files?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement du fichier impossible."},400);
-        return reply({success:true,file:(await r.json())[0]});
+        const savedFile=(await r.json())[0];
+        if(fileKind==="cover"){
+          const coverUpdate=await db("library_books?id=eq."+encodeURIComponent(payload.book_id),"PATCH",{cover_path:storagePath,updated_at:new Date().toISOString()},"return=minimal");
+          if(!coverUpdate.ok)return reply({success:false,error:"Fichier de couverture téléversé, mais impossible de l’associer à la fiche du livre."},502);
+        }
+        return reply({success:true,file:savedFile});
       }
       return reply({success:false,error:"Action administrative inconnue."},400);
     }

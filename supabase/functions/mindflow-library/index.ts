@@ -91,7 +91,7 @@ Deno.serve(async(req:Request)=>{
       if(!await adminAllowed(req,userId))return reply({success:false,error:"Accès refusé : compte bibliothèque autorisé et authentification renforcée (MFA) requis."},403);
       if(action==="admin_list"){
         const tables=["library_books?select=*,library_book_categories(category_id)&order=updated_at.desc","library_partners?select=*&order=display_name.asc","library_licenses?select=*&order=created_at.desc","library_files?select=*&order=created_at.desc","library_categories?select=*&order=display_order.asc","library_quizzes?select=*&order=created_at.desc","products?select=id,title,price,is_free&is_active=eq.true&order=title.asc","library_quiz_questions?select=*,library_quiz_answers(*)&order=display_order.asc","library_guides?select=*&order=updated_at.desc"];
-        const results=await Promise.all(tables.map(db));
+        const results=await Promise.all(tables.map(path=>db(path)));
         if(results.some(r=>!r.ok))return reply({success:false,error:"Impossible de charger les données administratives."},502);
         const [books,partners,licenses,files,categories,quizzes,products,quizQuestions,guides]=await Promise.all(results.map(r=>r.json()));
         return reply({success:true,books,partners,licenses,files,categories,quizzes,products,quizQuestions,guides});
@@ -130,7 +130,7 @@ Deno.serve(async(req:Request)=>{
         return reply({success:true,partner:(await r.json())[0]});
       }
       if(action==="admin_save_license"){
-        const x=body.license??{},payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,partner_id:x.partner_id||null,rights_type:x.rights_type||"public_domain",territory:x.territory||["GA"],valid_from:x.valid_from||null,valid_until:x.valid_until||null,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,allow_sale:!!x.allow_sale,revenue_share_percent:x.revenue_share_percent===""||x.revenue_share_percent==null?null:Number(x.revenue_share_percent),contract_reference:x.contract_reference||null,status:x.status||"pending"};
+        const x=body.license??{},payload={...(x.id?{id:x.id}:{}),book_id:x.book_id,partner_id:x.partner_id||null,rights_type:x.rights_type||"public_domain",territory:x.territory||["GA"],valid_from:x.valid_from||null,valid_until:x.valid_until||null,allow_online_reading:!!x.allow_online_reading,allow_download:!!x.allow_download,allow_sale:!!x.allow_sale,revenue_share_percent:x.revenue_share_percent===""||x.revenue_share_percent==null?null:Number(x.revenue_share_percent),contract_reference:x.contract_reference||null,evidence_reference:String(x.evidence_reference??"").trim()||null,status:x.status||"pending"};
         if(!payload.book_id)return reply({success:false,error:"Choisis un ouvrage pour associer les droits."},400);
         const bookCheck=await db("library_books?select=id,product_id&id=eq."+encodeURIComponent(payload.book_id)+"&limit=1");const linkedBook=(await bookCheck.json().catch(()=>[]))?.[0];
         if(!linkedBook)return reply({success:false,error:"Ouvrage introuvable."},404);
@@ -141,7 +141,6 @@ Deno.serve(async(req:Request)=>{
           if(!pr.ok||(await pr.json()).length!==1)return reply({success:false,error:"Le partenaire ou ayant droit doit d’abord être vérifié dans la fiche partenaire."},400);
         }
         if(payload.allow_sale&&!linkedBook.product_id)return reply({success:false,error:"Associe d’abord un produit MindFlow à cet ouvrage avant d’autoriser sa vente."},400);
-        payload.evidence_reference=String(x.evidence_reference??"").trim()||null;
         const r=await db("library_licenses?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement des droits impossible."},400);
         return reply({success:true,license:(await r.json())[0]});

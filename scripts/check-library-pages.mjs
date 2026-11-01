@@ -19,14 +19,14 @@ for (const page of pages) {
     } catch (error) {
       failed = true;
       pageFailed = true;
-      console.error(\`\${page} — script \${i + 1}: \${error.message}\`);
+      console.error(page + " — script " + (i + 1) + ": " + error.message);
     }
   }
   if (!scripts.length) {
     failed = true;
-    console.error(\`\${page} — aucun script inline détecté\`);
+    console.error(page + " — aucun script inline détecté");
   } else if (!pageFailed) {
-    console.log(\`\${page}: \${scripts.length} script(s) vérifié(s)\`);
+    console.log(page + ": " + scripts.length + " script(s) vérifié(s)");
   }
 }
 if (failed) process.exit(1);

@@ -237,3 +237,11 @@ from public.learner_entitlements e
 join public.library_books b on b.product_id=e.product_id
 where e.status='active' and b.status='published'
 on conflict(learner_id,book_id) do nothing;
+
+-- Extend the existing private product bucket to accept EPUB while preserving its current MIME allow-list.
+update storage.buckets
+set allowed_mime_types = (
+  select array_agg(distinct mime_type)
+  from unnest(coalesce(allowed_mime_types, array[]::text[]) || array['application/epub+zip']::text[]) as mime_type
+)
+where id='mindflow-products';

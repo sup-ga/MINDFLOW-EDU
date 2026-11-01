@@ -213,13 +213,26 @@ create or replace function public.sync_library_book_entitlement()
 returns trigger language plpgsql security definer set search_path=public
 as $$
 begin
-  if new.status='active' and new.product_id is not null then
+  if new.product_id is not null and new.status='active' then
     insert into public.learner_library_books(learner_id,book_id,access_origin,entitlement_id)
     select new.learner_id,b.id,'purchase',new.id
     from public.library_books b
     where b.product_id=new.product_id and b.status='published'
     on conflict(learner_id,book_id) do update
       set access_origin='purchase', entitlement_id=excluded.entitlement_id;
+  elsif new.product_id is not null then
+    delete from public.learner_library_books llb
+    using public.library_books b
+    where llb.book_id=b.id
+      and llb.learner_id=new.learner_id
+      and llb.access_origin='purchase'
+      and b.product_id=new.product_id
+      and not exists (
+        select 1 from public.learner_entitlements e
+        where e.learner_id=new.learner_id
+          and e.product_id=new.product_id
+          and e.status='active'
+      );
   end if;
   return new;
 end;

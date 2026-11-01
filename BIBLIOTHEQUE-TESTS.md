@@ -31,7 +31,11 @@ Ce document accompagne la branche `feature/bibliotheque-numerique`. La migration
 - [ ] Publication sans licence active ou sans fichier PDF/EPUB autorisé : refus attendu.
 - [ ] Publication d’un livre payant sans produit MindFlow ou sans droit de vente : refus attendu.
 - [ ] Publication avec droits et fichier valides : succès attendu.
-- [ ] Création d’un quiz avec plusieurs questions ; vérifier que les réponses correctes ne sont jamais exposées au navigateur.
+- [ ] Création, modification et suppression d’un quiz depuis l’administration.
+- [ ] Passage d’un quiz côté apprenant : choix unique, choix multiples, vrai/faux et réponse courte.
+- [ ] Vérifier que les réponses correctes ne sont jamais exposées au navigateur avant correction.
+- [ ] Vérifier que le score est calculé côté serveur et qu’un client ne peut pas injecter un score ou une tentative falsifiée.
+- [ ] Vérifier l’enregistrement de la tentative et le seuil de réussite.
 
 ## Scénarios apprenant et paiement
 
@@ -43,6 +47,12 @@ Ce document accompagne la branche `feature/bibliotheque-numerique`. La migration
 - [ ] Après confirmation réelle du paiement, l’entitlement actif ajoute l’ouvrage à « Ma bibliothèque ».
 - [ ] Un achat déjà confirmé avant la publication de l’ouvrage est également synchronisé lors de sa publication.
 - [ ] Un compte sans droit d’accès ne peut ni lire ni télécharger le fichier.
+- [ ] Après révocation ou suppression du dernier entitlement actif, l’ouvrage disparaît de « Ma bibliothèque » et l’accès est refusé.
+- [ ] Si plusieurs entitlements actifs existent pour le même produit, la révocation d’un seul ne retire pas l’accès.
+- [ ] Création, modification, publication et suppression des fiches pédagogiques.
+- [ ] Consultation des fiches uniquement par un apprenant ayant accès à l’ouvrage.
+- [ ] Progression EPUB enregistrée pendant la lecture et affichée dans « Ma bibliothèque ».
+- [ ] Vérifier qu’un accès de lecture expiré ou révoqué ne permet plus de consulter le livre, les fiches ni les quiz.
 - [ ] Un fichier privé n’est accessible qu’au moyen d’un lien signé temporaire (180 secondes).
 - [ ] Un droit expiré ou révoqué bloque l’ouverture et le téléchargement.
 
@@ -61,3 +71,9 @@ Ce document accompagne la branche `feature/bibliotheque-numerique`. La migration
 - Le retrait d’une fiche fichier ne supprime volontairement pas le binaire du bucket, afin d’éviter une suppression accidentelle.
 - Les justificatifs de droits sont des références saisies par l’équipe ; la validation juridique du document reste humaine.
 - Le rôle d’administration de la bibliothèque est distinct de l’administration MindFlow Réseau.
+
+## Contrôles automatisés de code
+
+- GitHub Actions exécute `deno check` sur la fonction Edge.
+- GitHub Actions vérifie la syntaxe JavaScript inline des pages bibliothèque, apprenant et administration.
+- Ces contrôles statiques ne remplacent pas les tests d’intégration après déploiement sur l’environnement de test.

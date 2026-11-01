@@ -16,6 +16,14 @@ begin
          and new.ends_at is not distinct from old.ends_at then
         return new;
       end if;
+      select po.status into v_offer_status
+      from public.professional_classes pc
+      join public.professional_offers po on po.id = pc.offer_id
+      where pc.id = old.class_id;
+      if v_offer_status in ('published', 'archived') then
+        raise exception 'Le calendrier de cette offre est verrouillé depuis sa publication.'
+          using errcode = '55000';
+      end if;
       v_class_id := new.class_id;
     elsif tg_op = 'DELETE' then
       v_class_id := old.class_id;
@@ -31,6 +39,13 @@ begin
          and new.start_at is not distinct from old.start_at
          and new.end_at is not distinct from old.end_at then
         return new;
+      end if;
+      select status into v_offer_status
+      from public.professional_offers
+      where id = old.offer_id;
+      if v_offer_status in ('published', 'archived') then
+        raise exception 'Le calendrier de cette offre est verrouillé depuis sa publication.'
+          using errcode = '55000';
       end if;
       v_offer_id := new.offer_id;
     elsif tg_op = 'DELETE' then
@@ -54,7 +69,6 @@ begin
   return new;
 end;
 $$;
-
 drop trigger if exists trg_guard_published_class_session_schedule on public.class_sessions;
 create trigger trg_guard_published_class_session_schedule
 before insert or update or delete on public.class_sessions

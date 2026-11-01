@@ -5,7 +5,7 @@
 - Migration `mindflow_digital_library` appliquée au projet Supabase actif `vzgmhdxxlgdiimqtincf`.
 - Fonction Edge `mindflow-library` déployée et signalée active avec `verify_jwt=false`. Ce réglage est nécessaire au GET public du catalogue ; le code valide les jetons pour les opérations privées et exige le rôle dédié ainsi que MFA `aal2` pour l'administration.
 - Bucket `mindflow-products` privé ; les fichiers de livres ne sont pas exposés publiquement.
-- Les pages du site sont dans cette branche et seront publiées par GitHub Pages après fusion dans `main` (si la source Pages du dépôt est bien configurée sur `main`).
+- Les pages du site sont intégrées à `main`. Le dépôt indique que GitHub Pages est activé ; la disponibilité HTTP publique de chaque page reste à confirmer depuis un navigateur après la propagation du déploiement.
 
 ## Fonctionnalités livrées
 

@@ -30,7 +30,7 @@ async function adminAllowed(req:Request,userId:string){
 }
 function validMime(kind:string,mime:string,name:string){
   const ext=name.toLowerCase().split(".").pop()||"";
-  const map:Record<string,string[]>={pdf:["application/pdf"],epub:["application/epub+zip","application/octet-stream"],cover:["image/jpeg","image/png","image/webp"],preview:["image/jpeg","image/png","image/webp"],supplement:["application/pdf","image/jpeg","image/png"]};
+  const map:Record<string,string[]>={pdf:["application/pdf"],epub:["application/epub+zip"],cover:["image/jpeg","image/png","image/webp"],preview:["image/jpeg","image/png","image/webp"],supplement:["application/pdf","image/jpeg","image/png"]};
   const extensions:Record<string,string[]>={pdf:["pdf"],epub:["epub"],cover:["jpg","jpeg","png","webp"],preview:["jpg","jpeg","png","webp"],supplement:["pdf","jpg","jpeg","png"]};
   return (map[kind]??[]).includes(mime)&&(extensions[kind]??[]).includes(ext);
 }
@@ -96,6 +96,10 @@ Deno.serve(async(req:Request)=>{
         const r=await db("library_books?on_conflict=id","POST",payload,"resolution=merge-duplicates,return=representation");
         if(!r.ok)return reply({success:false,error:"Enregistrement du livre impossible."},400);
         const saved=(await r.json())[0];
+        if(saved.status==="published"&&saved.product_id){
+          const er=await db("learner_entitlements?select=id,learner_id&product_id=eq."+encodeURIComponent(saved.product_id)+"&status=eq.active");
+          if(er.ok){const entitlements=await er.json();for(const ent of entitlements){await db("learner_library_books?on_conflict=learner_id,book_id","POST",{learner_id:ent.learner_id,book_id:saved.id,access_origin:"purchase",entitlement_id:ent.id},"resolution=merge-duplicates");}}
+        }
         if(Array.isArray(x.category_ids)){
           await db("library_book_categories?book_id=eq."+saved.id,"DELETE");
           if(x.category_ids.length){const links=x.category_ids.filter((id:string)=>/^[0-9a-f-]{36}$/i.test(id)).map((category_id:string)=>({book_id:saved.id,category_id}));if(links.length){const cr=await db("library_book_categories","POST",links);if(!cr.ok)return reply({success:false,error:"Ouvrage enregistré, mais ses collections n’ont pas pu être associées."},502);}}

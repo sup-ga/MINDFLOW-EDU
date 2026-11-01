@@ -162,7 +162,7 @@ Deno.serve(async(req:Request)=>{
       return reply({success:false,error:"Action administrative inconnue."},400);
     }
     const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour accéder à ce livre."},401);
-    const bookId=String(body?.book_id??"");const accessAction=String(body?.accessAction??"open");
+    const bookId=String(body?.book_id??"");const accessAction=String(body?.action??"open");
     if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Livre invalide."},400);
     const br=await db("library_books?select=id,title,slug,access_mode,product_id,status&id=eq."+bookId+"&status=eq.published&limit=1");
     const book=(await br.json().catch(()=>[]))?.[0];if(!br.ok||!book)return reply({success:false,error:"Livre introuvable."},404);

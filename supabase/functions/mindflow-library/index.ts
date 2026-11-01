@@ -49,16 +49,26 @@ Deno.serve(async(req:Request)=>{
       let endpoint="library_books?select=id,slug,title,subtitle,author_name,description,publisher_name,publication_year,language,country_of_origin,book_type,access_mode,product_id,cover_path,featured,library_book_categories(category:library_categories(id,slug,name)),product:products(id,price,is_free)&status=eq.published&order=featured.desc,published_at.desc&limit=80";
       if(mine){
         const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour consulter ta bibliothèque."},401);
-        endpoint="library_books?select=id,slug,title,subtitle,author_name,description,book_type,access_mode,product_id,cover_path,learner_library_books!inner(learner_id,added_at)&learner_library_books.learner_id=eq."+userId+"&status=eq.published&order=title.asc";
+        endpoint="library_books?select=id,slug,title,subtitle,author_name,description,book_type,access_mode,product_id,cover_path,learner_library_books!inner(learner_id,added_at,access_origin)&learner_library_books.learner_id=eq."+userId+"&status=eq.published&order=title.asc";
       }
       const b=await db(endpoint);
       if(!b.ok)return reply({success:false,error:"Impossible de charger les livres."},502);
       let books=await b.json();
-      if(!mine&&books.length){
+      if(books.length){
         const rightsRes=await db("library_licenses?select=book_id,valid_from,valid_until,allow_online_reading,allow_download&status=eq.active");
         const filesRes=await db("library_files?select=book_id,file_kind,allow_online_reading,allow_download");
         const rights=rightsRes.ok?await rightsRes.json():[],files=filesRes.ok?await filesRes.json():[],today=new Date().toISOString().slice(0,10);
-        books=books.filter((book:Record<string,any>)=>rights.some((l:Record<string,any>)=>l.book_id===book.id&&(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&(l.allow_online_reading||l.allow_download))&&files.some((f:Record<string,any>)=>f.book_id===book.id&&["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)));
+        const activeRights=new Set(rights.filter((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today)&&(l.allow_online_reading||l.allow_download)).map((l:Record<string,any>)=>l.book_id));
+        const readableFiles=new Set(files.filter((f:Record<string,any>)=>["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)).map((f:Record<string,any>)=>f.book_id));
+        let activeEntitlements=new Set<string>();
+        if(mine){const er=await db("learner_entitlements?select=product_id&learner_id=eq."+encodeURIComponent(await identify(req)??"")+"&status=eq.active");if(er.ok)activeEntitlements=new Set((await er.json()).map((x:Record<string,any>)=>x.product_id));}
+        books=books.filter((book:Record<string,any>)=>{
+          if(!activeRights.has(book.id)||!readableFiles.has(book.id))return false;
+          if(!mine)return true;
+          if(book.access_mode==="free")return true;
+          if(book.access_mode==="paid")return !!book.product_id&&activeEntitlements.has(book.product_id);
+          return (book.learner_library_books||[]).some((x:Record<string,any>)=>x.access_origin==="partner_grant");
+        });
       }
       if(q){const n=q.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();books=books.filter((x:Record<string,unknown>)=>[x.title,x.author_name,x.description,x.publisher_name].join(" ").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().includes(n));}
       if(category)books=books.filter((x:Record<string,any>)=>(x.library_book_categories??[]).some((c:any)=>c.category?.slug===category));

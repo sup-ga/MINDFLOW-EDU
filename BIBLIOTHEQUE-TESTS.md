@@ -1,14 +1,20 @@
 # MindFlow — Plan de recette de la bibliothèque numérique
 
-Ce document accompagne la branche `feature/bibliotheque-numerique`. La migration et la fonction Edge ne sont pas déployées par ce commit. Ne pas lancer les essais utilisateurs avant le déploiement coordonné des trois éléments : migration SQL, fonction Edge, pages web.
+La migration SQL et la fonction Edge sont déjà déployées sur le projet Supabase actif ; les pages sont publiées dans `main`. Ce document décrit la recette fonctionnelle à terminer avec un ouvrage et un paiement de test.
 
-## Ordre de mise en service pour les tests
+## État technique déjà vérifié
 
-1. Vérifier que le bucket `mindflow-products` reste privé et conserve sa limite de 100 Mo. La migration ajoute uniquement le MIME EPUB à la liste autorisée.
-2. Appliquer la migration `20261101000000_mindflow_digital_library.sql`.
-3. Déployer la fonction Edge `mindflow-library` avec les secrets Supabase standards déjà configurés. Conserver la vérification JWT activée.
-4. Publier les pages de la branche sur un environnement de test ou après validation sur le site.
-5. Se connecter avec le compte bibliothèque autorisé et terminer l’authentification MFA au niveau `aal2`.
+1. Migration `mindflow_digital_library` appliquée ; tables et rôle dédié présents.
+2. Fonction Edge `mindflow-library` active. Le déploiement conserve `verify_jwt=false` pour rendre le GET public du catalogue accessible ; les POST privés vérifient eux-mêmes le jeton et les actions admin exigent `library_admins` + MFA `aal2`.
+3. Bucket `mindflow-products` privé ; fichiers de livres non publics.
+4. Contrôles GitHub Actions réussis : typage Deno et syntaxe JavaScript des pages.
+
+## Ordre de recette fonctionnelle
+
+1. Ouvrir le catalogue public et vérifier le chargement.
+2. Vérifier les parcours apprenant et administrateur avec les comptes adaptés.
+3. Exécuter les scénarios upload, licence, lecture, quiz, fiche pédagogique, achat E-Billing et révocation ci-dessous.
+4. Examiner les journaux Edge et les Security Advisors Supabase.
 
 ## Scénarios administrateur
 
@@ -69,7 +75,7 @@ Ce document accompagne la branche `feature/bibliotheque-numerique`. La migration
 
 ## Limites connues à vérifier pendant la recette
 
-- Les quiz sont créés et publiés depuis l’administration ; l’expérience complète de passage/correction du quiz côté apprenant reste une étape distincte.
+- Les quiz sont gérés et corrigés côté serveur ; vérifier le parcours apprenant complet lors de la recette.
 - Le retrait d’une fiche fichier ne supprime volontairement pas le binaire du bucket, afin d’éviter une suppression accidentelle.
 - Les justificatifs de droits sont des références saisies par l’équipe ; la validation juridique du document reste humaine.
 - Le rôle d’administration de la bibliothèque est distinct de l’administration MindFlow Réseau.

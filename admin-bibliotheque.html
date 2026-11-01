@@ -41,11 +41,12 @@ function fillSelects(){for(const id of ["licenseBook","fileBook","quizBook","gui
 $("bookForm").onsubmit=async e=>{
  e.preventDefault();
  const requestedStatus=$("status").value,existingId=$("bookId").value||undefined,mainFile=$("bookFile").files[0],coverFile=$("coverUpload").files[0],previewFiles=[...$("previewUploads").files];
+ if(previewFiles.length>3){notice("Tu peux ajouter trois images d’aperçu au maximum.","error");return;}
  const payload={...(existingId?{id:existingId}:{}),title:$("title").value,author_name:$("author").value,slug:$("slug").value,description:$("description").value,publisher_name:$("publisher").value,publication_year:$("year").value,book_type:$("bookType").value,access_mode:$("access").value,status:(!existingId&&requestedStatus==="published"&&(mainFile||coverFile))?"draft":requestedStatus,cover_path:$("coverPath").value||null,product_id:$("productId").value||null,category_ids:[...$("bookCategories").selectedOptions].map(o=>o.value),featured:$("featured").checked};
  try{
   const first=await api({action:"admin_save_book",book:payload}),bookId=first.book.id;
   if(coverFile){const cover=await uploadBookAsset(bookId,coverFile,"cover",false,false,true);$("coverPath").value=cover.storage_path;payload.cover_path=cover.storage_path;}
-  if(mainFile){const ext=mainFile.name.toLowerCase().split(".").pop(),kind=ext==="epub"?"epub":"pdf";await uploadBookAsset(bookId,mainFile,kind,$("bookFileRead").checked,$("bookFileDownload").checked,true);}\n  if(previewFiles.length>3)throw Error("Tu peux ajouter trois images d’aperçu au maximum.");for(const preview of previewFiles)await uploadBookAsset(bookId,preview,"preview",false,false,false);
+  if(mainFile){const ext=mainFile.name.toLowerCase().split(".").pop(),kind=ext==="epub"?"epub":"pdf";await uploadBookAsset(bookId,mainFile,kind,$("bookFileRead").checked,$("bookFileDownload").checked,true);}\n  for(const preview of previewFiles)await uploadBookAsset(bookId,preview,"preview",false,false,false);
   if(payload.status!==requestedStatus){payload.id=bookId;payload.status=requestedStatus;await api({action:"admin_save_book",book:payload});}
   notice(requestedStatus==="published"?"Ouvrage publié et fichiers rangés automatiquement.":"Ouvrage enregistré. Les fichiers sélectionnés ont été téléversés et associés automatiquement.");
   $("bookForm").reset();$("bookId").value="";$("coverPath").value="";await load();

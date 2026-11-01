@@ -47,5 +47,8 @@ $("quizList").onclick=async e=>{
  document.querySelector('[data-tab="quizzes"]').click();
  }
 };
+
+$("guideForm").onsubmit=async e=>{e.preventDefault();try{await api({action:"admin_save_guide",guide:{id:$("guideId").value||undefined,book_id:$("guideBook").value,guide_type:$("guideType").value,title:$("guideTitle").value,content_markdown:$("guideContent").value,is_published:$("guidePublished").checked}});notice("Fiche pédagogique enregistrée.");$("guideForm").reset();$("guideId").value="";await load()}catch(err){notice(err.message,"error")}};
+$("guideList").onclick=async e=>{const del=e.target.closest("[data-delete-guide]");if(del){if(!confirm("Supprimer cette fiche pédagogique ?"))return;try{await api({action:"admin_delete_guide",id:del.dataset.deleteGuide});notice("Fiche supprimée.");await load()}catch(err){notice(err.message,"error")}return;}const edit=e.target.closest("[data-edit-guide]");if(edit){const g=data.guides.find(x=>x.id===edit.dataset.editGuide);if(!g)return;$("guideId").value=g.id;$("guideBook").value=g.book_id;$("guideType").value=g.guide_type;$("guideTitle").value=g.title;$("guideContent").value=g.content_markdown;$("guidePublished").checked=!!g.is_published;document.querySelector('[data-tab="guides"]').click()}};
 $("refresh").onclick=load;$("logout").onclick=async()=>{await supa.auth.signOut();location.href="verification-professionnels.html"};gate();
 </script></body></html>

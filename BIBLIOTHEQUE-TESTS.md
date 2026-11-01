@@ -40,11 +40,13 @@ Ce document accompagne la branche `feature/bibliotheque-numerique`. La migration
 ## Scénarios apprenant et paiement
 
 - [ ] Le catalogue public ne montre que les ouvrages publiés ayant des droits valides et un fichier de lecture autorisé.
+- [ ] Les boutons Lire / Télécharger ne s’affichent que si la licence et le fichier autorisent l’action, et si le compte possède l’accès.
 - [ ] Les trois collections apparaissent : classiques et domaine public, auteurs locaux et contemporains, lectures scolaires.
 - [ ] La recherche, les filtres de collection et le tri fonctionnent.
 - [ ] Un ouvrage gratuit peut être lu et ajouté à « Ma bibliothèque ».
 - [ ] Un ouvrage payant renvoie vers `paiement.html?id=<product_id>` et le parcours E-Billing existant.
 - [ ] Après confirmation réelle du paiement, l’entitlement actif ajoute l’ouvrage à « Ma bibliothèque ».
+- [ ] Un acheteur connecté voit les actions de lecture autorisées ; un visiteur non acheteur voit le bouton Acheter sans action de lecture.
 - [ ] Un achat déjà confirmé avant la publication de l’ouvrage est également synchronisé lors de sa publication.
 - [ ] Un compte sans droit d’accès ne peut ni lire ni télécharger le fichier.
 - [ ] Après révocation ou suppression du dernier entitlement actif, l’ouvrage disparaît de « Ma bibliothèque » et l’accès est refusé.

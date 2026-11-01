@@ -64,3 +64,23 @@ drop trigger if exists trg_guard_published_professional_class_schedule on public
 create trigger trg_guard_published_professional_class_schedule
 before insert or update or delete on public.professional_classes
 for each row execute function public.guard_published_class_schedule();
+
+-- Once published, an offer cannot be returned to draft status.
+create or replace function public.prevent_unpublishing_scheduled_offer()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  if old.status in ('published', 'archived') and new.status = 'draft' then
+    raise exception 'Une offre déjà publiée ne peut pas redevenir un brouillon : son calendrier est définitif.'
+      using errcode = '55000';
+  end if;
+  return new;
+end;
+$$;
+
+drop trigger if exists trg_prevent_unpublishing_scheduled_offer on public.professional_offers;
+create trigger trg_prevent_unpublishing_scheduled_offer
+before update of status on public.professional_offers
+for each row execute function public.prevent_unpublishing_scheduled_offer();

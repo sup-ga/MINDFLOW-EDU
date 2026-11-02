@@ -57,7 +57,7 @@ Deno.serve(async(req:Request)=>{
           db("library_files?select=book_id,file_kind,storage_path,display_order&order=is_primary.desc,display_order.asc")
         ]);
         if(!booksRes.ok)return reply({success:false,error:"Impossible de charger les ouvrages favoris."},502);
-        const books=await booksRes.json(),files=filesRes.ok?await filesRes.json():[],byId=new Map(books.map((b:Record<string,any>)=>[b.id,b]));
+        const books=await booksRes.json(),files=filesRes.ok?await filesRes.json():[],byId=new Map<string,Record<string,any>>(books.map((b:Record<string,any>)=>[String(b.id),b] as [string,Record<string,any>]));
         const result=await Promise.all(favorites.map(async(f:Record<string,any>)=>{
           const book=byId.get(f.book_id);if(!book)return null;
           const bookFiles=files.filter((x:Record<string,any>)=>x.book_id===book.id),cover=bookFiles.find((x:Record<string,any>)=>x.file_kind==="cover")||bookFiles.filter((x:Record<string,any>)=>x.file_kind==="preview").sort((a:Record<string,any>,b:Record<string,any>)=>Number(a.display_order||0)-Number(b.display_order||0))[0];

@@ -74,7 +74,7 @@ Deno.serve(async(req:Request)=>{
       }
       if(books.length){
         const rightsRes=await db("library_licenses?select=book_id,valid_from,valid_until,allow_online_reading,allow_download&status=eq.active");
-        const filesRes=await db("library_files?select=book_id,file_kind,allow_online_reading,allow_download");
+        const filesRes=await db("library_files?select=book_id,file_kind,storage_path,file_name,display_order,is_primary,allow_online_reading,allow_download&order=is_primary.desc,display_order.asc");
         const rights=rightsRes.ok?await rightsRes.json():[],today=new Date().toISOString().slice(0,10);
         files=filesRes.ok?await filesRes.json():[];
         validRights=rights.filter((l:Record<string,any>)=>(!l.valid_from||l.valid_from<=today)&&(!l.valid_until||l.valid_until>=today));
@@ -92,7 +92,7 @@ Deno.serve(async(req:Request)=>{
       if(category)books=books.filter((x:Record<string,any>)=>(x.library_book_categories??[]).some((c:any)=>c.category?.slug===category));
       books=await Promise.all(books.map(async(x:Record<string,any>)=>{
         const bookRights=validRights.filter((l:Record<string,any>)=>l.book_id===x.id),bookFiles=files.filter((f:Record<string,any>)=>f.book_id===x.id&&["pdf","epub"].includes(f.file_kind));
-        return {...x,has_access:x.access_mode==="free"||(x.access_mode==="paid"&&!!x.product_id&&activeEntitlements.has(x.product_id))||(x.access_mode==="partner"&&partnerGrants.has(x.id)),can_read:bookRights.some((l:Record<string,any>)=>l.allow_online_reading)&&bookFiles.some((f:Record<string,any>)=>f.allow_online_reading),can_download:bookRights.some((l:Record<string,any>)=>l.allow_download)&&bookFiles.some((f:Record<string,any>)=>f.allow_download),cover_url:x.cover_path?await signed(x.cover_path).catch(()=>null):null};
+        const previews=files.filter((f:Record<string,any>)=>f.book_id===x.id&&f.file_kind==="preview").sort((a:Record<string,any>,b:Record<string,any>)=>Number(a.display_order??100)-Number(b.display_order??100));const coverFile=files.find((f:Record<string,any>)=>f.book_id===x.id&&f.file_kind==="cover");const coverPath=x.cover_path||coverFile?.storage_path||null;const previewUrls=await Promise.all(previews.map(async(f:Record<string,any>)=>({name:f.file_name||"Aperçu",url:await signed(f.storage_path).catch(()=>null)})));return {...x,has_access:x.access_mode==="free"||(x.access_mode==="paid"&&!!x.product_id&&activeEntitlements.has(x.product_id))||(x.access_mode==="partner"&&partnerGrants.has(x.id)),can_read:bookRights.some((l:Record<string,any>)=>l.allow_online_reading)&&bookFiles.some((f:Record<string,any>)=>f.allow_online_reading),can_download:bookRights.some((l:Record<string,any>)=>l.allow_download)&&bookFiles.some((f:Record<string,any>)=>f.allow_download),cover_url:coverPath?await signed(coverPath).catch(()=>null):null,previews:previewUrls.filter((p:Record<string,any>)=>!!p.url)};
       }));
       const c=mine?[]:await db("library_categories?select=id,slug,name,description&is_active=eq.true&order=display_order.asc").then(async r=>r.ok?await r.json():[]);
       return reply({success:true,books,categories:c});

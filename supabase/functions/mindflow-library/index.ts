@@ -47,7 +47,7 @@ Deno.serve(async(req:Request)=>{
     if(req.method==="GET"){
       const u=new URL(req.url),q=(u.searchParams.get("q")??"").trim().slice(0,100),category=u.searchParams.get("category"),mine=u.searchParams.get("mine")==="1";
       let mineUserId:string|null=null;
-      let endpoint="library_books?select=id,slug,title,subtitle,author_name,description,publisher_name,publication_year,language,country_of_origin,book_type,access_mode,product_id,cover_path,featured,library_book_categories(category:library_categories(id,slug,name)),product:products(id,price,is_free)&status=eq.published&order=featured.desc,published_at.desc&limit=80";
+      let endpoint="library_books?select=id,slug,title,subtitle,author_name,description,publisher_name,publication_year,language,country_of_origin,genre,subject_name,education_level,target_audience,themes,book_type,access_mode,product_id,cover_path,featured,library_book_categories(category:library_categories(id,slug,name)),product:products(id,price,is_free)&status=eq.published&order=featured.desc,published_at.desc&limit=80";
       if(mine){
         mineUserId=await identify(req);if(!mineUserId)return reply({success:false,error:"Connecte-toi pour consulter ta bibliothèque."},401);
         endpoint="library_books?select=id,slug,title,subtitle,author_name,description,book_type,access_mode,product_id,cover_path,learner_library_books!inner(learner_id,added_at,access_origin)&learner_library_books.learner_id=eq."+mineUserId+"&status=eq.published&order=title.asc";

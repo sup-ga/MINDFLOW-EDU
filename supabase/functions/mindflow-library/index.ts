@@ -245,6 +245,29 @@ Deno.serve(async(req:Request)=>{
     const userId=await identify(req);if(!userId)return reply({success:false,error:"Connecte-toi pour accéder à ce livre."},401);
     const learnerId=await identify(req);if(!learnerId)return reply({success:false,error:"Connecte-toi pour accéder à cette fonctionnalité."},401);
     const learnerAction=String(body?.action??"");
+    if(learnerAction==="add_to_library"){
+      const bookId=String(body.book_id??"");
+      if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Ouvrage invalide."},400);
+      const br=await db("library_books?select=id,access_mode,product_id,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1");
+      const book=(await br.json().catch(()=>[]))?.[0];
+      if(!br.ok||!book)return reply({success:false,error:"Ouvrage indisponible."},404);
+      let entitled=book.access_mode==="free";
+      let origin="free";
+      if(book.access_mode==="paid"){
+        const er=await db("learner_entitlements?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&product_id=eq."+encodeURIComponent(book.product_id??"")+"&status=eq.active");
+        entitled=!!book.product_id&&er.ok&&(await er.json()).length>0;
+        origin="purchase";
+      }
+      if(book.access_mode==="partner"){
+        const er=await db("learner_library_books?select=id&learner_id=eq."+encodeURIComponent(learnerId)+"&book_id=eq."+encodeURIComponent(bookId)+"&access_origin=eq.partner_grant&limit=1");
+        entitled=er.ok&&(await er.json()).length>0;
+        origin="partner_grant";
+      }
+      if(!entitled)return reply({success:false,error:"Cet ouvrage nécessite un achat ou une autorisation partenaire avant son ajout.",product_id:book.product_id},403);
+      const saved=await db("learner_library_books?on_conflict=learner_id,book_id","POST",{learner_id:learnerId,book_id:bookId,access_origin:origin},"resolution=merge-duplicates,return=representation");
+      if(!saved.ok)return reply({success:false,error:"Impossible d’ajouter cet ouvrage à ta bibliothèque."},502);
+      return reply({success:true,added:true,book_id:bookId});
+    }
     if(learnerAction==="guide_list"){
       const bookId=String(body.book_id??"");if(!/^[0-9a-f-]{36}$/i.test(bookId))return reply({success:false,error:"Ouvrage invalide."},400);
       const br=await db("library_books?select=id,access_mode,product_id,status&id=eq."+encodeURIComponent(bookId)+"&status=eq.published&limit=1"),book=(await br.json().catch(()=>[]))?.[0];

@@ -1,69 +1,531 @@
-<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10131c"><title>Œuvre — MindFlow</title><style>
-:root{color-scheme:dark;--bg:#10131c;--text:#f7f7fb;--muted:#b4bacb;--mint:#a9f4d0;--line:#ffffff1c}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 85% 0%,#51457a50,transparent 35%),radial-gradient(ellipse at 0% 40%,#3e8b7940,transparent 30%),var(--bg);color:var(--text);font:16px/1.6 Inter,system-ui,sans-serif}a{color:inherit;text-decoration:none}.wrap{width:min(1160px,calc(100% - 36px));margin:auto}.top{padding:20px 0;border-bottom:1px solid var(--line)}.nav{display:flex;justify-content:space-between;gap:18px}.brand{font-weight:850;font-size:1.2rem}.brand span{color:var(--mint)}.navlinks{display:flex;gap:20px;color:var(--muted)}.crumb{padding:24px 0;color:var(--muted)}.hero{display:grid;grid-template-columns:.85fr 1.15fr;gap:7vw;align-items:center;padding:15px 0 65px}.visual{display:grid;place-items:center;min-height:460px;position:relative}.visual:before{content:"";position:absolute;inset:8% 0;background:linear-gradient(135deg,#a9f4d044,#c9b7ff35);filter:blur(36px);border-radius:50%}.cover{position:relative;width:min(100%,390px);aspect-ratio:3/4;border-radius:28px 28px 90px 28px;overflow:hidden;background:linear-gradient(145deg,#293e49,#4d3d68 65%,#81576d);display:grid;place-items:center;box-shadow:0 35px 90px #0007}.cover img{width:100%;height:100%;object-fit:cover}.fallback{text-align:center;padding:30px}.fallback strong{display:block;font-size:2.2rem;line-height:1.1}.eyebrow{color:var(--mint);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;font-weight:800}h1{font-size:clamp(2.5rem,5vw,4.6rem);line-height:1;letter-spacing:-.06em;margin:14px 0}.muted{color:var(--muted)}.description{white-space:pre-line;margin:22px 0}.book-meta{margin:18px 0 24px;color:#c8c9d8;font-size:.98rem;line-height:1.9;max-width:660px}.book-meta:empty{display:none}.spotlight{position:relative;overflow:hidden;padding:clamp(24px,4vw,42px);border:1px solid #a58cff65;border-radius:28px 28px 58px 28px;background:radial-gradient(ellipse at 88% 12%,#ff78c82c,transparent 38%),radial-gradient(ellipse at 8% 100%,#63e6ff20,transparent 40%),linear-gradient(125deg,#1a2033,#21182e 68%,#17202d);box-shadow:0 22px 70px #0005;animation:spotlightIn .7s ease both}.spotlight:before{content:"";position:absolute;width:240px;height:240px;right:-70px;top:-130px;border:1px solid #ffffff12;border-radius:50%;box-shadow:0 0 0 22px #a58cff0a,0 0 0 48px #ff78c808;pointer-events:none}.spotlight>*{position:relative;z-index:1}.spotlight .eyebrow{color:#ffb2dc}.spotlight h2{max-width:700px}.spotlight .section-intro{max-width:650px}.spotlight .btn{margin-top:16px;background:linear-gradient(100deg,#63e6ff,#a58cff 60%,#ff78c8);color:#10111b;border:0;box-shadow:0 10px 30px #a58cff30}.spotlight .spark{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:15px;background:#ffffff12;font-size:1.3rem;margin-bottom:12px;animation:floatSpark 4s ease-in-out infinite}@keyframes floatSpark{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}@keyframes spotlightIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}.favorite-btn{border-color:#ff9bc855;background:linear-gradient(110deg,#ff78c81a,#a58cff18);color:#ffd5eb}.favorite-btn[aria-pressed=true]{background:linear-gradient(110deg,#ff78c8,#a58cff);color:#17111d;border-color:transparent}.related{scroll-behavior:smooth}.related article{transition:transform .25s ease}.related article:hover{transform:translateY(-5px)}@media(prefers-reduced-motion:reduce){.spotlight,.spotlight .spark{animation:none}.related{scroll-behavior:auto}.related article{transition:none}}.price{font-size:1.6rem;font-weight:850}.actions,.learning-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.btn{display:inline-flex;align-items:center;justify-content:center;padding:13px 19px;min-height:48px;border:1px solid var(--line);border-radius:99px;background:#ffffff0b;color:var(--text);font-weight:800;cursor:pointer}.primary{background:var(--mint);color:#14251e;border-color:transparent}.btn:disabled{opacity:.5}.status{font-size:.9rem;color:var(--muted);min-height:1.4em}.section{padding:52px 0 65px;border-top:1px solid var(--line)}.section h2{font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-.05em;margin:8px 0}.section-intro{color:var(--muted);max-width:700px}.previews{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;margin-top:25px}.preview{padding:13px;border:1px solid var(--line);border-radius:20px 20px 45px 20px;cursor:zoom-in}.preview img{width:100%;height:clamp(300px,50vw,620px);object-fit:contain;background:#f4f2ed;border-radius:12px;display:block}.preview figcaption{color:var(--muted);padding:10px 3px 0}.learning{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:24px}.learning article{padding:20px;border:1px solid var(--line);border-radius:20px 20px 42px 20px;background:#ffffff07}.learning h3{margin:8px 0}.learning p{color:var(--muted);font-size:.92rem}.related{display:flex;gap:18px;overflow:auto;padding:5px 0 20px;scroll-snap-type:x mandatory}.related article{flex:0 0 220px;scroll-snap-align:start}.related .cover-mini{aspect-ratio:3/4;border-radius:18px 18px 45px 18px;overflow:hidden;background:#293e49}.related img{width:100%;height:100%;object-fit:cover}.related h3{font-size:1rem}.empty{padding:24px;border:1px dashed var(--line);border-radius:16px;color:var(--muted)}.lightbox{width:min(96vw,1100px);max-width:none;background:#111521;border:1px solid var(--line);border-radius:16px}.lightbox::backdrop{background:#000d}.lightbox img{max-width:100%;max-height:82vh;display:block;margin:auto}.lightbox button{display:block;margin:10px 10px 10px auto;padding:8px 14px;border-radius:99px;background:#ffffff12;color:white;border:1px solid var(--line)}footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted)}
-@media(max-width:760px){.wrap{width:calc(100% - 28px)}.hero{grid-template-columns:1fr;gap:12px;padding-top:0}.visual{min-height:320px;order:-1}.cover{width:75%;max-width:320px}.facts{grid-template-columns:repeat(2,1fr)}.learning{grid-template-columns:1fr}.previews{grid-template-columns:1fr}.preview img{height:auto;max-height:75vh}.navlinks{gap:10px;font-size:.85rem}.navlinks a:first-child{display:none}.actions .btn{flex:1 1 100%}}
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c1220">
+<title>Œuvre — MindFlow</title>
+<link rel="stylesheet" href="bibliotheque.css?v=20261102-1">
+<style>
+.crumb{display:flex;align-items:center;gap:10px;padding:22px 0 6px;color:var(--soft);font-size:.9rem;min-width:0}
+.crumb a{color:var(--mint);white-space:nowrap}
+.crumb a:hover{text-decoration:underline}
+.crumb span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* MindFlow book detail — editorial cover-first layout */
-:root{--bg:#0c1220;--mint:#9ff3d1;--line:#ffffff20}
-body{background:radial-gradient(ellipse at 15% 25%,#45c9a51c,transparent 32%),radial-gradient(ellipse at 90% 0%,#8271d72b,transparent 36%),#0c1220}
-.wrap{width:min(1240px,calc(100% - 48px))}
-.top{background:#0c1220d8;backdrop-filter:blur(18px)}
-.crumb{padding:22px 0;font-size:.9rem}.crumb a{color:var(--mint)}
-.hero{grid-template-columns:minmax(300px,.78fr) minmax(0,1.22fr);gap:clamp(35px,6vw,90px);padding:20px 0 72px}
-.visual{min-height:500px}.visual:before{inset:7%;filter:blur(55px)}
-.cover{width:min(100%,430px);border-radius:10px 28px 28px 10px;box-shadow:0 38px 100px #0009}
-.cover img{object-fit:cover}.fallback{font-family:Georgia,serif}
-h1{font-size:clamp(2.7rem,5.4vw,5.2rem);line-height:.96}
-.description{font-size:1.04rem;line-height:1.85;max-width:720px;color:#e0e6f0}
-.book-meta{font-size:.88rem;line-height:2;color:#b8c4d7}
-.price{font-size:1.75rem;color:var(--mint);margin:15px 0}
-.actions{gap:11px}.btn{border-radius:999px;padding:13px 20px}
-.favorite-btn{border-color:#ff9bc855}
-.section{padding:58px 0 70px}
-.section h2{font-size:clamp(2rem,4vw,3.2rem)}
-.previews{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
-.preview{padding:10px;border-radius:14px 14px 34px 14px;background:#ffffff08;transition:transform .25s,border-color .25s}
-.preview:hover{transform:translateY(-4px);border-color:#9ff3d15c}
-.preview img{height:clamp(250px,35vw,470px);object-fit:contain;background:#f5f3ed}
-.learning article{border-radius:16px 16px 34px 16px;background:linear-gradient(145deg,#ffffff0d,#ffffff04)}
-.spotlight{border-radius:25px 25px 58px 25px;background:radial-gradient(ellipse at 88% 8%,#ff78c82a,transparent 40%),radial-gradient(ellipse at 4% 95%,#63e6ff20,transparent 40%),linear-gradient(125deg,#1a3440,#24203d 65%,#35243b)}
-.related article{flex:0 0 205px}
-.related .cover-mini{border-radius:10px 20px 20px 10px}
-footer{padding:34px 0}
-@media(max-width:760px){.wrap{width:calc(100% - 28px)}.hero{grid-template-columns:1fr;gap:15px;padding:5px 0 48px}.visual{min-height:320px;order:-1}.cover{width:72%;max-width:310px}.previews{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.preview img{height:auto;max-height:58vh}.actions .btn{flex:1 1 auto}.book-meta{line-height:1.8}}
-@media(max-width:430px){.previews{grid-template-columns:1fr}.preview img{max-height:72vh}}
-</style></head><body><header class="top"><div class="wrap nav"><a class="brand" href="index.html">Mind<span>Flow</span></a><nav class="navlinks"><a href="catalogue.html">Catalogue</a><a href="bibliotheque.html">Bibliothèque</a><a href="ma-bibliotheque.html">Ma bibliothèque</a></nav></div></header>
-<main class="wrap"><div class="crumb"><a href="bibliotheque.html">← Retour à la bibliothèque</a></div><div id="loading" class="empty">Chargement de l’œuvre…</div><div id="content" hidden>
-<section class="hero"><div class="visual"><div class="cover" id="cover"></div></div><div><div class="eyebrow" id="kind"></div><h1 id="title"></h1><p id="author" class="muted"></p><div class="eyebrow">Résumé</div><p id="description" class="description"></p><p id="facts" class="book-meta"></p><div id="price" class="price"></div><div id="actions" class="actions"></div><p id="status" class="status"></p></div></section>
-<section class="section"><div class="eyebrow">Feuilleter avant de choisir</div><h2>Découvre les aperçus de cette œuvre.</h2><p class="section-intro">Consulte les pages disponibles en grand format. Appuie sur une image pour l’agrandir.</p><div id="previews" class="previews"></div><div id="noPreview" class="empty" hidden>Aucun aperçu n’a encore été ajouté.</div></section>
-<section class="section"><div class="spotlight"><span class="spark" aria-hidden="true">✦</span><div class="eyebrow">Et si tu allais plus loin ?</div><h2>Une lecture peut ouvrir de nouvelles portes.</h2><p class="section-intro">Tu souhaites mieux comprendre cette œuvre, approfondir une notion ou être accompagné dans ton apprentissage ? MindFlow t’aide à trouver le bon accompagnement pédagogique.</p><a class="btn primary" href="espace-apprenant.html?view=tutor-request">Découvrir l’accompagnement ↗</a></div></section>
-<section class="section"><div class="eyebrow">À découvrir ensuite</div><h2>Découvrir la suite.</h2><p class="section-intro">D’autres œuvres à explorer, choisies dans la bibliothèque MindFlow.</p><div id="related" class="related" aria-label="Autres ouvrages"></div></section></div><div id="error" class="empty" hidden></div></main>
-<dialog id="lightbox" class="lightbox"><button id="closeLightbox">Fermer ✕</button><img id="lightboxImage" alt=""></dialog><footer><div class="wrap">© 2026 MindFlow · Apprendre autrement.</div></footer>
-<script>window.addEventListener("error",e=>{const n=document.getElementById("loading")||document.getElementById("state");if(!n)return;if(e.target&&e.target!==window){const src=e.target.src||e.target.href||e.target.tagName;n.textContent="Échec du chargement d’une ressource : "+src}else{n.textContent="Erreur JavaScript : "+(e.message||"inconnue")+(e.filename?" · "+e.filename.split("/").pop():"")+(e.lineno?" · ligne "+e.lineno:"")}});window.addEventListener("unhandledrejection",e=>{const n=document.getElementById("loading")||document.getElementById("state");if(n)n.textContent="Erreur de connexion : "+String(e.reason?.message||e.reason||"inconnue")});</script><script>
-window.mfLoadSupabase=async function(){
- if(window.supabase&&typeof window.supabase.createClient==="function")return window.supabase;
- const sources=["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js","https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js","https://cdnjs.cloudflare.com/ajax/libs/supabase/2.49.4/umd/supabase.min.js"];
- let lastError;
- for(const src of sources){try{await new Promise((resolve,reject)=>{const s=document.createElement("script");s.src=src;s.async=true;s.crossOrigin="anonymous";const timer=setTimeout(()=>reject(Error("Délai dépassé sur "+new URL(src).hostname)),10000);s.onload=()=>{clearTimeout(timer);resolve()};s.onerror=()=>{clearTimeout(timer);reject(Error("Réseau inaccessible : "+new URL(src).hostname))};document.head.appendChild(s)});if(window.supabase&&typeof window.supabase.createClient==="function")return window.supabase;throw Error("Le module Supabase n’a pas fourni son client.")}catch(e){lastError=e;console.warn("[MindFlow] Échec CDN",src,e)}}
- throw lastError||Error("Aucun réseau CDN disponible.");
-};
-</script><script>
-(async()=>{try{await window.mfLoadSupabase();
-"use strict";const KEY="sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil",URL="https://vzgmhdxxlgdiimqtincf.supabase.co",API=URL+"/functions/v1/mindflow-library",supa=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}),$=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),money=v=>Number(v||0).toLocaleString("fr-FR")+" FCFA";
-const kinds={school_reading:"Lecture scolaire",literary_work:"Œuvre littéraire",textbook:"Manuel",educational_resource:"Ressource pédagogique"};let book=null;
-async function session(){return (await supa.auth.getSession()).data.session}
-async function learner(action){const s=await session();if(!s?.user){location.href="espace-apprenant.html?mode=login&next="+encodeURIComponent("ouvrage.html?id="+book.id);return null}const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+s.access_token},body:JSON.stringify({action,book_id:book.id})}),d=await r.json().catch(()=>({}));if(!r.ok||!d.success)throw Object.assign(Error(d.error||"Opération impossible."),{data:d});return d}
-function cover(b){const u=b.cover_url||b.previews?.[0]?.url;return u?'<img src="'+esc(u)+'" alt="Couverture ou aperçu de '+esc(b.title)+'">':'<div class="fallback"><small>MindFlow</small><strong>'+esc(b.title)+'</strong><p>'+esc(b.author_name||"")+'</p></div>'}
-function render(b){book=b;document.title=b.title+" — MindFlow";$("#kind").textContent=kinds[b.book_type]||"Œuvre MindFlow";$("#title").textContent=b.title;const metadata=[];if(b.author_name)metadata.push("Par "+b.author_name);if(b.publisher_name)metadata.push("Publié par "+b.publisher_name);if(b.publication_year)metadata.push("Édition "+b.publication_year);if(b.genre)metadata.push("Genre : "+b.genre);if(b.subject_name)metadata.push("Matière : "+b.subject_name);if(b.education_level)metadata.push("Niveau : "+b.education_level);if(b.target_audience)metadata.push("Public : "+b.target_audience);if(b.language)metadata.push("Langue : "+b.language);if(b.country_of_origin)metadata.push("Origine : "+b.country_of_origin);if(Array.isArray(b.themes)&&b.themes.length)metadata.push("Thèmes : "+b.themes.join(", "));const categories=(b.library_book_categories||[]).map(x=>x.category?.name).filter(Boolean);if(categories.length)metadata.push("Collection : "+categories.join(", "));$("#author").textContent="";$("#facts").textContent=metadata.join("  ·  ");$("#description").textContent=b.description||"Découvre cette œuvre et les ressources pédagogiques qui l’accompagnent.";$("#cover").innerHTML=cover(b);$("#price").textContent=b.access_mode==="free"?"Gratuit":b.access_mode==="paid"?(b.product?.price!=null?money(b.product.price):"Accès payant"):"Accès partenaire";
-let buttons=[];if(b.has_access){buttons.push('<a class="btn primary" href="espace-apprenant.html?view=library">Ouvrir ma bibliothèque ↗</a>');if(b.can_download)buttons.push('<button class="btn" id="download">Télécharger le livre ↓</button>')}else if(b.access_mode==="paid"&&b.product_id)buttons.push('<a class="btn primary" href="paiement.html?id='+encodeURIComponent(b.product_id)+'">Acheter cette œuvre ↗</a>');else if(b.access_mode==="free")buttons.push('<button class="btn primary" id="add">＋ Ajouter à ma bibliothèque</button>');else buttons.push('<a class="btn primary" href="espace-apprenant.html?mode=login">Se connecter pour accéder ↗</a>');buttons.push('<button class="btn favorite-btn" id="favorite" type="button" aria-pressed="false">♡ Ajouter aux favoris</button>');$("#actions").innerHTML=buttons.join("");$("#status").textContent=b.has_access?"Cette œuvre est accessible dans ta bibliothèque.":b.access_mode==="paid"?"L’accès complet sera activé après confirmation de l’achat.":"Ajoute gratuitement cette œuvre à ton espace personnel.";
-const ps=b.previews||[];$("#previews").innerHTML=ps.map((p,i)=>'<figure class="preview" data-i="'+i+'"><img loading="lazy" src="'+esc(p.url)+'" alt="Aperçu '+(i+1)+' de '+esc(b.title)+'"><figcaption>Page d’aperçu '+(i+1)+' · Appuyer pour agrandir</figcaption></figure>').join("");$("#noPreview").hidden=ps.length>0;$("#previews").querySelectorAll("[data-i]").forEach(el=>el.onclick=()=>{$("#lightboxImage").src=ps[+el.dataset.i].url;$("#lightbox").showModal()});
+/* ── En-tête de l'œuvre ──────────────────────────────── */
+.hero{display:grid;grid-template-columns:minmax(250px,.6fr) minmax(0,1.4fr);gap:clamp(30px,6vw,84px);align-items:start;padding:18px 0 44px}
+.hero-cover{position:sticky;top:92px;justify-self:center;width:min(100%,370px);isolation:isolate}
+.hero-cover:before{content:"";position:absolute;inset:6% -8%;z-index:-1;border-radius:50%;background:linear-gradient(135deg,#9ff3d140,#c9b9ff38);filter:blur(44px)}
+.hero-cover .cover{box-shadow:0 40px 90px #000a,0 4px 12px #00000050}
+.hero h1{margin:14px 0 10px;font-size:clamp(2.4rem,5vw,4.3rem);line-height:.98;letter-spacing:-.06em}
+.subtitle{margin:0 0 12px;font:italic 1.25rem/1.4 var(--serif);color:var(--lilac)}
+.byline{margin:0 0 18px;color:var(--muted);font-size:1.02rem}
+.byline b{color:var(--ink)}
+.chips-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.desc{max-width:720px;color:#e0e6f0;line-height:1.85;white-space:pre-line}
+.desc.clamped{display:-webkit-box;-webkit-line-clamp:6;-webkit-box-orient:vertical;overflow:hidden}
+.linkbtn{padding:0;border:0;background:none;color:var(--mint);font-weight:750;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.more{margin-top:8px}
 
-async function refreshFavoriteButton(){const btn=$("#favorite");if(!btn)return;const s=await session();if(!s?.user){btn.textContent="♡ Ajouter aux favoris";btn.setAttribute("aria-pressed","false");return}const {data,error}=await supa.from("library_favorites").select("book_id").eq("learner_id",s.user.id).eq("book_id",book.id).maybeSingle();if(error)throw error;const saved=!!data;btn.textContent=saved?"♥ Retirer des favoris":"♡ Ajouter aux favoris";btn.setAttribute("aria-pressed",String(saved));btn.dataset.saved=String(saved)}
-$("#favorite")?.addEventListener("click",async()=>{const btn=$("#favorite");btn.disabled=true;try{const s=await session();if(!s?.user){location.href="espace-apprenant.html?mode=login&view=library&tab=favorites";return}if(btn.dataset.saved==="true"){const {error}=await supa.from("library_favorites").delete().eq("learner_id",s.user.id).eq("book_id",book.id);if(error)throw error;btn.dataset.saved="false";btn.textContent="♡ Ajouter aux favoris";btn.setAttribute("aria-pressed","false");$("#status").textContent="Retiré de tes favoris."}else{const {error}=await supa.from("library_favorites").upsert({learner_id:s.user.id,book_id:book.id},{onConflict:"learner_id,book_id"});if(error)throw error;btn.dataset.saved="true";btn.textContent="♥ Retirer des favoris";btn.setAttribute("aria-pressed","true");$("#status").textContent="Cette œuvre est maintenant dans tes favoris."}}catch(e){$("#status").textContent=e.message||"Impossible de mettre à jour tes favoris."}finally{btn.disabled=false}});refreshFavoriteButton().catch(e=>console.warn("Favoris non chargés",e));
-$("#add")?.addEventListener("click",async()=>{const bt=$("#add");bt.disabled=true;bt.textContent="Ajout en cours…";try{await learner("add_to_library");b.has_access=true;render(b);$("#status").textContent="L’ouvrage est maintenant dans ta bibliothèque personnelle."}catch(e){if(e.data?.product_id){location.href="paiement.html?id="+e.data.product_id;return}$("#status").textContent=e.message;bt.disabled=false;bt.textContent="＋ Ajouter à ma bibliothèque"}});
-$("#download")?.addEventListener("click",async()=>{const bt=$("#download");bt.disabled=true;try{const d=await learner("download");if(!d)return;const a=document.createElement("a");a.href=d.url;a.download=d.file_name||"ouvrage.pdf";a.rel="noopener";document.body.append(a);a.click();a.remove();$("#status").textContent="Le téléchargement a été préparé."}catch(e){$("#status").textContent=e.message;bt.disabled=false}});
+.buy-box{max-width:720px;margin-top:26px;padding:20px 22px;border:1px solid var(--line);border-radius:22px 22px 46px 22px;background:linear-gradient(145deg,#ffffff0e,#ffffff04)}
+.price{margin-bottom:12px;color:var(--mint);font-size:1.65rem;font-weight:850;letter-spacing:-.03em;line-height:1.1}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
+.fav[aria-pressed="true"]{background:linear-gradient(110deg,#ff9bc8,#c9b9ff);border-color:transparent;color:#1a1020}
+.status{min-height:1.4em;margin:12px 0 0;color:var(--muted);font-size:.9rem}
+
+/* ── Sections ────────────────────────────────────────── */
+.block{padding:50px 0 14px;border-top:1px solid var(--line)}
+.block h2{margin:10px 0 8px;font-size:clamp(1.8rem,3.4vw,2.8rem);line-height:1.02;letter-spacing:-.055em}
+.block .intro{max-width:640px;margin:0 0 26px;color:var(--muted)}
+.block[hidden]{display:none}
+
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.fact{padding:15px 18px;border:1px solid var(--line);border-radius:16px;background:#ffffff06}
+.fact small{display:block;color:var(--soft);font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.fact b{display:block;margin-top:3px;font-weight:650;overflow-wrap:anywhere}
+.themes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:20px}
+.themes>span{color:var(--soft);font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;margin-right:4px}
+
+.work{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.work-card{display:flex;flex-direction:column;gap:6px;padding:21px 20px 18px;border:1px solid var(--line);border-radius:18px 18px 42px 18px;background:linear-gradient(145deg,#ffffff0d,#ffffff03);transition:transform .25s var(--ease),border-color .25s}
+a.work-card:hover{transform:translateY(-4px);border-color:#9ff3d15c}
+.work-card .n{font:italic 1.3rem var(--serif);color:var(--mint)}
+.work-card h3{margin:2px 0 0;font-size:1.1rem;letter-spacing:-.02em}
+.work-card p{flex:1;margin:0;color:var(--muted);font-size:.88rem;line-height:1.6}
+.work-card .go{margin-top:10px;color:var(--mint);font-size:.85rem;font-weight:800}
+.work-card.locked .n,.work-card.locked .go{color:var(--soft)}
+.work-card.locked .go{font-weight:650}
+
+.previews{display:flex;gap:16px;overflow-x:auto;padding:4px 2px 18px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+.preview{flex:0 0 min(290px,72vw);margin:0;scroll-snap-align:start;cursor:zoom-in}
+.preview img{display:block;width:100%;height:clamp(300px,42vw,400px);object-fit:contain;border:1px solid var(--line);border-radius:12px;background:#f5f3ed;transition:transform .25s var(--ease)}
+.preview:hover img{transform:translateY(-4px)}
+.preview figcaption{padding-top:9px;color:var(--soft);font-size:.82rem}
+
+.related{display:flex;gap:22px;overflow-x:auto;padding:6px 2px 22px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+.rel{flex:0 0 min(158px,40vw);scroll-snap-align:start}
+.rel .cover{transition:transform .3s var(--ease)}
+.rel:hover .cover{transform:translateY(-6px)}
+.rel h3{margin:13px 0 2px;font-size:.98rem;line-height:1.25;letter-spacing:-.02em}
+.rel p{margin:0;color:var(--muted);font-size:.84rem}
+
+/* ── Visionneuse d'aperçus ───────────────────────────── */
+.lightbox{width:min(96vw,980px);max-width:none;padding:0;border:1px solid var(--line);border-radius:18px;background:#0f1626;color:var(--ink)}
+.lightbox::backdrop{background:#000000d9}
+.lb-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px}
+.lb-bar span{color:var(--muted);font-size:.88rem}
+.lb-stage{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;padding:0 10px 14px}
+.lb-stage img{display:block;max-width:100%;max-height:78vh;margin:auto;border-radius:8px}
+.lb-nav{width:44px;height:44px;border:1px solid var(--line);border-radius:50%;background:#ffffff10;color:var(--ink);font-size:1.3rem;cursor:pointer}
+.lb-nav:disabled{opacity:.3;cursor:default}
+
+/* ── Barre d'action mobile ───────────────────────────── */
+.mobilebar{position:fixed;left:0;right:0;bottom:0;z-index:25;display:none;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px calc(10px + env(safe-area-inset-bottom));background:#0c1220f0;backdrop-filter:blur(14px);border-top:1px solid var(--line)}
+.mobilebar b{color:var(--mint);font-size:1.05rem;white-space:nowrap}
+
+@media(max-width:960px){.work{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){
+  .hero{grid-template-columns:1fr;gap:26px;padding-bottom:30px}
+  .hero-cover{position:relative;top:0;width:min(62%,260px)}
+  .actions .btn{flex:1 1 100%}
+  .mobilebar.show{display:flex}
+  body.has-bar{padding-bottom:76px}
 }
-async function init(){try{const id=new URLSearchParams(location.search).get("id");if(!id)throw Error("Aucune œuvre sélectionnée.");const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);let r;try{r=await fetch(API+"?limit=80",{headers:{apikey:KEY},signal:controller.signal})}finally{clearTimeout(timer)}const d=await r.json();if(!r.ok||!d.success)throw Error(d.error||"Bibliothèque indisponible.");const books=d.books||[];book=books.find(x=>x.id===id);if(!book)throw Error("Cette œuvre n’est pas disponible.");render(book);const others=books.filter(x=>x.id!==id);$("#related").innerHTML=others.length?others.map(x=>'<article><a href="ouvrage.html?id='+x.id+'"><div class="cover-mini">'+(x.cover_url||x.previews?.[0]?.url?'<img src="'+esc(x.cover_url||x.previews[0].url)+'" alt="">':'✳')+'</div><h3>'+esc(x.title)+'</h3></a><p class="muted">'+esc(x.author_name||"MindFlow")+'</p></article>').join(""):'<div class="empty">Les prochaines œuvres apparaîtront ici dès leur publication.</div>';if(others.length>2&&!window.matchMedia("(prefers-reduced-motion: reduce)").matches){let i=0;setInterval(()=>{const el=$("#related");if(!document.hidden&&!el.matches(":hover")&&!el.contains(document.activeElement)){i=(i+1)%others.length;el.scrollTo({left:i*238,behavior:"smooth"})}},5000)}$("#loading").hidden=true;$("#content").hidden=false}catch(e){$("#loading").hidden=true;$("#error").hidden=false;$("#error").textContent=(e.name==="AbortError"?"Le serveur met trop de temps à répondre. Réessaie dans quelques instants.":(e.message||"Impossible de charger cette œuvre."))+" ";const a=document.createElement("a");a.href="bibliotheque.html";a.textContent="Retour à la bibliothèque";$("#error").append(a)}}
-$("#closeLightbox").onclick=()=>$("#lightbox").close();$("#lightbox").onclick=e=>{if(e.target===$("#lightbox"))$("#lightbox").close()};init();
+@media(max-width:480px){.work{grid-template-columns:1fr}}
+</style>
+</head><body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="index.html">Mind<span>Flow</span></a>
+  <nav class="links" aria-label="Navigation principale">
+    <a href="catalogue.html">Catalogue</a>
+    <a href="bibliotheque.html" aria-current="page" data-keep>Bibliothèque</a>
+    <a href="ma-bibliotheque.html" data-keep>Ma bibliothèque</a>
+    <a class="navcta" href="espace-apprenant.html">Mon espace</a>
+  </nav>
+</div></header>
 
-}catch(error){console.error("[MindFlow] Démarrage impossible",error);const node=document.getElementById("loading")||document.getElementById("state");if(node)node.textContent="Connexion impossible : "+(error?.message||"vérifie ton réseau puis réessaie.")}})();
-</script><script src="cookie-consent.js?v=20261026-1"></script><script src="guides-apprenant.js?v=20261030-1"></script></body></html>
+<main class="wrap">
+  <nav class="crumb" aria-label="Fil d'Ariane"><a id="backLink" href="bibliotheque.html">← Bibliothèque</a><span id="crumbTitle"></span></nav>
+  <div id="loading" class="empty">Chargement de l’œuvre…</div>
+
+  <div id="content" hidden>
+    <section class="hero">
+      <div class="hero-cover" id="cover"></div>
+      <div>
+        <span class="eyebrow" id="kind"></span>
+        <h1 id="title"></h1>
+        <p class="subtitle" id="subtitle" hidden></p>
+        <p class="byline" id="byline"></p>
+        <div class="chips-row" id="chips"></div>
+        <div class="desc clamped" id="description"></div>
+        <button class="linkbtn more" id="more" type="button" hidden>Lire la suite</button>
+        <div class="buy-box">
+          <div class="price" id="price"></div>
+          <div class="actions" id="actions"></div>
+          <p class="status" id="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="workBlock">
+      <span class="eyebrow">Travaille cette œuvre</span>
+      <h2>Lire, comprendre, vérifier.</h2>
+      <p class="intro">Une œuvre MindFlow ne s'arrête pas à la dernière page : voici les chemins pour aller plus loin.</p>
+      <div class="work" id="work"></div>
+    </section>
+
+    <section class="block" id="factsBlock">
+      <span class="eyebrow">Fiche de l'œuvre</span>
+      <h2>Les informations essentielles.</h2>
+      <div class="facts" id="facts" style="margin-top:22px"></div>
+      <div class="themes" id="themes" hidden></div>
+    </section>
+
+    <section class="block" id="previewsBlock" hidden>
+      <span class="eyebrow">Feuilleter avant de choisir</span>
+      <h2>Quelques pages de l'œuvre.</h2>
+      <p class="intro">Touche une page pour l'agrandir.</p>
+      <div class="previews" id="previews"></div>
+    </section>
+
+    <section class="block" id="relatedBlock" hidden>
+      <span class="eyebrow" id="relatedKicker">À découvrir ensuite</span>
+      <h2 id="relatedTitle">D'autres œuvres à explorer.</h2>
+      <div class="related" id="related" style="margin-top:22px"></div>
+    </section>
+  </div>
+
+  <div id="error" class="empty" hidden></div>
+</main>
+
+<div class="mobilebar" id="mobileBar"><b id="mbPrice"></b><button class="btn primary" id="mbAction" type="button"></button></div>
+
+<dialog id="lightbox" class="lightbox" aria-label="Aperçu agrandi">
+  <div class="lb-bar"><span id="lbCount"></span><button class="btn small" id="lbClose" type="button">Fermer ✕</button></div>
+  <div class="lb-stage">
+    <button class="lb-nav" id="lbPrev" type="button" aria-label="Page précédente">‹</button>
+    <img id="lbImage" alt="">
+    <button class="lb-nav" id="lbNext" type="button" aria-label="Page suivante">›</button>
+  </div>
+</dialog>
+
+<footer><div class="wrap">© 2026 MindFlow · Apprendre autrement. · <a href="bibliotheque.html">Retour à la bibliothèque</a></div></footer>
+
+<script src="bibliotheque-ui.js?v=20261102-1"></script>
+<script>
+window.mfLoadSupabase = async function () {
+  if (window.supabase && typeof window.supabase.createClient === "function") return window.supabase;
+  const sources = [
+    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js",
+    "https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js",
+    "https://cdnjs.cloudflare.com/ajax/libs/supabase/2.49.4/umd/supabase.min.js"
+  ];
+  let lastError;
+  for (const src of sources) {
+    try {
+      await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = src; s.async = true; s.crossOrigin = "anonymous";
+        const timer = setTimeout(() => reject(Error("Délai dépassé sur " + new URL(src).hostname)), 10000);
+        s.onload = () => { clearTimeout(timer); resolve(); };
+        s.onerror = () => { clearTimeout(timer); reject(Error("Réseau inaccessible : " + new URL(src).hostname)); };
+        document.head.appendChild(s);
+      });
+      if (window.supabase && typeof window.supabase.createClient === "function") return window.supabase;
+      throw Error("Le module Supabase n’a pas fourni son client.");
+    } catch (e) { lastError = e; console.warn("[MindFlow] Échec CDN", src, e); }
+  }
+  throw lastError || Error("Aucun réseau CDN disponible.");
+};
+</script>
+<script>
+(async () => {
+  "use strict";
+  const KEY = "sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil";
+  const SUPABASE_URL = "https://vzgmhdxxlgdiimqtincf.supabase.co";
+  const API = SUPABASE_URL + "/functions/v1/mindflow-library";
+  const { esc, kindLabel, coverHTML, plural } = window.MFLib;
+  const $ = (s) => document.querySelector(s);
+  const money = (v) => Number(v || 0).toLocaleString("fr-FR") + " FCFA";
+
+  let supa = null, session = null, book = null, books = [], inLibrary = false, lbIndex = 0, barObserver = null;
+
+  // Retour à la liste avec les filtres que le lecteur avait choisis.
+  try {
+    const ref = document.referrer ? new URL(document.referrer) : null;
+    if (ref && ref.origin === location.origin && /\/bibliotheque\.html$/.test(ref.pathname)) $("#backLink").href = ref.href;
+  } catch (_) { /* lien par défaut */ }
+
+  async function getSession() {
+    if (!supa) return null;
+    try { return (await supa.auth.getSession()).data.session; } catch (_) { return null; }
+  }
+
+  async function learner(action) {
+    const s = await getSession();
+    if (!s?.user) { location.href = "espace-apprenant.html?mode=login&next=" + encodeURIComponent("ouvrage.html?id=" + book.id); return null; }
+    const r = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: KEY, Authorization: "Bearer " + s.access_token },
+      body: JSON.stringify({ action, book_id: book.id })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.success) throw Object.assign(Error(d.error || "Opération impossible."), { data: d });
+    return d;
+  }
+
+  const openLink = (mode) => "ma-bibliotheque.html?book=" + encodeURIComponent(book.id) + (mode ? "&open=" + mode : "");
+
+  /* ── Rendu ─────────────────────────────────────────── */
+  function renderHero() {
+    const b = book;
+    document.title = b.title + " — MindFlow";
+    $("#crumbTitle").textContent = "/ " + b.title;
+    $("#kind").textContent = kindLabel(b.book_type);
+    $("#title").textContent = b.title;
+    $("#subtitle").hidden = !b.subtitle;
+    $("#subtitle").textContent = b.subtitle || "";
+    $("#cover").innerHTML = coverHTML(b, { eager: true });
+
+    const pub = [b.publisher_name, b.publication_year].filter(Boolean).join(", ");
+    $("#byline").innerHTML = (b.author_name ? "Par <b>" + esc(b.author_name) + "</b>" : "Auteur non renseigné") + (pub ? " · " + esc(pub) : "");
+    $("#chips").innerHTML = [b.subject_name, b.education_level, b.genre, b.language].filter(Boolean).slice(0, 4)
+      .map((t) => '<span class="tag">' + esc(t) + "</span>").join("");
+
+    const d = $("#description");
+    d.textContent = b.description || "Découvre cette œuvre et les ressources pédagogiques qui l’accompagnent.";
+    const long = (b.description || "").length > 380;
+    d.classList.toggle("clamped", long);
+    $("#more").hidden = !long;
+    $("#more").textContent = "Lire la suite";
+  }
+
+  function renderActions() {
+    const b = book, loggedIn = !!session?.user;
+    const owned = !!b.has_access;
+    $("#price").textContent = b.access_mode === "free" ? "Gratuit"
+      : b.access_mode === "paid" ? (b.product?.price != null ? money(b.product.price) : "Accès payant")
+      : "Accès partenaire";
+
+    const btns = [];
+    let status = "";
+    if (owned && inLibrary) {
+      btns.push(b.can_read
+        ? '<a class="btn primary" href="' + openLink("read") + '">Lire maintenant ↗</a>'
+        : '<a class="btn primary" href="' + openLink() + '">Ouvrir dans ma bibliothèque ↗</a>');
+      if (b.can_download) btns.push('<button class="btn" id="download" type="button">Télécharger ↓</button>');
+      status = "Cette œuvre est dans ta bibliothèque.";
+    } else if (owned) {
+      btns.push('<button class="btn primary" id="add" type="button">＋ Ajouter à ma bibliothèque</button>');
+      status = loggedIn
+        ? "Ajoute-la à ta bibliothèque pour la lire et accéder aux fiches et aux quiz."
+        : "Un compte MindFlow gratuit te permet de la retrouver à tout moment.";
+    } else if (b.access_mode === "paid" && b.product_id) {
+      btns.push('<a class="btn primary" href="paiement.html?id=' + encodeURIComponent(b.product_id) + '">Acheter cette œuvre ↗</a>');
+      status = "L’accès complet est activé après la confirmation de l’achat.";
+    } else if (!loggedIn) {
+      btns.push('<a class="btn primary" href="espace-apprenant.html?mode=login&next=' + encodeURIComponent("ouvrage.html?id=" + b.id) + '">Se connecter pour accéder ↗</a>');
+      status = "Cette œuvre est proposée par nos partenaires.";
+    } else {
+      status = "Cette œuvre est réservée aux apprenants invités par un partenaire MindFlow.";
+    }
+    btns.push('<button class="btn fav" id="favorite" type="button" aria-pressed="false">♡ Ajouter aux favoris</button>');
+    $("#actions").innerHTML = btns.join("");
+    $("#status").textContent = status;
+    bindActions();
+    refreshFavorite().catch((e) => console.warn("Favoris non chargés", e));
+    setupMobileBar();
+  }
+
+  function renderWork() {
+    const b = book, ready = !!b.has_access && inLibrary;
+    const lockedHint = b.access_mode === "paid" && !b.has_access ? "Disponible après l’achat" : "Disponible une fois l’œuvre dans ta bibliothèque";
+    const cards = [
+      { n: "01", t: "Lire", d: b.can_read ? "Lis l’œuvre directement dans MindFlow : ta progression est enregistrée." : "La lecture en ligne n’est pas proposée pour cette œuvre.", href: b.can_read ? openLink("read") : "", go: "Ouvrir la lecture →" },
+      { n: "02", t: "Fiches de lecture", d: "Résumé, analyse, vocabulaire et contexte pour mieux comprendre l’œuvre.", href: openLink("guides"), go: "Consulter les fiches →" },
+      { n: "03", t: "Quiz", d: "Vérifie ce que tu as retenu, avec une correction expliquée.", href: openLink("quiz"), go: "Tester mes acquis →" },
+      { n: "04", t: "Accompagnement", d: "Un enseignant ou répétiteur peut t’aider à approfondir cette œuvre.", href: "espace-apprenant.html?view=tutor-request", go: "Demander de l’aide →", always: true }
+    ];
+    $("#work").innerHTML = cards.map((c) => {
+      const unavailable = c.n === "01" && !b.can_read;
+      const open = c.always || (ready && !unavailable);
+      const inner = '<span class="n">' + c.n + "</span><h3>" + esc(c.t) + "</h3><p>" + esc(c.d) + "</p>" +
+        '<span class="go">' + esc(open ? c.go : unavailable ? "Non disponible" : lockedHint) + "</span>";
+      return open
+        ? '<a class="work-card" href="' + esc(c.href) + '">' + inner + "</a>"
+        : '<div class="work-card locked">' + inner + "</div>";
+    }).join("");
+  }
+
+  function renderFacts() {
+    const b = book;
+    const cats = (b.library_book_categories || []).map((x) => x.category?.name).filter(Boolean).join(", ");
+    const rows = [
+      ["Auteur", b.author_name], ["Éditeur", b.publisher_name], ["Édition", b.publication_year],
+      ["Genre", b.genre], ["Matière", b.subject_name], ["Niveau", b.education_level],
+      ["Public", b.target_audience], ["Langue", b.language], ["Origine", b.country_of_origin], ["Collection", cats]
+    ].filter(([, v]) => v != null && String(v).trim() !== "");
+    $("#facts").innerHTML = rows.map(([k, v]) => '<div class="fact"><small>' + esc(k) + "</small><b>" + esc(v) + "</b></div>").join("");
+    $("#factsBlock").hidden = rows.length === 0;
+    const themes = Array.isArray(b.themes) ? b.themes.filter(Boolean) : [];
+    $("#themes").hidden = themes.length === 0;
+    $("#themes").innerHTML = themes.length ? "<span>Thèmes</span>" + themes.map((t) => '<span class="tag">' + esc(t) + "</span>").join("") : "";
+  }
+
+  function renderPreviews() {
+    const ps = book.previews || [];
+    $("#previewsBlock").hidden = ps.length === 0;
+    $("#previews").innerHTML = ps.map((p, i) =>
+      '<figure class="preview" data-i="' + i + '" tabindex="0" role="button" aria-label="Agrandir la page ' + (i + 1) + '">' +
+      '<img loading="lazy" src="' + esc(p.url) + '" alt="Aperçu ' + (i + 1) + " de " + esc(book.title) + '">' +
+      "<figcaption>Page " + (i + 1) + " sur " + ps.length + "</figcaption></figure>"
+    ).join("");
+  }
+
+  function renderRelated() {
+    const mySlugs = new Set((book.library_book_categories || []).map((x) => x.category?.slug).filter(Boolean));
+    const scored = books.filter((x) => x.id !== book.id).map((x) => {
+      let s = 0;
+      if ((x.library_book_categories || []).some((c) => mySlugs.has(c.category?.slug))) s += 2;
+      if (book.subject_name && x.subject_name === book.subject_name) s += 2;
+      if (book.author_name && x.author_name === book.author_name) s += 3;
+      return [x, s];
+    }).sort((a, b) => b[1] - a[1]).slice(0, 10);
+    $("#relatedBlock").hidden = scored.length === 0;
+    if (!scored.length) return;
+    const near = scored[0][1] > 0;
+    $("#relatedKicker").textContent = near ? "Dans la même veine" : "À découvrir ensuite";
+    $("#relatedTitle").textContent = near ? "Si cette œuvre te plaît." : "D’autres œuvres à explorer.";
+    $("#related").innerHTML = scored.map(([x]) =>
+      '<a class="rel" href="ouvrage.html?id=' + encodeURIComponent(x.id) + '">' + coverHTML(x) +
+      "<h3>" + esc(x.title) + "</h3><p>" + esc(x.author_name || "MindFlow") + "</p></a>"
+    ).join("");
+  }
+
+  /* ── Actions ───────────────────────────────────────── */
+  function bindActions() {
+    $("#add")?.addEventListener("click", async () => {
+      const bt = $("#add");
+      bt.disabled = true; bt.textContent = "Ajout en cours…";
+      try {
+        const r = await learner("add_to_library");
+        if (!r) return;
+        inLibrary = true;
+        renderActions(); renderWork();
+        $("#status").textContent = "C’est fait : l’œuvre est dans ta bibliothèque.";
+      } catch (e) {
+        if (e.data?.product_id) { location.href = "paiement.html?id=" + encodeURIComponent(e.data.product_id); return; }
+        $("#status").textContent = e.message;
+        bt.disabled = false; bt.textContent = "＋ Ajouter à ma bibliothèque";
+      }
+    });
+
+    $("#download")?.addEventListener("click", async () => {
+      const bt = $("#download");
+      bt.disabled = true;
+      try {
+        const d = await learner("download");
+        if (!d) return;
+        const a = document.createElement("a");
+        a.href = d.url; a.download = d.file_name || "ouvrage.pdf"; a.rel = "noopener";
+        document.body.append(a); a.click(); a.remove();
+        $("#status").textContent = "Le téléchargement a été préparé.";
+      } catch (e) { $("#status").textContent = e.message; }
+      finally { bt.disabled = false; }
+    });
+
+    $("#favorite")?.addEventListener("click", async () => {
+      const btn = $("#favorite");
+      btn.disabled = true;
+      try {
+        const s = await getSession();
+        if (!s?.user) { location.href = "espace-apprenant.html?mode=login&next=" + encodeURIComponent("ouvrage.html?id=" + book.id); return; }
+        if (btn.dataset.saved === "true") {
+          const { error } = await supa.from("library_favorites").delete().eq("learner_id", s.user.id).eq("book_id", book.id);
+          if (error) throw error;
+          setFavorite(false);
+          $("#status").textContent = "Retirée de tes favoris.";
+        } else {
+          const { error } = await supa.from("library_favorites").upsert({ learner_id: s.user.id, book_id: book.id }, { onConflict: "learner_id,book_id" });
+          if (error) throw error;
+          setFavorite(true);
+          $("#status").textContent = "Cette œuvre est maintenant dans tes favoris.";
+        }
+      } catch (e) { $("#status").textContent = e.message || "Impossible de mettre à jour tes favoris."; }
+      finally { btn.disabled = false; }
+    });
+  }
+
+  function setFavorite(saved) {
+    const btn = $("#favorite");
+    if (!btn) return;
+    btn.dataset.saved = String(saved);
+    btn.textContent = saved ? "♥ Retirer des favoris" : "♡ Ajouter aux favoris";
+    btn.setAttribute("aria-pressed", String(saved));
+  }
+
+  async function refreshFavorite() {
+    const s = await getSession();
+    if (!s?.user || !supa) return setFavorite(false);
+    const { data, error } = await supa.from("library_favorites").select("book_id").eq("learner_id", s.user.id).eq("book_id", book.id).maybeSingle();
+    if (error) throw error;
+    setFavorite(!!data);
+  }
+
+  /* Sur mobile, l'action principale reste accessible quand la zone d'achat sort de l'écran. */
+  function setupMobileBar() {
+    barObserver?.disconnect();
+    const primary = $("#actions .primary"), bar = $("#mobileBar");
+    if (!primary || !("IntersectionObserver" in window)) { bar.classList.remove("show"); document.body.classList.remove("has-bar"); return; }
+    $("#mbPrice").textContent = $("#price").textContent;
+    $("#mbAction").textContent = primary.textContent;
+    $("#mbAction").onclick = () => $("#actions .primary")?.click();
+    barObserver = new IntersectionObserver(([entry]) => {
+      const show = !entry.isIntersecting;
+      bar.classList.toggle("show", show);
+      document.body.classList.toggle("has-bar", show);
+    }, { threshold: 0 });
+    barObserver.observe($("#actions"));
+  }
+
+  /* ── Visionneuse ───────────────────────────────────── */
+  function showLightbox(i) {
+    const ps = book.previews || [];
+    lbIndex = (i + ps.length) % ps.length;
+    $("#lbImage").src = ps[lbIndex].url;
+    $("#lbImage").alt = "Aperçu " + (lbIndex + 1) + " de " + book.title;
+    $("#lbCount").textContent = "Page " + (lbIndex + 1) + " sur " + ps.length;
+    $("#lbPrev").disabled = $("#lbNext").disabled = ps.length < 2;
+    if (!$("#lightbox").open) $("#lightbox").showModal();
+  }
+
+  function bindStatic() {
+    $("#more").addEventListener("click", () => {
+      const d = $("#description"), collapsed = d.classList.toggle("clamped");
+      $("#more").textContent = collapsed ? "Lire la suite" : "Réduire";
+    });
+    $("#previews").addEventListener("click", (e) => { const f = e.target.closest("[data-i]"); if (f) showLightbox(+f.dataset.i); });
+    $("#previews").addEventListener("keydown", (e) => {
+      const f = e.target.closest("[data-i]");
+      if (f && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); showLightbox(+f.dataset.i); }
+    });
+    $("#lbClose").addEventListener("click", () => $("#lightbox").close());
+    $("#lbPrev").addEventListener("click", () => showLightbox(lbIndex - 1));
+    $("#lbNext").addEventListener("click", () => showLightbox(lbIndex + 1));
+    $("#lightbox").addEventListener("click", (e) => { if (e.target === $("#lightbox")) $("#lightbox").close(); });
+    $("#lightbox").addEventListener("keydown", (e) => {
+      if (e.key === "ArrowLeft") showLightbox(lbIndex - 1);
+      if (e.key === "ArrowRight") showLightbox(lbIndex + 1);
+    });
+  }
+
+  /* ── Démarrage ─────────────────────────────────────── */
+  function fail(message) {
+    $("#loading").hidden = true;
+    $("#error").hidden = false;
+    $("#error").innerHTML = esc(message) + ' <a class="linkbtn" href="bibliotheque.html">Retour à la bibliothèque</a>';
+  }
+
+  try {
+    bindStatic();
+    const id = new URLSearchParams(location.search).get("id");
+    if (!id) throw Error("Aucune œuvre sélectionnée.");
+
+    try {
+      await window.mfLoadSupabase();
+      supa = window.supabase.createClient(SUPABASE_URL, KEY, { auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true } });
+      session = await getSession();
+    } catch (e) { console.warn("[MindFlow] Connexion au compte indisponible", e); }
+
+    const headers = { apikey: KEY };
+    if (session?.access_token) headers.Authorization = "Bearer " + session.access_token;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    let r;
+    try { r = await fetch(API + "?limit=80", { headers, signal: controller.signal }); }
+    finally { clearTimeout(timer); }
+    const d = await r.json();
+    if (!r.ok || !d.success) throw Error(d.error || "Bibliothèque indisponible.");
+    books = d.books || [];
+    book = books.find((x) => x.id === id);
+    if (!book) throw Error("Cette œuvre n’est pas disponible.");
+
+    if (session?.access_token) {
+      try {
+        const m = await fetch(API + "?mine=1", { headers });
+        const md = await m.json();
+        if (m.ok && md.success) inLibrary = (md.books || []).some((x) => x.id === id);
+      } catch (_) { /* on considère l'œuvre comme non ajoutée */ }
+    }
+
+    renderHero(); renderActions(); renderWork(); renderFacts(); renderPreviews(); renderRelated();
+    $("#loading").hidden = true;
+    $("#content").hidden = false;
+  } catch (e) {
+    console.error(e);
+    fail(e.name === "AbortError" ? "Le serveur met trop de temps à répondre. Réessaie dans quelques instants." : (e.message || "Impossible de charger cette œuvre."));
+  }
+})();
+</script>
+<script src="cookie-consent.js?v=20261026-1"></script>
+<script src="guides-apprenant.js?v=20261030-1"></script>
+</body></html>

@@ -1,39 +1,76 @@
 <!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#10131c"><title>Ma bibliothèque — MindFlow</title>
+<link rel="stylesheet" href="bibliotheque.css?v=20261102-1">
 <style>
-:root{color-scheme:dark;--bg:#10131c;--text:#f7f7fb;--muted:#b4bacb;--mint:#a9f4d0;--line:#ffffff18}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 90% 0%,#51457a44,transparent 35%),var(--bg);color:var(--text);font:16px/1.55 Inter,system-ui,sans-serif}a{color:inherit;text-decoration:none}.wrap{width:min(1100px,calc(100% - 32px));margin:auto}.top{padding:22px 0;border-bottom:1px solid var(--line)}.nav{display:flex;justify-content:space-between}.brand{font-weight:850}.brand span{color:var(--mint)}.hero{padding:56px 0 24px}.eyebrow{color:var(--mint);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;font-weight:800}h1{font-size:clamp(2.4rem,5vw,4rem);letter-spacing:-.06em;margin:10px 0}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;padding:24px 0 70px}.book{min-width:0}.cover{aspect-ratio:3/4;border-radius:20px 20px 55px 20px;overflow:hidden;background:linear-gradient(145deg,#293e49,#4d3d68 65%,#81576d);display:grid;place-items:center}.cover img{width:100%;height:100%;object-fit:cover}.cover span{font-size:3rem;color:var(--mint)}h2{font-size:1.08rem;line-height:1.2;margin:12px 0 4px}.author{font-size:.88rem;color:var(--muted)}button{border:1px solid var(--line);border-radius:999px;padding:9px 13px;color:var(--text);background:#ffffff0a;cursor:pointer;margin:10px 6px 0 0}.state{grid-column:1/-1;padding:50px 10px;text-align:center;color:var(--muted)}.reader{width:min(1050px,94vw);height:min(88vh,900px);border:1px solid var(--line);border-radius:20px;background:#111521;padding:0;max-width:none;max-height:none}.reader::backdrop{background:#05070bdc}.bar{display:flex;justify-content:space-between;padding:12px 16px}.body{height:calc(100% - 55px);background:#fff}.body iframe{width:100%;height:100%;border:0}@media(max-width:800px){.grid{grid-template-columns:repeat(3,1fr)}}@media(max-width:560px){.grid{grid-template-columns:repeat(2,1fr);gap:16px}}@media(max-width:390px){.grid{grid-template-columns:1fr 1fr}}
+.hero{padding:46px 0 14px}
+.hero h1{margin:14px 0 10px;font-size:clamp(2.6rem,5.5vw,4.6rem);line-height:.98;letter-spacing:-.065em}
+.hero p{max-width:620px;margin:0;color:var(--muted);font-size:1.04rem;line-height:1.75}
+.muted{color:var(--muted)}
+#state{margin:14px 0 4px;color:var(--muted);font-size:.92rem}
 
-/* MindFlow personal library — reading-room redesign */
-:root{--bg:#0c1220;--text:#f7f8fc;--muted:#aebbd0;--mint:#9ff3d1;--line:#ffffff1d}
-body{background:radial-gradient(ellipse at 88% 0%,#8171d72b,transparent 34%),radial-gradient(ellipse at 0% 48%,#44c9a51a,transparent 30%),#0c1220}
-.wrap{width:min(1220px,calc(100% - 44px))}
-.top{padding:17px 0;background:#0c1220c9;backdrop-filter:blur(18px)}
-.nav{align-items:center}.brand{font-size:1.35rem}.nav>a:last-child{padding:10px 15px;border:1px solid var(--line);border-radius:999px;color:var(--mint)}
-.hero{padding:54px 0 27px;position:relative}
-.hero:after{content:"";position:absolute;right:3%;top:28px;width:190px;height:190px;border-radius:50%;background:radial-gradient(circle,#a9f4d02c,transparent 68%);pointer-events:none}
-h1{font-size:clamp(2.8rem,6vw,5rem);line-height:.98;max-width:700px}
-.hero p{font-size:1.03rem;max-width:650px;line-height:1.75}
-#state{padding:14px 17px;border:1px solid var(--line);border-radius:15px;background:#ffffff08;margin:12px 0 4px}
-.grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:30px 22px;padding:25px 0 80px}
-.book{position:relative;min-width:0;padding:12px 12px 17px;border:1px solid #ffffff15;border-radius:17px 17px 34px 17px;background:linear-gradient(145deg,#ffffff0b,#ffffff03);transition:transform .25s,border-color .25s,background .25s}
+/* Reprendre la lecture */
+.resume{display:flex;align-items:center;gap:clamp(18px,3vw,32px);margin:22px 0 6px;padding:18px clamp(18px,3vw,28px);border:1px solid #9ff3d13a;border-radius:24px 24px 52px 24px;background:radial-gradient(ellipse at 95% 0%,#9ff3d11f,transparent 45%),linear-gradient(135deg,#ffffff0e,#ffffff04)}
+.resume[hidden]{display:none}
+.resume-cover{flex:none;width:96px}
+.resume-body{min-width:0;flex:1}
+.resume-body h2{margin:6px 0 2px;font-size:1.4rem;line-height:1.15;letter-spacing:-.03em}
+.resume-body .btn{margin-top:14px}
+
+/* Étagère */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:28px 22px;padding:24px 0 80px}
+.grid>.empty{grid-column:1/-1}
+.empty .btn{margin-top:18px}
+.book{display:flex;flex-direction:column;min-width:0;padding:12px 12px 16px;border:1px solid #ffffff15;border-radius:18px 18px 34px 18px;background:linear-gradient(145deg,#ffffff0b,#ffffff03);transition:transform .25s var(--ease),border-color .25s,background .25s}
 .book:hover{transform:translateY(-5px);border-color:#9ff3d15c;background:#ffffff0d}
-.cover{aspect-ratio:3/4;border-radius:9px 18px 18px 9px;box-shadow:0 15px 35px #0005}
-.cover img{object-fit:cover}
-.book h2{font-size:1.08rem;margin:14px 2px 4px;letter-spacing:-.02em}
-.author{margin:0 2px 7px}
-.book button{font-size:.8rem;font-weight:750;margin:7px 4px 0 0;padding:9px 12px;border-radius:999px}
-.book button[data-read]{background:var(--mint);color:#10221c;border-color:var(--mint)}
-.book button[data-guides],.book button[data-quiz]{background:#ffffff0a}
-.reader{background:#111827;border-color:#ffffff25;box-shadow:0 30px 90px #0008}
-.bar{align-items:center;border-bottom:1px solid var(--line);padding:12px 17px}
-.bar button{margin:0}
-@media(max-width:900px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px 15px}}
-@media(max-width:620px){.wrap{width:calc(100% - 26px)}.hero{padding:38px 0 22px}.hero:after{width:120px;height:120px;right:0}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 12px}.book{padding:9px 9px 13px}.book h2{font-size:.98rem}.book button{font-size:.74rem;padding:8px 10px}.state{font-size:.9rem}}
+.book .cover{box-shadow:0 16px 36px #0006}
+.book h2{margin:14px 2px 3px;font-size:1.06rem;line-height:1.22;letter-spacing:-.02em}
+.author{margin:0 2px;color:var(--muted);font-size:.88rem}
+.progress{height:6px;margin:12px 2px 0;border-radius:99px;background:#ffffff14;overflow:hidden}
+.progress span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--mint),var(--lilac))}
+.progress-label{margin:6px 2px 14px;color:var(--soft);font-size:.78rem}
+.book-actions{display:grid;gap:8px;margin-top:auto}
+.book-actions .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* Fenêtres : lecture, fiches, quiz */
+.reader{width:min(1050px,94vw);height:min(88vh,900px);max-width:none;max-height:none;padding:0;border:1px solid #ffffff25;border-radius:20px;background:#111827;color:var(--ink);box-shadow:0 30px 90px #0008}
+.reader::backdrop{background:#05070bdc}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 17px;border-bottom:1px solid var(--line)}
+.body{height:calc(100% - 57px);background:#fff}
+.body iframe{width:100%;height:100%;border:0}
+.reader h2{margin:6px 0;font-size:1.2rem}
+.reader .eyebrow{margin:0}
+.reader button{padding:9px 15px;border:1px solid var(--line);border-radius:999px;background:#ffffff0d;color:var(--ink);font-weight:700;cursor:pointer}
+.reader button:hover{background:#ffffff18}
+.reader button[type="submit"],.reader button[data-start-quiz]{background:var(--mint);border-color:var(--mint);color:#10231d}
+
+@media(max-width:620px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 12px}
+  .book{padding:9px 9px 13px}
+  .resume{flex-direction:column;align-items:flex-start;border-radius:22px 22px 40px 22px}
+  .resume-cover{width:84px}
+  .resume-body{width:100%}
+}
 </style></head><body>
-<header class="top"><div class="wrap nav"><a class="brand" href="index.html">Mind<span>Flow</span></a><a href="bibliotheque.html">Explorer la bibliothèque ↗</a></div></header>
-<main class="wrap"><section class="hero"><div class="eyebrow">Ton espace de lecture</div><h1>Ma bibliothèque.</h1><p class="muted">Retrouve ici les œuvres gratuites, achetées ou ajoutées à ton compte.</p></section><div id="state" class="muted">Chargement de tes livres…</div><section class="grid" id="books"></section></main>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="index.html">Mind<span>Flow</span></a>
+  <nav class="links" aria-label="Navigation principale">
+    <a href="catalogue.html">Catalogue</a>
+    <a href="bibliotheque.html" data-keep>Bibliothèque</a>
+    <a href="ma-bibliotheque.html" aria-current="page" data-keep>Ma bibliothèque</a>
+    <a class="navcta" href="espace-apprenant.html">Mon espace</a>
+  </nav>
+</div></header>
+<main class="wrap">
+  <section class="hero"><span class="eyebrow">Ton espace de lecture</span><h1>Ma bibliothèque.</h1><p>Retrouve ici les œuvres gratuites, achetées ou ajoutées à ton compte, ta progression, tes fiches et tes quiz.</p></section>
+  <div id="state">Chargement de tes livres…</div>
+  <section class="resume" id="resume" hidden></section>
+  <section class="grid" id="books"></section>
+</main>
 <dialog class="reader" id="reader"><div class="bar"><strong id="readerTitle">Lecture MindFlow</strong><button id="close">Fermer ✕</button></div><div class="body" id="readerBody"></div></dialog>
-<dialog class="reader" id="guideDialog"><div class="bar"><strong id="guideHeading">Fiches pédagogiques</strong><button id="guideClose">Fermer ✕</button></div><div class="body" style="background:#111521;color:#f7f7fb;overflow:auto;padding:22px" id="guideBody"></div></dialog>\n<dialog class="reader" id="quizDialog"><div class="bar"><strong id="quizHeading">Quiz de lecture</strong><button id="quizClose">Fermer ✕</button></div><div class="body" style="background:#111521;color:#f7f7fb;overflow:auto;padding:22px" id="quizBody"></div></dialog>\n<script>window.addEventListener("error",e=>{const n=document.getElementById("loading")||document.getElementById("state");if(n)n.textContent="Une erreur technique empêche le chargement. Actualise la page ; si le problème persiste, contacte MindFlow."});window.addEventListener("unhandledrejection",e=>{const n=document.getElementById("loading")||document.getElementById("state");if(n)n.textContent="La connexion au service a échoué. Vérifie ta connexion puis actualise la page."});</script><script>
+<dialog class="reader" id="guideDialog"><div class="bar"><strong id="guideHeading">Fiches pédagogiques</strong><button id="guideClose">Fermer ✕</button></div><div class="body" style="background:#111521;color:#f7f7fb;overflow:auto;padding:22px" id="guideBody"></div></dialog>
+<dialog class="reader" id="quizDialog"><div class="bar"><strong id="quizHeading">Quiz de lecture</strong><button id="quizClose">Fermer ✕</button></div><div class="body" style="background:#111521;color:#f7f7fb;overflow:auto;padding:22px" id="quizBody"></div></dialog>
+<script src="bibliotheque-ui.js?v=20261102-1"></script>
+<script>window.addEventListener("error",e=>{const n=document.getElementById("loading")||document.getElementById("state");if(n)n.textContent="Une erreur technique empêche le chargement. Actualise la page ; si le problème persiste, contacte MindFlow."});window.addEventListener("unhandledrejection",e=>{const n=document.getElementById("loading")||document.getElementById("state");if(n)n.textContent="La connexion au service a échoué. Vérifie ta connexion puis actualise la page."});</script><script>
 window.mfLoadSupabase=async function(){
  if(window.supabase&&typeof window.supabase.createClient==="function")return window.supabase;
  const sources=["https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js","https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js","https://cdnjs.cloudflare.com/ajax/libs/supabase/2.49.4/umd/supabase.min.js"];
@@ -47,6 +84,7 @@ window.mfLoadSupabase=async function(){
 const KEY="sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil",URL="https://vzgmhdxxlgdiimqtincf.supabase.co",API=URL+"/functions/v1/mindflow-library";
 const supa=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const {coverHTML}=window.MFLib;
 
 async function learnerApi(payload){const {data:{session}}=await supa.auth.getSession();if(!session?.user){location.href="espace-apprenant.html?mode=login";return null}const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+session.access_token},body:JSON.stringify(payload)});const d=await r.json();if(!r.ok||!d.success)throw Error(d.error||"Opération impossible.");return d}
 
@@ -67,7 +105,35 @@ async function openQuizzesForSameBook(){if(currentQuizBook)await openQuizzes(cur
 async function fileFor(id,action){const {data:{session}}=await supa.auth.getSession();if(!session?.user){location.href="espace-apprenant.html?mode=login";return null}const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+session.access_token},body:JSON.stringify({action,book_id:id})});const d=await r.json();if(!r.ok||!d.success)throw Error(d.error||"Accès indisponible.");return d}
 async function read(id){try{const d=await fileFor(id,"open");if(!d)return;await saveProgress(id,0,{mode:d.file_kind,started_at:new Date().toISOString()});$("#readerTitle").textContent=d.file_name||"Lecture MindFlow";$("#readerBody").innerHTML="";$("#reader").showModal();if(d.file_kind==="pdf"){const f=document.createElement("iframe");f.src=d.url;f.title=d.file_name;$("#readerBody").appendChild(f)}else{const holder=document.createElement("div");holder.style.cssText="height:100%;color:#111";$("#readerBody").appendChild(holder);if(!window.ePub)await new Promise((resolve,reject)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js";s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});const rendition=window.ePub(d.url).renderTo(holder,{width:"100%",height:"100%"});rendition.on("relocated",loc=>{const pct=Number(loc?.start?.percentage||0)*100;saveProgress(id,Math.min(99.9,Math.max(0,pct)),{href:loc?.start?.href||"",cfi:loc?.start?.cfi||""})});await rendition.display()}}catch(e){alert(e.message)}}
 async function download(id){try{const d=await fileFor(id,"download");if(!d)return;const a=document.createElement("a");a.href=d.url;a.download=d.file_name||"livre";a.rel="noopener";a.click()}catch(e){alert(e.message)}}
-async function load(){try{const authResult=await Promise.race([supa.auth.getSession(),new Promise((_,reject)=>setTimeout(()=>reject(Error("La vérification de ta session prend trop de temps. Actualise la page.")),12000))]);const {data:{session}}=authResult;if(!session?.user){location.href="espace-apprenant.html?mode=login&next="+encodeURIComponent("ma-bibliotheque.html");return}const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);let r;try{r=await fetch(API+"?mine=1",{headers:{apikey:KEY,Authorization:"Bearer "+session.access_token},signal:controller.signal})}finally{clearTimeout(timer)}const d=await r.json();if(!r.ok||!d.success)throw Error(d.error||"Impossible de charger ta bibliothèque.");const books=d.books||[];$("#state").textContent=books.length?books.length+" livre"+(books.length>1?"s":"")+" dans ta bibliothèque":"Ta bibliothèque est encore vide.";$("#books").innerHTML=books.length?books.map(b=>'<article class="book"><div class="cover">'+(b.cover_url?'<img src="'+esc(b.cover_url)+'" alt="Couverture de '+esc(b.title)+'">':'<span>✳</span>')+'</div><h2>'+esc(b.title)+'</h2><p class="author">'+esc(b.author_name)+'</p>'+(b.reading_progress?'<p class="author">Progression : '+Number(b.reading_progress.progress_percent||0).toFixed(0)+' %</p>':'<p class="author">Pas encore commencé</p>')+(b.has_access?'<button type="button" data-read="'+esc(b.id)+'">Lire maintenant ↗</button>':'')+(b.can_download&&b.has_access?'<button type="button" data-download="'+esc(b.id)+'">Télécharger</button>':'')+'<button type="button" data-quiz="'+esc(b.id)+'" data-title="'+esc(b.title)+'">Quiz</button><button type="button" data-guides="'+esc(b.id)+'" data-title="'+esc(b.title)+'">Fiches</button></article>').join(""):"";$("#books").querySelectorAll("[data-read]").forEach(b=>b.addEventListener("click",()=>read(b.dataset.read)));$("#books").querySelectorAll("[data-download]").forEach(b=>b.addEventListener("click",()=>download(b.dataset.download)));$("#books").querySelectorAll("[data-quiz]").forEach(b=>b.addEventListener("click",()=>openQuizzes(b.dataset.quiz,b.dataset.title)));$("#books").querySelectorAll("[data-guides]").forEach(b=>b.addEventListener("click",()=>openGuides(b.dataset.guides,b.dataset.title)));const params=new URLSearchParams(location.search),target=params.get("book"),mode=params.get("open");if(target&&books.some(x=>x.id===target)){const selected=books.find(x=>x.id===target);if(mode==="guides")openGuides(target,selected.title);else if(mode==="quiz"){currentQuizBook=target;currentQuizTitle=selected.title;openQuizzes(target,selected.title)}else if(mode==="progress"){$("#guideHeading").textContent="Progression · "+selected.title;$("#guideBody").innerHTML='<p class="muted">'+(selected.reading_progress?"Progression enregistrée : "+Number(selected.reading_progress.progress_percent||0).toFixed(0)+" %.":"Tu n’as pas encore commencé cet ouvrage. La progression sera disponible lorsque la lecture sera activée pour ce fichier.")+'</p>';$("#guideDialog").showModal()}}}catch(e){$("#state").textContent=e.name==="AbortError"?"Le serveur met trop de temps à répondre. Réessaie dans quelques instants.":(e.message||"Impossible de charger ta bibliothèque.")}}
+function progressInfo(b){
+ const p=b.reading_progress,pct=Math.round(Number(p?.progress_percent||0)),done=!!p?.completed_at||pct>=100;
+ const label=done?"Terminé":p?(pct>0?pct+" % lu":"Commencé"):"Pas encore commencé";
+ return {pct,done,started:!!p,label,width:done?100:(p?Math.max(pct,3):0)};
+}
+function bookCard(b){
+ const pr=progressInfo(b);
+ const readLabel=pr.started&&!pr.done?"Reprendre la lecture ↗":"Lire maintenant ↗";
+ return '<article class="book">'+coverHTML(b)+'<h2>'+esc(b.title)+'</h2><p class="author">'+esc(b.author_name||"")+'</p>'
+  +'<div class="progress" role="img" aria-label="'+esc(pr.label)+'"><span style="width:'+pr.width+'%"></span></div><p class="progress-label">'+esc(pr.label)+'</p>'
+  +'<div class="book-actions">'
+  +(b.has_access&&b.can_read?'<button type="button" class="btn primary small" data-read="'+esc(b.id)+'">'+readLabel+'</button>':'')
+  +'<div class="row2"><button type="button" class="btn small" data-guides="'+esc(b.id)+'" data-title="'+esc(b.title)+'">Fiches</button><button type="button" class="btn small" data-quiz="'+esc(b.id)+'" data-title="'+esc(b.title)+'">Quiz</button></div>'
+  +(b.can_download&&b.has_access?'<button type="button" class="btn small" data-download="'+esc(b.id)+'">Télécharger</button>':'')
+  +'</div></article>';
+}
+const EMPTY_SHELF='<div class="empty"><h3>Ta bibliothèque est encore vide</h3><p>Explore les œuvres et ajoute celles qui t’intéressent : tu les retrouveras ici avec ta progression.</p><a class="btn primary" href="bibliotheque.html">Explorer la bibliothèque ↗</a></div>';
+function renderResume(books){
+ const el=$("#resume");
+ const cur=books.filter(b=>b.has_access&&b.can_read&&b.reading_progress&&!b.reading_progress.completed_at&&Number(b.reading_progress.progress_percent||0)<100)
+  .sort((a,b)=>String(b.reading_progress.last_opened_at||"").localeCompare(String(a.reading_progress.last_opened_at||"")))[0];
+ if(!cur){el.hidden=true;el.innerHTML="";return}
+ const pr=progressInfo(cur);
+ el.innerHTML='<div class="resume-cover">'+coverHTML(cur,{eager:true})+'</div><div class="resume-body"><span class="eyebrow">Reprendre ta lecture</span><h2>'+esc(cur.title)+'</h2><p class="author" style="margin:0">'+esc(cur.author_name||"")+'</p>'
+  +'<div class="progress" role="img" aria-label="'+esc(pr.label)+'"><span style="width:'+pr.width+'%"></span></div><p class="progress-label" style="margin-bottom:0">'+esc(pr.label)+'</p>'
+  +'<button type="button" class="btn primary" data-read="'+esc(cur.id)+'">Reprendre la lecture ↗</button></div>';
+ el.hidden=false;
+}
+async function load(){try{const authResult=await Promise.race([supa.auth.getSession(),new Promise((_,reject)=>setTimeout(()=>reject(Error("La vérification de ta session prend trop de temps. Actualise la page.")),12000))]);const {data:{session}}=authResult;if(!session?.user){location.href="espace-apprenant.html?mode=login&next="+encodeURIComponent("ma-bibliotheque.html");return}const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),15000);let r;try{r=await fetch(API+"?mine=1",{headers:{apikey:KEY,Authorization:"Bearer "+session.access_token},signal:controller.signal})}finally{clearTimeout(timer)}const d=await r.json();if(!r.ok||!d.success)throw Error(d.error||"Impossible de charger ta bibliothèque.");const books=d.books||[];$("#state").textContent=books.length?books.length+" livre"+(books.length>1?"s":"")+" dans ta bibliothèque":"Ta bibliothèque est encore vide.";$("#books").innerHTML=books.length?books.map(bookCard).join(""):EMPTY_SHELF;renderResume(books);document.querySelectorAll("[data-read]").forEach(b=>b.addEventListener("click",()=>read(b.dataset.read)));$("#books").querySelectorAll("[data-download]").forEach(b=>b.addEventListener("click",()=>download(b.dataset.download)));$("#books").querySelectorAll("[data-quiz]").forEach(b=>b.addEventListener("click",()=>openQuizzes(b.dataset.quiz,b.dataset.title)));$("#books").querySelectorAll("[data-guides]").forEach(b=>b.addEventListener("click",()=>openGuides(b.dataset.guides,b.dataset.title)));const params=new URLSearchParams(location.search),target=params.get("book"),mode=params.get("open");if(target&&books.some(x=>x.id===target)){const selected=books.find(x=>x.id===target);if(mode==="guides")openGuides(target,selected.title);else if(mode==="quiz"){currentQuizBook=target;currentQuizTitle=selected.title;openQuizzes(target,selected.title)}else if(mode==="read"){if(selected.has_access&&selected.can_read)read(target)}else if(mode==="progress"){$("#guideHeading").textContent="Progression · "+selected.title;$("#guideBody").innerHTML='<p class="muted">'+(selected.reading_progress?"Progression enregistrée : "+Number(selected.reading_progress.progress_percent||0).toFixed(0)+" %.":"Tu n’as pas encore commencé cet ouvrage. La progression sera disponible lorsque la lecture sera activée pour ce fichier.")+'</p>';$("#guideDialog").showModal()}}}catch(e){$("#state").textContent=e.name==="AbortError"?"Le serveur met trop de temps à répondre. Réessaie dans quelques instants.":(e.message||"Impossible de charger ta bibliothèque.")}}
 $("#close").addEventListener("click",()=>{$("#reader").close();$("#readerBody").innerHTML=""});$("#quizClose").addEventListener("click",()=>$("#quizDialog").close());$("#guideClose").addEventListener("click",()=>$("#guideDialog").close());load();
 
 }catch(error){console.error("[MindFlow] Démarrage impossible",error);const node=document.getElementById("loading")||document.getElementById("state");if(node)node.textContent="Connexion impossible : "+(error?.message||"vérifie ton réseau puis réessaie.")}})();

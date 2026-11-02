@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 
 const pages = [
   "bibliotheque.html",
+  "ouvrage.html",
   "ma-bibliotheque.html",
   "admin-bibliotheque.html",
   "verification-professionnels.html",
@@ -27,6 +28,15 @@ for (const page of pages) {
     console.error(page + " — aucun script inline détecté");
   } else if (!pageFailed) {
     console.log(page + ": " + scripts.length + " script(s) vérifié(s)");
+  }
+}
+for (const file of ["bibliotheque-ui.js"]) {
+  try {
+    new Function(readFileSync(file, "utf8"));
+    console.log(file + ": syntaxe vérifiée");
+  } catch (error) {
+    failed = true;
+    console.error(file + ": " + error.message);
   }
 }
 if (failed) process.exit(1);

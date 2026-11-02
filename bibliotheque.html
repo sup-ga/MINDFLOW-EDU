@@ -1,71 +1,363 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#111827"><meta name="description" content="La bibliothèque MindFlow : lire, comprendre et progresser grâce aux œuvres et à leurs ressources pédagogiques."><title>Bibliothèque — MindFlow</title>
+<html lang="fr"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0c1220">
+<meta name="description" content="La bibliothèque MindFlow : lire, comprendre et progresser grâce aux œuvres et à leurs ressources pédagogiques.">
+<title>Bibliothèque — MindFlow</title>
+<link rel="stylesheet" href="bibliotheque.css?v=20261102-1">
 <style>
-:root{color-scheme:dark;--bg:#101522;--panel:#171f30;--panel2:#202b40;--ink:#f7f8fc;--muted:#aab5c8;--mint:#a9f4d0;--lilac:#cbbcff;--gold:#f2d49b;--line:#ffffff19;--max:1240px}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 82% 0%,#6e5cae35,transparent 32%),radial-gradient(ellipse at 5% 32%,#3e9c8440,transparent 30%),var(--bg);color:var(--ink);font:16px/1.55 Inter,ui-sans-serif,system-ui,sans-serif}a{color:inherit;text-decoration:none}button,input,select{font:inherit}.wrap{width:min(var(--max),calc(100% - 44px));margin:auto}.top{position:sticky;top:0;z-index:20;background:#101522dc;backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}.nav{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:900;font-size:1.35rem;letter-spacing:-.05em}.brand span{color:var(--mint)}.links{display:flex;align-items:center;gap:24px;color:var(--muted);font-size:.92rem}.links a:hover{color:var(--mint)}.navcta{padding:10px 16px;border-radius:999px;background:var(--mint);color:#13241e;font-weight:800}.hero{padding:66px 0 34px;display:grid;grid-template-columns:1.05fr .95fr;align-items:center;gap:38px}.kicker,.section-kicker{color:var(--mint);font-size:.73rem;font-weight:850;letter-spacing:.18em;text-transform:uppercase}.hero h1{font-size:clamp(3rem,6.3vw,5.7rem);letter-spacing:-.075em;line-height:.94;margin:18px 0 20px;max-width:720px}.hero h1 em{font-style:normal;color:var(--mint)}.hero p{color:var(--muted);font-size:1.06rem;max-width:600px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:26px}.btn{border:1px solid var(--line);border-radius:999px;padding:12px 18px;background:#ffffff0a;color:var(--ink);font-weight:800;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}.btn.primary{background:var(--mint);color:#13241e;border-color:var(--mint)}.btn:hover{transform:translateY(-1px)}.hero-art{position:relative;min-height:390px;display:grid;place-items:center}.art-orbit{position:absolute;width:360px;height:360px;border-radius:50%;border:1px solid #ffffff20;box-shadow:0 0 100px #9c8dff22,inset 0 0 80px #a9f4d014}.art-book{position:relative;width:220px;height:300px;transform:rotate(-7deg);border-radius:10px 22px 22px 10px;background:linear-gradient(145deg,#d8b98b,#795a79 55%,#263b4b);box-shadow:22px 26px 65px #0008;display:flex;flex-direction:column;justify-content:space-between;padding:24px;color:#fff;overflow:hidden}.art-book:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#0005,transparent 12%,#fff2 13%,transparent 16%),radial-gradient(circle at 75% 22%,#f4d9a7aa,transparent 28%)}.art-book strong,.art-book small{position:relative;text-shadow:0 2px 8px #0008}.art-book strong{font:700 2rem/1.05 Georgia,serif}.art-book small{letter-spacing:.14em;text-transform:uppercase}.art-note{position:absolute;right:0;bottom:34px;padding:16px 20px;background:#1d2940;border:1px solid var(--line);border-radius:18px;box-shadow:0 18px 45px #0005;color:var(--muted);font-size:.86rem}.art-note b{display:block;color:var(--mint);font-size:1rem}.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:8px 0 70px}.pillar{padding:19px 21px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(140deg,#ffffff0b,#ffffff02)}.pillar b{display:block;font-size:1.03rem}.pillar span{color:var(--muted);font-size:.87rem}.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:0 0 20px}.section-head h2{font-size:clamp(1.7rem,3vw,2.5rem);letter-spacing:-.055em;margin:7px 0}.section-head p{color:var(--muted);margin:0}.toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 210px;gap:12px;margin:22px 0 14px}.field{width:100%;border:1px solid var(--line);background:#171f30;color:var(--ink);border-radius:14px;padding:14px 16px;outline:none}.field:focus{border-color:var(--mint);box-shadow:0 0 0 3px #a9f4d01c}.chips{display:flex;gap:9px;overflow:auto;padding:5px 0 22px;scrollbar-width:thin}.chip{white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:8px 15px;color:var(--muted);background:transparent;cursor:pointer}.chip.active{background:var(--mint);color:#14271f;border-color:var(--mint);font-weight:800}.count{color:var(--muted);font-size:.88rem;margin:0 0 18px}.shelf{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:30px 22px;padding-bottom:78px}.book{min-width:0;cursor:pointer}.cover{position:relative;aspect-ratio:3/4;border-radius:8px 20px 20px 8px;overflow:hidden;background:linear-gradient(145deg,#304d59,#59486f 65%,#a16d76);box-shadow:0 18px 42px #0005;isolation:isolate}.cover:before{content:"";position:absolute;z-index:2;inset:0;background:linear-gradient(90deg,#0005,transparent 10%,#fff2 11%,transparent 15%);pointer-events:none}.cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}.book:hover .cover img{transform:scale(1.045)}.cover-fallback{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:22px;color:#fff;background:radial-gradient(circle at 80% 20%,#f4d49c77,transparent 30%),linear-gradient(145deg,#345d62,#64517b 68%,#ad777a)}.cover-fallback small{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase}.cover-fallback strong{font:700 clamp(1.15rem,2vw,1.8rem)/1.08 Georgia,serif;max-width:95%;text-shadow:0 2px 9px #0008}.cover-fallback em{font-size:.75rem;font-style:normal}.book-meta{padding:15px 2px 0}.genre{color:var(--mint);font-size:.69rem;font-weight:850;letter-spacing:.12em;text-transform:uppercase}.book h3{font-size:1.1rem;line-height:1.2;margin:7px 0 4px;letter-spacing:-.025em}.author{color:var(--muted);font-size:.88rem;margin:0}.book-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:13px}.access{font-size:.75rem;color:var(--gold);font-weight:750}.discover{font-size:.8rem;font-weight:800;color:var(--mint)}.empty{grid-column:1/-1;padding:60px 20px;text-align:center;border:1px dashed var(--line);border-radius:24px;color:var(--muted)}.learning{margin:0 0 78px;padding:35px;border-radius:28px;background:linear-gradient(120deg,#24384a,#302c49 65%,#46334b);border:1px solid #ffffff20;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:center}.learning h2{font-size:clamp(1.8rem,3.5vw,3rem);line-height:1.02;letter-spacing:-.06em;margin:10px 0}.learning p{color:#d1d6e2}.steps{display:grid;grid-template-columns:1fr 1fr;gap:12px}.step{padding:15px;background:#ffffff0d;border:1px solid #ffffff18;border-radius:16px}.step b{display:block}.step span{color:#c1c8d7;font-size:.83rem}.detail{width:min(1050px,94vw);max-height:92vh;padding:0;border:1px solid var(--line);border-radius:26px;background:#141c2b;color:var(--ink);overflow:auto}.detail::backdrop{background:#050812d9;backdrop-filter:blur(9px)}.detail-layout{display:grid;grid-template-columns:.78fr 1.22fr;gap:30px;padding:30px}.detail-cover{position:sticky;top:0;align-self:start}.detail-cover>img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px 20px 20px 10px;box-shadow:0 22px 55px #0007}.detail-cover .cover-fallback{position:relative;aspect-ratio:3/4;border-radius:10px 20px 20px 10px}.preview-strip{display:flex;gap:9px;overflow:auto;margin-top:13px;padding-bottom:6px}.preview-strip img{width:78px;height:100px;object-fit:cover;border-radius:8px;border:1px solid var(--line);cursor:zoom-in}.detail-copy h2{font-size:clamp(2rem,4vw,3.4rem);letter-spacing:-.065em;line-height:1;margin:10px 0}.detail-subtitle{color:var(--lilac);font-size:1.1rem}.detail-author{color:var(--muted);margin:10px 0 18px}.detail-desc{font-size:1rem;color:#e1e5ef;white-space:pre-line}.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:22px 0}.fact{padding:12px 14px;border:1px solid var(--line);border-radius:13px;background:#ffffff06}.fact small{display:block;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em}.fact b{font-size:.9rem}.detail-actions{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0}.learning-tools{border-top:1px solid var(--line);padding-top:20px;margin-top:20px}.learning-tools h3{margin:0 0 6px}.learning-tools p{color:var(--muted);font-size:.9rem}.tool-links{display:flex;flex-wrap:wrap;gap:9px}.tool-links a,.tool-links button{border:1px solid var(--line);background:#ffffff08;border-radius:12px;padding:10px 13px;color:var(--ink);font-weight:750;cursor:pointer}.close-detail{position:sticky;top:10px;float:right;margin:12px 12px -54px 0;z-index:3;border:1px solid var(--line);border-radius:50%;width:40px;height:40px;background:#111a2b;color:white;font-size:1.2rem;cursor:pointer}.reader{width:min(1100px,96vw);height:min(90vh,950px);padding:0;border:1px solid var(--line);border-radius:20px;background:#111827;color:white;max-width:none;max-height:none}.reader::backdrop{background:#05070bdd}.readerbar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}.readerbar button{border:1px solid var(--line);background:#ffffff0c;color:white;border-radius:999px;padding:8px 12px;cursor:pointer}.readerbody{height:calc(100% - 58px);background:white}.readerbody iframe{width:100%;height:100%;border:0}footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:.88rem}@media(max-width:900px){.hero{grid-template-columns:1fr .8fr}.shelf{grid-template-columns:repeat(3,1fr)}.detail-layout{gap:20px;padding:24px}}@media(max-width:650px){.wrap{width:min(100% - 28px,var(--max))}.nav{height:66px}.links{gap:12px;font-size:.8rem}.links a:first-child{display:none}.navcta{padding:9px 11px}.hero{grid-template-columns:1fr;padding:45px 0 25px;gap:0}.hero-art{min-height:280px}.art-orbit{width:260px;height:260px}.art-book{width:170px;height:235px;padding:18px}.art-book strong{font-size:1.55rem}.pillars{grid-template-columns:1fr;margin-bottom:52px}.toolbar{grid-template-columns:1fr}.shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 14px}.book h3{font-size:1rem}.learning{grid-template-columns:1fr;padding:24px}.detail-layout{grid-template-columns:1fr;padding:22px;gap:22px}.detail-cover{position:relative}.detail-cover>img,.detail-cover .cover-fallback{max-height:360px;aspect-ratio:4/3;object-fit:contain}.detail-copy h2{font-size:2.2rem}.facts{grid-template-columns:1fr 1fr}.detail{width:100vw;height:100dvh;max-height:100dvh;border-radius:0;border:0}.reader{width:100vw;height:100dvh;border-radius:0;border:0}}@media(max-width:390px){.links a:nth-child(2){display:none}.facts{grid-template-columns:1fr}}
+/* ── Accueil de la bibliothèque ──────────────────────── */
+.hero{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:40px;padding:54px 0 30px}
+.hero[data-empty="true"]{grid-template-columns:1fr}
+.hero h1{margin:18px 0 18px;max-width:700px;font-size:clamp(2.9rem,6.2vw,5.6rem);line-height:.94;letter-spacing:-.075em}
+.hero h1 em{font:italic 400 1em var(--serif);letter-spacing:-.06em;color:var(--mint)}
+.hero p{max-width:540px;margin:0;color:var(--muted);font-size:1.06rem;line-height:1.8}
+.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:28px}
+.hero-stats{margin-top:22px!important;color:var(--soft)!important;font-size:.88rem!important}
 
-/* MindFlow Library — editorial redesign */
-:root{--bg:#0c1220;--panel:#151f31;--mint:#9ff3d1;--lilac:#c9b9ff;--line:#ffffff20}
-body{background:radial-gradient(ellipse at 78% 3%,#7c6bd52c,transparent 32%),radial-gradient(ellipse at 4% 42%,#45c9a51c,transparent 30%),#0c1220}
-.wrap{width:min(1320px,calc(100% - 52px))}
-.top{background:#0c1220d9;border-bottom-color:#ffffff18}
-.nav{height:72px}.brand{font-size:1.45rem}.links{gap:27px}
-.hero{padding:58px 0 38px;grid-template-columns:1fr 1.05fr;gap:42px;min-height:500px}
-.hero h1{font-size:clamp(3.4rem,6.8vw,6.4rem);max-width:720px;line-height:.91}
-.hero p{font-size:1.08rem;line-height:1.8;max-width:560px}
-.hero-art{min-height:440px;display:block;position:relative;isolation:isolate}
-.hero-art:before{content:"";position:absolute;inset:7% 5%;border-radius:48%;background:radial-gradient(ellipse,#a9f4d02c,transparent 68%);filter:blur(18px);z-index:-1}
-.hero-art .art-orbit{width:82%;height:auto;aspect-ratio:1;left:9%;top:7%;border-color:#ffffff20;box-shadow:0 0 90px #9c8dff24,inset 0 0 90px #a9f4d014}
-.hero-art .art-book{display:none}
-.art-note{right:0;bottom:7%;z-index:5;padding:17px 20px;border-radius:18px;background:#18243aee;backdrop-filter:blur(18px)}
-.hero-showcase{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;align-items:center;padding:24px 6%}
-.showcase-book{position:relative;overflow:hidden;border-radius:13px 22px 22px 13px;aspect-ratio:3/4;box-shadow:0 25px 65px #0008;transform:rotate(-8deg) translateY(20px);background:linear-gradient(145deg,#345d62,#64517b)}
-.showcase-book:nth-child(2){transform:rotate(3deg) translateY(-35px) scale(1.1);z-index:2}
-.showcase-book:nth-child(3){transform:rotate(9deg) translateY(18px)}
-.showcase-book img{width:100%;height:100%;object-fit:cover;display:block}
-.showcase-book span{position:absolute;inset:auto 0 0;padding:40px 13px 13px;background:linear-gradient(transparent,#080d19d9);font-weight:800;font-size:.9rem}
-.pillars{gap:12px;margin:0 0 76px}
-.pillar{padding:17px 20px;border-radius:18px 18px 36px 18px;background:linear-gradient(130deg,#ffffff0d,#ffffff03);border-color:#ffffff18}
-#explorer{padding-top:8px}
-.section-head{margin-bottom:14px}.section-head h2{font-size:clamp(2rem,3.8vw,3rem)}
-.toolbar{grid-template-columns:minmax(220px,1fr) 230px;margin:25px 0 12px}
-.field{border-radius:15px;padding:15px 17px;background:#141f32}
-.chips{padding-bottom:17px}.chip{border-radius:999px;padding:9px 16px}
-.shelf{grid-template-columns:repeat(5,minmax(0,1fr));gap:35px 23px;padding-bottom:82px}
-.book{cursor:pointer}.cover{border-radius:8px 22px 22px 8px;box-shadow:0 20px 42px #0006;transition:transform .35s,box-shadow .35s}
-.book:hover .cover{transform:translateY(-7px) rotate(-1deg);box-shadow:0 28px 52px #0008}
-.book-meta{padding-top:14px}.book h3{font-size:1.06rem}.genre{letter-spacing:.15em}
-.learning{border-radius:28px 28px 64px 28px;padding:clamp(25px,4vw,48px);background:radial-gradient(ellipse at 90% 0%,#9e8bff2b,transparent 38%),linear-gradient(125deg,#1b3440,#25213d 65%,#35243b);margin-bottom:80px}
-.step{border-radius:15px 15px 28px 15px;padding:17px;background:#ffffff0c}
-footer{padding:34px 0}
-@media(max-width:1050px){.shelf{grid-template-columns:repeat(4,minmax(0,1fr))}.hero{gap:20px}}
-@media(max-width:700px){.wrap{width:calc(100% - 28px)}.hero{grid-template-columns:1fr;padding:40px 0 22px;gap:4px}.hero-art{min-height:300px;margin-top:8px}.hero-showcase{padding:10px 7%}.showcase-book:nth-child(2){transform:rotate(3deg) translateY(-20px) scale(1.08)}.art-note{right:0;bottom:0;font-size:.76rem;padding:12px 14px}.pillars{margin-bottom:48px}.shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:25px 15px}.toolbar{grid-template-columns:1fr}.learning{padding:23px;border-radius:22px 22px 42px 22px}}
-@media(max-width:390px){.links{gap:8px}.links a{font-size:.76rem}.links a:nth-child(2){display:none}}
-</style></head><body>
-<header class="top"><div class="wrap nav"><a class="brand" href="index.html">Mind<span>Flow</span></a><nav class="links"><a href="catalogue.html">Catalogue</a><a href="bibliotheque.html">Bibliothèque</a><a href="ma-bibliotheque.html">Ma bibliothèque ↗</a><a class="navcta" href="espace-apprenant.html">Mon espace</a></nav></div></header>
+.hero-art{position:relative;min-height:400px;display:grid;place-items:center;isolation:isolate}
+.hero-art[hidden]{display:none}
+.hero-art:before{content:"";position:absolute;inset:6% 4%;z-index:-1;border-radius:48%;background:radial-gradient(ellipse,#9ff3d12e,transparent 68%);filter:blur(20px)}
+.showcase{display:flex;justify-content:center;align-items:center;width:100%}
+.showcase .sc{display:block;width:min(33%,205px);transition:transform .4s var(--ease)}
+.showcase[data-count="3"] .sc:nth-child(1){transform:rotate(-8deg) translate(16%,7%);z-index:1}
+.showcase[data-count="3"] .sc:nth-child(2){transform:translateY(-7%) scale(1.12);z-index:3}
+.showcase[data-count="3"] .sc:nth-child(3){transform:rotate(8deg) translate(-16%,7%);z-index:2}
+.showcase[data-count="2"] .sc{width:min(38%,215px)}
+.showcase[data-count="2"] .sc:nth-child(1){transform:rotate(-6deg) translateX(10%)}
+.showcase[data-count="2"] .sc:nth-child(2){transform:rotate(6deg) translate(-10%,5%)}
+.showcase[data-count="1"] .sc{width:min(46%,250px);transform:rotate(-3deg)}
+.showcase .sc:hover{z-index:5;transform:translateY(-10px) scale(1.05)}
+.art-note{position:absolute;right:0;bottom:-26px;z-index:6;max-width:250px;padding:15px 19px;border:1px solid var(--line);border-radius:18px;background:#18243aee;backdrop-filter:blur(16px);box-shadow:0 18px 45px #0006;color:var(--muted);font-size:.82rem;line-height:1.5}
+.art-note b{display:block;color:var(--mint);font-size:.98rem}
+
+/* ── Explorer ────────────────────────────────────────── */
+#explorer{padding-top:34px;scroll-margin-top:84px}
+.explorer-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:22px}
+.explorer-head h2{margin:8px 0 0;font-size:clamp(2rem,3.6vw,3rem);line-height:1;letter-spacing:-.06em}
+.count{margin:0;color:var(--muted);font-size:.9rem}
+
+.toolbar{display:grid;grid-template-columns:minmax(220px,1.6fr) repeat(3,minmax(150px,1fr));gap:12px}
+.field{width:100%;min-height:48px;padding:0 16px;border:1px solid var(--line);border-radius:14px;background:#141f32;color:var(--ink);outline:none}
+.field:focus{border-color:var(--mint);box-shadow:0 0 0 3px #9ff3d11f}
+.field[hidden]{display:none}
+
+.chips{display:flex;gap:9px;overflow-x:auto;padding:16px 0 6px;scrollbar-width:thin}
+.chip{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;padding:8px 15px;border:1px solid var(--line);border-radius:999px;background:transparent;color:var(--muted);cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+.chip:hover{border-color:#ffffff44;color:var(--ink)}
+.chip i{font-style:normal;font-size:.75rem;opacity:.7}
+.chip.active{background:var(--mint);border-color:var(--mint);color:#10231d;font-weight:800}
+.linkbtn{padding:0;border:0;background:none;color:var(--mint);font-weight:750;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.reset-row{min-height:26px;padding:8px 0 0;font-size:.88rem}
+
+.shelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:40px 26px;padding:26px 0 80px}
+.shelf>.empty{grid-column:1/-1}
+
+.book{display:block;min-width:0}
+.book .cover{transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+.book:hover .cover,.book:focus-visible .cover{transform:translateY(-8px) rotate(-1deg);box-shadow:0 32px 58px #0009}
+.book-body{padding:16px 2px 0}
+.book-kicker{overflow:hidden;color:var(--mint);font-size:.68rem;font-weight:850;letter-spacing:.13em;text-transform:uppercase;white-space:nowrap;text-overflow:ellipsis}
+.book h3{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:6px 0 3px;font-size:1.08rem;line-height:1.22;letter-spacing:-.02em}
+.book .author{margin:0;color:var(--muted);font-size:.88rem}
+.book-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.book-meta .tag{padding:3px 9px;font-size:.72rem}
+.book-foot{display:flex;justify-content:space-between;gap:8px;margin-top:12px;color:var(--soft);font-size:.78rem}
+.book-foot b{flex:none;color:var(--mint);font-weight:800;transition:transform .25s var(--ease)}
+.book:hover .book-foot b{transform:translateX(3px)}
+
+/* ── Au-delà de la lecture ───────────────────────────── */
+.learning{display:grid;grid-template-columns:1fr 1.1fr;gap:clamp(24px,5vw,60px);align-items:center;margin:0 0 80px;padding:clamp(26px,4.5vw,52px);
+  border:1px solid #ffffff20;border-radius:30px 30px 70px 30px;
+  background:radial-gradient(ellipse at 92% 0%,#9e8bff2e,transparent 40%),linear-gradient(125deg,#1b3440,#25213d 65%,#35243b)}
+.learning h2{margin:14px 0 12px;font-size:clamp(1.9rem,3.6vw,3.1rem);line-height:1.02;letter-spacing:-.06em}
+.learning h2 em{font:italic 400 1em var(--serif);color:var(--mint)}
+.learning p{margin:0 0 22px;color:#d1d6e2}
+.steps{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0;padding:0;list-style:none}
+.steps li{display:flex;gap:13px;padding:17px;border:1px solid #ffffff18;border-radius:16px 16px 28px 16px;background:#ffffff0c}
+.steps .n{flex:none;font:italic 1.25rem var(--serif);color:var(--mint)}
+.steps b{display:block}
+.steps span.d{color:#c1c8d7;font-size:.84rem;line-height:1.55}
+
+@media(max-width:1000px){
+  .toolbar{grid-template-columns:repeat(3,1fr)}
+  .toolbar .field:first-child{grid-column:1/-1}
+}
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;gap:6px;padding-top:38px}
+  .hero-art{min-height:330px}
+  .learning{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .explorer-head{flex-direction:column;align-items:flex-start;gap:8px}
+  .toolbar{grid-template-columns:1fr}
+  .shelf{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 14px}
+  .steps{grid-template-columns:1fr}
+  .art-note{right:0;bottom:0;max-width:200px;padding:11px 14px;font-size:.76rem}
+}
+</style>
+</head><body>
+<header class="top"><div class="wrap nav">
+  <a class="brand" href="index.html">Mind<span>Flow</span></a>
+  <nav class="links" aria-label="Navigation principale">
+    <a href="catalogue.html">Catalogue</a>
+    <a href="bibliotheque.html" aria-current="page" data-keep>Bibliothèque</a>
+    <a href="ma-bibliotheque.html" data-keep>Ma bibliothèque</a>
+    <a class="navcta" href="espace-apprenant.html">Mon espace</a>
+  </nav>
+</div></header>
+
 <main class="wrap">
-<section class="hero"><div><div class="kicker">La bibliothèque des savoirs</div><h1>Lire. Comprendre.<br><em>Aller plus loin.</em></h1><p>Une œuvre n'est pas seulement un livre à ouvrir. C'est une porte vers des idées, des connaissances et de nouvelles compétences. Découvre les ressources, explore les œuvres et avance à ton rythme.</p><div class="hero-actions"><a class="btn primary" href="#explorer">Explorer les œuvres <span>↗</span></a><a class="btn" href="ma-bibliotheque.html">Retrouver mes lectures</a></div></div><div class="hero-art" aria-label="Quelques œuvres de la bibliothèque"><div class="art-orbit"></div><div class="hero-showcase" id="heroShowcase"><div class="showcase-book"></div><div class="showcase-book"></div><div class="showcase-book"></div></div><div class="art-note"><b>Une œuvre, plusieurs chemins</b>Lecture · Fiches · Quiz · Accompagnement</div></div></section>
-<section class="pillars"><article class="pillar"><b>01 · Le savoir</b><span>Des livres, documents et ressources choisis.</span></article><article class="pillar"><b>02 · La compréhension</b><span>Des fiches, analyses, exercices et quiz.</span></article><article class="pillar"><b>03 · L'accompagnement</b><span>Des enseignants et spécialistes pour progresser.</span></article></section>
-<section id="explorer"><div class="section-head"><div><div class="section-kicker">Le catalogue vivant</div><h2>À la découverte des œuvres</h2><p>Chaque ressource ouvre un parcours d'apprentissage.</p></div></div><div class="toolbar"><input class="field" id="search" type="search" placeholder="Rechercher un titre, un auteur, un thème…"><select class="field" id="sort"><option value="featured">Sélection MindFlow</option><option value="title">Titre A à Z</option><option value="author">Auteur A à Z</option></select></div><div class="chips" id="categories"><button class="chip active" data-category="">Toutes les œuvres</button></div><p class="count" id="count">Chargement des œuvres…</p><div class="shelf" id="books"><div class="empty">La bibliothèque s'ouvre…</div></div></section>
-<section class="learning"><div><div class="section-kicker">Au-delà de la lecture</div><h2>Ne te contente pas de lire. Comprends.</h2><p>Découvre les personnages, les idées, le contexte et les notions essentielles. Puis teste ta compréhension et, si tu en as besoin, trouve un enseignant pour t'accompagner.</p><a class="btn primary" href="ma-bibliotheque.html">Accéder à mon espace de lecture ↗</a></div><div class="steps"><div class="step"><b>Lire</b><span>Lecture en ligne ou téléchargement selon les droits.</span></div><div class="step"><b>Explorer</b><span>Résumé, fiche de lecture, analyse et vocabulaire.</span></div><div class="step"><b>Évaluer</b><span>Quiz et exercices pour vérifier ses acquis.</span></div><div class="step"><b>Être accompagné</b><span>Un enseignant peut aider à approfondir l'œuvre.</span></div></div></section>
-</main><footer><div class="wrap">© 2026 MindFlow · MindFlow, apprendre autrement. · <a href="catalogue.html">Retour au catalogue</a></div></footer>
-<dialog class="detail" id="detail"><button class="close-detail" id="closeDetail" aria-label="Fermer">×</button><div class="detail-layout"><div class="detail-cover" id="detailCover"></div><div class="detail-copy" id="detailCopy"></div></div></dialog>
-<dialog class="reader" id="reader"><div class="readerbar"><strong id="readerTitle">Lecture MindFlow</strong><div><button id="readerDownload">Télécharger</button> <button id="readerClose">Fermer ✕</button></div></div><div class="readerbody" id="readerBody"></div></dialog>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+  <section class="hero" id="hero">
+    <div>
+      <span class="eyebrow">La bibliothèque des savoirs</span>
+      <h1>Lire. Comprendre.<br><em>Aller plus loin.</em></h1>
+      <p>Une œuvre n'est pas seulement un livre à ouvrir. C'est une porte vers des idées, des connaissances et de nouvelles compétences. Découvre les œuvres, travaille-les à ton rythme.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="#explorer">Explorer les œuvres ↓</a>
+        <a class="btn" href="ma-bibliotheque.html">Retrouver mes lectures</a>
+      </div>
+      <p class="hero-stats" id="heroStats" aria-live="polite"></p>
+    </div>
+    <div class="hero-art" id="heroArt" aria-label="Quelques œuvres de la bibliothèque">
+      <div class="showcase" id="showcase" data-count="3">
+        <div class="sc skeleton"><div class="cover"></div></div>
+        <div class="sc skeleton"><div class="cover"></div></div>
+        <div class="sc skeleton"><div class="cover"></div></div>
+      </div>
+      <div class="art-note"><b>Une œuvre, plusieurs chemins</b>Lecture · Fiches · Quiz · Accompagnement</div>
+    </div>
+  </section>
+
+  <section id="explorer">
+    <div class="explorer-head">
+      <div>
+        <span class="eyebrow">Le catalogue vivant</span>
+        <h2>À la découverte des œuvres</h2>
+      </div>
+      <p class="count" id="count" aria-live="polite">Chargement des œuvres…</p>
+    </div>
+
+    <div class="toolbar" role="search">
+      <label class="sr-only" for="search">Rechercher dans la bibliothèque</label>
+      <input class="field" id="search" type="search" placeholder="Rechercher un titre, un auteur, un thème…" autocomplete="off">
+      <label class="sr-only" for="subject">Matière</label>
+      <select class="field" id="subject" hidden><option value="">Toutes les matières</option></select>
+      <label class="sr-only" for="level">Niveau</label>
+      <select class="field" id="level" hidden><option value="">Tous les niveaux</option></select>
+      <label class="sr-only" for="sort">Trier</label>
+      <select class="field" id="sort">
+        <option value="featured">Sélection MindFlow</option>
+        <option value="title">Titre A à Z</option>
+        <option value="author">Auteur A à Z</option>
+      </select>
+    </div>
+
+    <div class="chips" id="categories" role="group" aria-label="Collections">
+      <button class="chip active" type="button" data-category="" aria-pressed="true">Toutes les œuvres</button>
+    </div>
+    <div class="reset-row"><button class="linkbtn" id="reset" type="button" hidden>Réinitialiser les filtres</button></div>
+
+    <div class="shelf" id="books" aria-live="polite">
+      <div class="book skeleton"><div class="cover"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="book skeleton"><div class="cover"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="book skeleton"><div class="cover"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="book skeleton"><div class="cover"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+      <div class="book skeleton"><div class="cover"></div><div class="sk-line"></div><div class="sk-line short"></div></div>
+    </div>
+  </section>
+
+  <section class="learning">
+    <div>
+      <span class="eyebrow">Au-delà de la lecture</span>
+      <h2>Ne te contente pas de lire. <em>Comprends.</em></h2>
+      <p>Découvre les personnages, les idées, le contexte et les notions essentielles. Puis teste ta compréhension et, si tu en as besoin, trouve un enseignant pour t'accompagner.</p>
+      <a class="btn primary" href="ma-bibliotheque.html">Accéder à mon espace de lecture ↗</a>
+    </div>
+    <ol class="steps">
+      <li><span class="n">01</span><div><b>Lire</b><span class="d">En ligne ou en téléchargement, selon les droits de l'œuvre.</span></div></li>
+      <li><span class="n">02</span><div><b>Explorer</b><span class="d">Résumé, fiche de lecture, analyse et vocabulaire.</span></div></li>
+      <li><span class="n">03</span><div><b>Évaluer</b><span class="d">Quiz et exercices pour vérifier ses acquis.</span></div></li>
+      <li><span class="n">04</span><div><b>Être accompagné</b><span class="d">Un enseignant peut aider à approfondir l'œuvre.</span></div></li>
+    </ol>
+  </section>
+</main>
+
+<footer><div class="wrap">© 2026 MindFlow · Apprendre autrement. · <a href="catalogue.html">Retour au catalogue</a></div></footer>
+
+<script src="bibliotheque-ui.js?v=20261102-1"></script>
+<script>
 "use strict";
-const API="https://vzgmhdxxlgdiimqtincf.supabase.co/functions/v1/mindflow-library",KEY="sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil";
-const supa=window.supabase.createClient("https://vzgmhdxxlgdiimqtincf.supabase.co",KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const $=s=>document.querySelector(s),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])),norm=s=>String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-let books=[],categories=[],activeCategory="",selectedBook=null;
-function kindLabel(v){return ({school_reading:"Lecture scolaire",literary_work:"Œuvre littéraire",textbook:"Manuel",educational_resource:"Ressource pédagogique"})[v]||"Ressource MindFlow"}
-function coverMarkup(b,large=false){const visual=b.cover_url||(!large?(b.previews?.[0]?.url||null):null);return visual?'<img src="'+esc(visual)+'" alt="'+(b.cover_url?'Couverture':'Aperçu')+' de '+esc(b.title)+'" '+(large?'':'loading="lazy"')+'>':'<div class="cover-fallback"><small>MindFlow · '+esc(kindLabel(b.book_type))+'</small><strong>'+esc(b.title)+'</strong><em>'+esc(b.author_name||"")+'</em></div>'}
-function renderShowcase(){const host=$("#heroShowcase");if(!host)return;const picks=books.slice(0,3);host.innerHTML=picks.map(b=>{const src=b.cover_url||b.previews?.[0]?.url;return '<div class="showcase-book">'+(src?'<img src="'+esc(src)+'" alt="Couverture de '+esc(b.title)+'">':'<span>'+esc(b.title)+'</span>')+'<span>'+esc(b.title)+'</span></div>'}).join("")}
-function render(){renderShowcase();let list=books.filter(b=>!activeCategory||(b.library_book_categories||[]).some(x=>x.category?.slug===activeCategory));const q=norm($("#search").value);if(q)list=list.filter(b=>norm([b.title,b.subtitle,b.author_name,b.description,b.publisher_name,b.country_of_origin].join(" ")).includes(q));if($("#sort").value==="title")list.sort((a,b)=>a.title.localeCompare(b.title,"fr"));if($("#sort").value==="author")list.sort((a,b)=>(a.author_name||"").localeCompare(b.author_name||"","fr"));$("#count").textContent=list.length+" œuvre"+(list.length>1?"s":"")+" publiée"+(list.length>1?"s":"")+" dans la bibliothèque";$("#books").innerHTML=list.length?list.map(b=>'<article class="book" tabindex="0" role="button" data-detail="'+esc(b.id)+'"><div class="cover">'+coverMarkup(b)+'</div><div class="book-meta"><div class="genre">'+esc(kindLabel(b.book_type))+'</div><h3>'+esc(b.title)+'</h3><p class="author">'+esc(b.author_name||"Auteur non renseigné")+'</p><div class="book-bottom"><span class="access">'+(b.access_mode==="free"?"Accès gratuit":b.access_mode==="paid"?"Œuvre payante":"Accès partenaire")+'</span><span class="discover">Découvrir ↗</span></div></div></article>').join(""):'<div class="empty"><h3>Aucune œuvre pour cette recherche</h3><p>Essaie un autre titre, un autre auteur ou une autre collection.</p></div>';$("#books").querySelectorAll("[data-detail]").forEach(el=>{el.addEventListener("click",()=>showDetail(el.dataset.detail));el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();showDetail(el.dataset.detail)}})})}
-function renderCategories(){categories.forEach(c=>{const b=document.createElement("button");b.className="chip";b.dataset.category=c.slug;b.textContent=c.name;$("#categories").appendChild(b)});$("#categories").querySelectorAll("[data-category]").forEach(b=>b.addEventListener("click",()=>{activeCategory=b.dataset.category;$("#categories").querySelectorAll(".chip").forEach(x=>x.classList.toggle("active",x.dataset.category===activeCategory));render()}))}
-function showDetail(id){location.href="ouvrage.html?id="+encodeURIComponent(id)}
-async function sessionToken(){const {data:{session}}=await supa.auth.getSession();if(!session?.user){location.href="espace-apprenant.html?mode=login&next="+encodeURIComponent("bibliotheque.html");return null}return session.access_token}
-async function requestFile(id,action){const token=await sessionToken();if(!token)return null;const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+token},body:JSON.stringify({action,book_id:id})});const d=await r.json();if(!r.ok||!d.success){if(d.product_id){location.href="paiement.html?id="+encodeURIComponent(d.product_id);return null}throw Error(d.error||"Accès indisponible.")}return d}
-async function openBook(id){try{const d=await requestFile(id,"open");if(!d)return;$("#readerTitle").textContent=d.file_name||"Lecture MindFlow";$("#readerBody").innerHTML="";if(d.file_kind==="pdf"){const f=document.createElement("iframe");f.src=d.url;f.title=d.file_name||"Lecture PDF";$("#readerBody").appendChild(f)}else{const holder=document.createElement("div");holder.id="epubReader";$("#readerBody").appendChild(holder);if(!window.ePub)await new Promise((resolve,reject)=>{const s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js";s.onload=resolve;s.onerror=reject;document.head.appendChild(s)});$("#reader").showModal();await window.ePub(d.url).renderTo(holder,{width:"100%",height:"100%",flow:"paginated"}).display()}if(!$("#reader").open)$("#reader").showModal();$("#readerDownload").dataset.id=id}catch(e){alert(e.message||"Impossible d’ouvrir ce livre.")}}
-async function downloadBook(id){try{const d=await requestFile(id,"download");if(!d)return;const a=document.createElement("a");a.href=d.url;a.download=d.file_name||"livre";a.rel="noopener";document.body.appendChild(a);a.click();a.remove()}catch(e){alert(e.message||"Téléchargement impossible.")}}
-$("#closeDetail").addEventListener("click",()=>$("#detail").close());$("#detail").addEventListener("click",e=>{if(e.target===$("#detail"))$("#detail").close()});$("#readerClose").addEventListener("click",()=>{$("#reader").close();$("#readerBody").innerHTML=""});$("#readerDownload").addEventListener("click",()=>downloadBook($("#readerDownload").dataset.id));$("#search").addEventListener("input",render);$("#sort").addEventListener("change",render);
-async function load(){try{const r=await fetch(API+"?limit=80",{headers:{apikey:KEY}}),d=await r.json();if(!r.ok||!d.success)throw Error(d.error||"Service indisponible");books=d.books||[];categories=d.categories||[];renderCategories();render()}catch(e){$("#count").textContent="La bibliothèque est momentanément indisponible.";$("#books").innerHTML='<div class="empty"><h3>La bibliothèque prépare ses prochaines découvertes</h3><p>Réessaie dans quelques instants.</p></div>';console.error(e)}}load();
-</script><script src="cookie-consent.js?v=20261026-1"></script><script src="guides-apprenant.js?v=20261030-1"></script></body></html>
+const API = "https://vzgmhdxxlgdiimqtincf.supabase.co/functions/v1/mindflow-library";
+const KEY = "sb_publishable_JAtY5AemjObNRI86NMGtlA__c_8tLil";
+const { esc, norm, kindLabel, coverHTML, plural } = window.MFLib;
+const $ = (s) => document.querySelector(s);
+
+let books = [], categories = [];
+const state = { q: "", category: "", subject: "", level: "", sort: "featured" };
+const PARAMS = { q: "q", category: "collection", subject: "matiere", level: "niveau", sort: "tri" };
+
+function readParams() {
+  const p = new URLSearchParams(location.search);
+  for (const [key, name] of Object.entries(PARAMS)) state[key] = p.get(name) || (key === "sort" ? "featured" : "");
+}
+function writeParams() {
+  const p = new URLSearchParams();
+  for (const [key, name] of Object.entries(PARAMS)) {
+    if (state[key] && !(key === "sort" && state[key] === "featured")) p.set(name, state[key]);
+  }
+  const qs = p.toString();
+  history.replaceState(null, "", location.pathname + (qs ? "?" + qs : "") + location.hash);
+}
+
+const hasFilters = () => !!(state.q || state.category || state.subject || state.level);
+
+function distinct(key) {
+  return [...new Set(books.map((b) => String(b[key] || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "fr"));
+}
+
+function fillSelect(id, values, current) {
+  const el = $(id);
+  const first = el.options[0];
+  el.innerHTML = "";
+  el.appendChild(first);
+  for (const v of values) {
+    const o = document.createElement("option");
+    o.value = v; o.textContent = v;
+    el.appendChild(o);
+  }
+  el.value = values.includes(current) ? current : "";
+  el.hidden = values.length < 2;
+}
+
+function filtered() {
+  const q = norm(state.q);
+  const list = books.filter((b) => {
+    if (state.category && !(b.library_book_categories || []).some((x) => x.category?.slug === state.category)) return false;
+    if (state.subject && String(b.subject_name || "").trim() !== state.subject) return false;
+    if (state.level && String(b.education_level || "").trim() !== state.level) return false;
+    if (q) {
+      const hay = norm([b.title, b.subtitle, b.author_name, b.description, b.publisher_name, b.country_of_origin, b.genre, b.subject_name, (b.themes || []).join(" ")].join(" "));
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  if (state.sort === "title") list.sort((a, b) => a.title.localeCompare(b.title, "fr"));
+  if (state.sort === "author") list.sort((a, b) => (a.author_name || "").localeCompare(b.author_name || "", "fr"));
+  return list;
+}
+
+function card(b) {
+  const kicker = [kindLabel(b.book_type), b.subject_name].filter(Boolean).join(" · ");
+  const tags = [b.education_level, b.genre].filter(Boolean).slice(0, 2);
+  const caps = [b.can_read ? "Lecture en ligne" : "", b.can_download ? "Téléchargeable" : ""].filter(Boolean).join(" · ");
+  return '<a class="book" href="ouvrage.html?id=' + encodeURIComponent(b.id) + '">' +
+    coverHTML(b, { badge: true }) +
+    '<div class="book-body"><div class="book-kicker">' + esc(kicker) + "</div>" +
+    "<h3>" + esc(b.title) + "</h3>" +
+    '<p class="author">' + esc(b.author_name || "Auteur non renseigné") + "</p>" +
+    (tags.length ? '<div class="book-meta">' + tags.map((t) => '<span class="tag">' + esc(t) + "</span>").join("") + "</div>" : "") +
+    '<div class="book-foot"><span>' + esc(caps) + "</span><b>Découvrir →</b></div></div></a>";
+}
+
+function renderShowcase() {
+  const pick = [...books.filter((b) => b.cover_url), ...books.filter((b) => !b.cover_url)].slice(0, 3);
+  $("#hero").dataset.empty = pick.length ? "false" : "true";
+  $("#heroArt").hidden = !pick.length;
+  if (!pick.length) return;
+  const host = $("#showcase");
+  host.dataset.count = String(pick.length);
+  host.innerHTML = pick.map((b) =>
+    '<a class="sc" href="ouvrage.html?id=' + encodeURIComponent(b.id) + '" aria-label="' + esc(b.title) + '">' + coverHTML(b, { eager: true }) + "</a>"
+  ).join("");
+}
+
+function renderCategories() {
+  const host = $("#categories");
+  const counts = new Map();
+  for (const b of books) for (const x of b.library_book_categories || []) {
+    const slug = x.category?.slug;
+    if (slug) counts.set(slug, (counts.get(slug) || 0) + 1);
+  }
+  const usable = categories.filter((c) => counts.get(c.slug));
+  host.innerHTML = '<button class="chip" type="button" data-category="">Toutes les œuvres <i>' + books.length + "</i></button>" +
+    usable.map((c) => '<button class="chip" type="button" data-category="' + esc(c.slug) + '">' + esc(c.name) + " <i>" + counts.get(c.slug) + "</i></button>").join("");
+  host.hidden = usable.length === 0;
+  if (state.category && !usable.some((c) => c.slug === state.category)) state.category = "";
+}
+
+function render() {
+  const list = filtered();
+  document.querySelectorAll("#categories .chip").forEach((c) => {
+    const on = c.dataset.category === state.category;
+    c.classList.toggle("active", on);
+    c.setAttribute("aria-pressed", String(on));
+  });
+  $("#reset").hidden = !hasFilters();
+  $("#count").textContent = plural(list.length, "œuvre", "œuvres") + (hasFilters() ? " correspondant à ta recherche" : " dans la bibliothèque");
+  if (!books.length) {
+    $("#books").innerHTML = '<div class="empty"><h3>La bibliothèque prépare ses premières œuvres</h3><p>Reviens très bientôt : les livres apparaîtront ici dès leur publication.</p></div>';
+    return;
+  }
+  $("#books").innerHTML = list.length
+    ? list.map(card).join("")
+    : '<div class="empty"><h3>Aucune œuvre pour cette recherche</h3><p>Essaie un autre titre ou une autre matière, ou <button class="linkbtn" type="button" id="emptyReset">réinitialise les filtres</button>.</p></div>';
+  $("#emptyReset")?.addEventListener("click", resetAll);
+}
+
+function resetAll() {
+  Object.assign(state, { q: "", category: "", subject: "", level: "", sort: "featured" });
+  $("#search").value = ""; $("#subject").value = ""; $("#level").value = ""; $("#sort").value = "featured";
+  writeParams(); render();
+}
+
+function bind() {
+  $("#search").addEventListener("input", (e) => { state.q = e.target.value.trim(); writeParams(); render(); });
+  $("#subject").addEventListener("change", (e) => { state.subject = e.target.value; writeParams(); render(); });
+  $("#level").addEventListener("change", (e) => { state.level = e.target.value; writeParams(); render(); });
+  $("#sort").addEventListener("change", (e) => { state.sort = e.target.value; writeParams(); render(); });
+  $("#reset").addEventListener("click", resetAll);
+  $("#categories").addEventListener("click", (e) => {
+    const chip = e.target.closest("[data-category]");
+    if (!chip) return;
+    state.category = chip.dataset.category; writeParams(); render();
+  });
+}
+
+async function load() {
+  try {
+    const r = await fetch(API + "?limit=80", { headers: { apikey: KEY } });
+    const d = await r.json();
+    if (!r.ok || !d.success) throw Error(d.error || "Service indisponible");
+    books = d.books || [];
+    categories = d.categories || [];
+    readParams();
+    renderCategories();
+    fillSelect("#subject", distinct("subject_name"), state.subject);
+    fillSelect("#level", distinct("education_level"), state.level);
+    if (!$("#subject").value) state.subject = "";
+    if (!$("#level").value) state.level = "";
+    $("#search").value = state.q;
+    $("#sort").value = state.sort;
+    const nCat = categories.filter((c) => books.some((b) => (b.library_book_categories || []).some((x) => x.category?.slug === c.slug))).length;
+    $("#heroStats").textContent = books.length
+      ? plural(books.length, "œuvre", "œuvres") + (nCat ? " · " + plural(nCat, "collection", "collections") : "")
+      : "";
+    renderShowcase();
+    render();
+  } catch (e) {
+    console.error(e);
+    $("#hero").dataset.empty = "true";
+    $("#heroArt").hidden = true;
+    $("#count").textContent = "La bibliothèque est momentanément indisponible.";
+    $("#books").innerHTML = '<div class="empty"><h3>La bibliothèque prépare ses prochaines découvertes</h3><p>Réessaie dans quelques instants.</p></div>';
+  }
+}
+
+bind();
+load();
+</script>
+<script src="cookie-consent.js?v=20261026-1"></script>
+<script src="guides-apprenant.js?v=20261030-1"></script>
+</body></html>

@@ -46,6 +46,26 @@ Deno.serve(async(req:Request)=>{
   try{
     if(req.method==="GET"){
       const u=new URL(req.url),q=(u.searchParams.get("q")??"").trim().slice(0,100),category=u.searchParams.get("category"),mine=u.searchParams.get("mine")==="1";
+      if(u.searchParams.get("favorites")==="1"){
+        const learnerId=await identify(req);if(!learnerId)return reply({success:false,error:"Connecte-toi pour consulter tes favoris."},401);
+        const favRes=await db("library_favorites?select=book_id,created_at&learner_id=eq."+encodeURIComponent(learnerId)+"&order=created_at.desc");
+        if(!favRes.ok)return reply({success:false,error:"Impossible de charger tes favoris."},502);
+        const favorites=await favRes.json(),ids=[...new Set(favorites.map((x:Record<string,any>)=>String(x.book_id||"")).filter((x:string)=>/^[0-9a-f-]{36}$/i.test(x)))];
+        if(!ids.length)return reply({success:true,favorites:[]});
+        const [booksRes,filesRes]=await Promise.all([
+          db("library_books?select=id,slug,title,subtitle,author_name,description,subject_name,genre,access_mode,cover_path&status=eq.published&id=in.("+ids.join(",")+")"),
+          db("library_files?select=book_id,file_kind,storage_path,display_order&order=is_primary.desc,display_order.asc")
+        ]);
+        if(!booksRes.ok)return reply({success:false,error:"Impossible de charger les ouvrages favoris."},502);
+        const books=await booksRes.json(),files=filesRes.ok?await filesRes.json():[],byId=new Map(books.map((b:Record<string,any>)=>[b.id,b]));
+        const result=await Promise.all(favorites.map(async(f:Record<string,any>)=>{
+          const book=byId.get(f.book_id);if(!book)return null;
+          const bookFiles=files.filter((x:Record<string,any>)=>x.book_id===book.id),cover=bookFiles.find((x:Record<string,any>)=>x.file_kind==="cover")||bookFiles.filter((x:Record<string,any>)=>x.file_kind==="preview").sort((a:Record<string,any>,b:Record<string,any>)=>Number(a.display_order||0)-Number(b.display_order||0))[0];
+          const path=book.cover_path||cover?.storage_path||null;
+          return {...book,created_at:f.created_at,cover_url:path?await signed(path).catch(()=>null):null};
+        }));
+        return reply({success:true,favorites:result.filter(Boolean)});
+      }
       let mineUserId:string|null=null;
       let endpoint="library_books?select=id,slug,title,subtitle,author_name,description,publisher_name,publication_year,language,country_of_origin,genre,subject_name,education_level,target_audience,themes,book_type,access_mode,product_id,cover_path,featured,library_book_categories(category:library_categories(id,slug,name)),product:products(id,price,is_free)&status=eq.published&order=featured.desc,published_at.desc&limit=80";
       if(mine){

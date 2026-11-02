@@ -101,8 +101,10 @@ Deno.serve(async(req:Request)=>{
         const activeRights=new Set(validRights.filter((l:Record<string,any>)=>l.allow_online_reading||l.allow_download).map((l:Record<string,any>)=>l.book_id));
         const readableFiles=new Set(files.filter((f:Record<string,any>)=>["pdf","epub"].includes(f.file_kind)&&(f.allow_online_reading||f.allow_download)).map((f:Record<string,any>)=>f.book_id));
         books=books.filter((book:Record<string,any>)=>{
-          if(!activeRights.has(book.id)||!readableFiles.has(book.id))return false;
+          // Public catalogue: every published book is discoverable. Rights and file flags
+          // control reading/download below, not whether the book appears in the catalogue.
           if(!mine)return true;
+          if(!activeRights.has(book.id)||!readableFiles.has(book.id))return false;
           if(book.access_mode==="free")return true;
           if(book.access_mode==="paid")return !!book.product_id&&activeEntitlements.has(book.product_id);
           return (book.learner_library_books||[]).some((x:Record<string,any>)=>x.access_origin==="partner_grant");

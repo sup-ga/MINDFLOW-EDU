@@ -368,17 +368,10 @@ async function loadBookFavorites(){
  const grid=$("bookFavoritesGrid"),status=$("bookFavoritesStatus");if(!currentUser||!grid)return;
  grid.innerHTML='<div class="library-empty"><strong>Chargement de tes ouvrages favoris…</strong></div>';status.textContent="Tes livres enregistrés avec le cœur.";
  try{
-  const {data,error}=await client.from("library_favorites").select("book_id,created_at,book:library_books(id,slug,title,subtitle,author_name,description,subject_name,genre,access_mode,cover_path,library_files(storage_path,file_kind,is_primary,display_order))").eq("learner_id",currentUser.id).order("created_at",{ascending:false});
-  if(error)throw error;
-  bookFavoriteRows=(data||[]).filter(x=>x.book&&x.book.id).map(x=>({...x.book,favorite_created_at:x.created_at}));
-  await Promise.all(bookFavoriteRows.map(async book=>{
-   const files=Array.isArray(book.library_files)?book.library_files:[];
-   const cover=files.find(x=>x.file_kind==="cover")||files.filter(x=>x.file_kind==="preview").sort((a,b)=>Number(a.display_order||0)-Number(b.display_order||0))[0];
-   const path=book.cover_path||cover?.storage_path;
-   book.cover_url=null;
-   if(path){const signed=await client.storage.from("mindflow-products").createSignedUrl(path,3600);if(!signed.error)book.cover_url=signed.data?.signedUrl||null}
-  }));
-  renderBookFavorites();
+  const {data:{session},error:sessionError}=await client.auth.getSession();if(sessionError)throw sessionError;if(!session?.access_token)throw new Error("Ta session a expiré. Reconnecte-toi pour consulter tes favoris.");
+  const response=await fetch(SUPABASE_URL+"/functions/v1/mindflow-library?favorites=1",{headers:{apikey:SUPABASE_KEY,Authorization:"Bearer "+session.access_token}});
+  const payload=await response.json().catch(()=>({}));if(!response.ok||!payload.success)throw new Error(payload.error||"Impossible de charger tes favoris.");
+  bookFavoriteRows=Array.isArray(payload.favorites)?payload.favorites:[];renderBookFavorites();
  }catch(e){console.warn("Favoris des ouvrages indisponibles",e);status.textContent="Impossible de charger tes favoris : "+(e.message||"réessaie plus tard.");grid.innerHTML='<div class="library-empty"><strong>Favoris momentanément indisponibles</strong><p>Vérifie ta connexion puis actualise cette rubrique.</p></div>'}
 }
 function renderBookFavorites(){

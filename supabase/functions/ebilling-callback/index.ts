@@ -35,7 +35,7 @@ async function markTutorRequestPaid(o:Record<string,unknown>){
 }
 async function markRelatedRequestsPaid(o:Record<string,unknown>){
  const learner=str(o.customer_user_id);if(!learner)return;
- const requestId=str(o.class_request_id);if(requestId){const exact=await patch("/rest/v1/class_requests?id=eq."+encodeURIComponent(requestId)+"&learner_id=eq."+encodeURIComponent(learner),{status:"enrolled",payment_status:"paid",updated_at:new Date().toISOString()});if(!exact.ok)console.error("individual lesson request payment status update failed",{order_id:str(o.id),request_id:requestId,status:exact.status});return;}
+ const requestId=str(o.class_request_id);if(requestId){const exact=await patch("/rest/v1/class_requests?id=eq."+encodeURIComponent(requestId)+"&learner_id=eq."+encodeURIComponent(learner)+"&status=eq.accepted",{status:"enrolled",payment_status:"paid",updated_at:new Date().toISOString()});if(!exact.ok)console.error("individual lesson request payment status update failed",{order_id:str(o.id),request_id:requestId,status:exact.status});return;}
  const filters:string[]=[];
  if(o.class_id)filters.push("class_id=eq."+str(o.class_id));
  else if(o.offer_id)filters.push("offer_id=eq."+str(o.offer_id));

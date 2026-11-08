@@ -47,11 +47,13 @@ Deno.serve(async(req:Request)=>{
    amount=Number(p.price);title=p.title;offer_id=p.id;orderType="offer";
    if(p.offer_type==="individual"){
     if(!classRequestId||!/^[0-9a-f-]{36}$/i.test(classRequestId))return out({success:false,error:"La demande de cours individuel est manquante."},400);
-    const cr=await rest("/rest/v1/class_requests?id=eq."+encodeURIComponent(classRequestId)+"&learner_id=eq."+encodeURIComponent(user.id)+"&offer_id=eq."+encodeURIComponent(p.id)+"&status=eq.accepted&select=id,requested_hours,payment_status");
+    const cr=await rest("/rest/v1/class_requests?id=eq."+encodeURIComponent(classRequestId)+"&learner_id=eq."+encodeURIComponent(user.id)+"&offer_id=eq."+encodeURIComponent(p.id)+"&status=eq.accepted&select=id,requested_hours,requested_start_at,requested_end_at,payment_expires_at,payment_status");
     if(!cr.ok)return out({success:false,error:"Impossible de vérifier la demande acceptée."},502);
     const requests=await cr.json(),request=requests?.[0];
     if(!request||!Number.isInteger(Number(request.requested_hours))||Number(request.requested_hours)<1)return out({success:false,error:"Cette demande n’est pas acceptée ou son nombre d’heures est invalide."},409);
     if(request.payment_status==="paid")return out({success:false,error:"Cette demande a déjà été payée."},409);
+    if(!request.requested_start_at||!request.requested_end_at||!request.payment_expires_at||Date.parse(request.payment_expires_at)<=Date.now())return out({success:false,error:"Le délai de 30 minutes est expiré ou le créneau n’est plus valide. Envoie une nouvelle demande au professeur."},409);
+    if(Date.parse(request.requested_end_at)-Date.parse(request.requested_start_at)!==Number(request.requested_hours)*60*60*1000)return out({success:false,error:"La durée du créneau ne correspond pas au nombre d’heures demandé."},409);
     amount=Number(p.price)*Number(request.requested_hours);class_request_id=request.id;
    }else if(classRequestId)return out({success:false,error:"Cette demande ne correspond pas à un cours individuel."},409);
   }else{

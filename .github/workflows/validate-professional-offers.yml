@@ -1,4 +1,5 @@
 name: Validate MindFlow professional offers
+# CI guard for the offer builder and the E-Billing request-payment path
 
 on:
   push:

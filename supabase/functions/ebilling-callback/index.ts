@@ -36,6 +36,7 @@ async function markTutorRequestPaid(o:Record<string,unknown>){
 async function markRelatedRequestsPaid(o:Record<string,unknown>){
  const learner=str(o.customer_user_id);if(!learner)return;
  const requestId=str(o.class_request_id);if(requestId){const exact=await patch("/rest/v1/class_requests?id=eq."+encodeURIComponent(requestId)+"&learner_id=eq."+encodeURIComponent(learner)+"&status=eq.accepted",{status:"enrolled",payment_status:"paid",updated_at:new Date().toISOString()});if(!exact.ok)console.error("individual lesson request payment status update failed",{order_id:str(o.id),request_id:requestId,status:exact.status});return;}
+ if(str(o.order_type)==="offer"&&str(o.offer_id)){const checkUrl=new URL("/rest/v1/professional_offers",SB);checkUrl.searchParams.set("id","eq."+str(o.offer_id));checkUrl.searchParams.set("select","offer_type");const checked=await fetch(checkUrl,{headers:{apikey:SERVICE,Authorization:"Bearer "+SERVICE}});if(!checked.ok){console.error("Offer type lookup failed before request payment update",{order_id:str(o.id),status:checked.status});return;}const offers=await checked.json();if(offers?.[0]?.offer_type==="individual"){console.error("Individual lesson payment has no linked request id; no other request will be marked paid",{order_id:str(o.id)});return;}}
  const filters:string[]=[];
  if(o.class_id)filters.push("class_id=eq."+str(o.class_id));
  else if(o.offer_id)filters.push("offer_id=eq."+str(o.offer_id));

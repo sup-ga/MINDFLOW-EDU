@@ -14,7 +14,7 @@ for (const path of pages) {
   const opened = (html.match(/<script\b/gi) || []).length;
   const closed = (html.match(/<\/script>/gi) || []).length;
   if (opened !== closed) {
-    console.error(\`FAIL \${path}: \${opened} script tags but \${closed} closing tags\`);
+    console.error("FAIL " + path + ": " + opened + " script tags but " + closed + " closing tags");
     failures++;
     continue;
   }
@@ -27,13 +27,13 @@ for (const path of pages) {
     if (!source) continue;
     inlineIndex++;
     try {
-      new vm.Script(source, { filename: \`\${path}#inline-\${inlineIndex}\` });
+      new vm.Script(source, { filename: path + "#inline-" + inlineIndex });
     } catch (error) {
-      console.error(\`FAIL \${path} inline script \${inlineIndex}: \${error.message}\`);
+      console.error("FAIL " + path + " inline script " + inlineIndex + ": " + error.message);
       failures++;
     }
   }
-  console.log(\`CHECKED \${path}: \${inlineIndex} inline script(s)\`);
+  console.log("CHECKED " + path + ": " + inlineIndex + " inline script(s)");
 }
 if (failures) process.exit(1);
 console.log("All MindFlow offer and learner payment scripts passed syntax checks.");

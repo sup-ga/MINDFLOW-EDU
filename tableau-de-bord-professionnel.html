@@ -371,7 +371,8 @@ function setupProfessionalRealtime(){
   .on("postgres_changes",{event:"*",schema:"public",table:"class_requests"},scheduleRefresh)
   .on("postgres_changes",{event:"*",schema:"public",table:"class_enrollments"},scheduleRefresh)
   .on("postgres_changes",{event:"*",schema:"public",table:"class_sessions"},scheduleRefresh)
-  .on("postgres_changes",{event:"*",schema:"public",table:"professional_notifications",filter:"professional_user_id=eq."+session.user.id},scheduleRefresh)\n  .on("postgres_changes",{event:"*",schema:"public",table:"professional_messages"},scheduleRefresh)
+  .on("postgres_changes",{event:"*",schema:"public",table:"professional_notifications",filter:"professional_user_id=eq."+session.user.id},scheduleRefresh)
+  .on("postgres_changes",{event:"*",schema:"public",table:"professional_messages"},scheduleRefresh)
   .on("postgres_changes",{event:"*",schema:"public",table:"professional_contact_offers",filter:"professional_user_id=eq."+session.user.id},scheduleRefresh)
   .on("postgres_changes",{event:"*",schema:"public",table:"professional_wallet_transactions",filter:"professional_user_id=eq."+session.user.id},scheduleRefresh)
   .subscribe(status=>{if(status==="CHANNEL_ERROR"||status==="TIMED_OUT")console.warn("Synchronisation professionnelle momentanément indisponible :",status)});

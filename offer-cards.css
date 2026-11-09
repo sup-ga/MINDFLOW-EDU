@@ -25,7 +25,8 @@
 .mf-offer-actions .btn{font-size:.76rem;padding:8px 10px;white-space:nowrap}
 .mf-offer-actions .mf-profile-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border-radius:10px;border:1px solid #ffffff35;color:#e9efff;font-size:.76rem;font-weight:800}
 @media(max-width:600px){.mf-offer-card{flex-basis:min(82vw,304px);width:min(82vw,304px);height:472px}.mf-offer-group-head h3{font-size:1rem}}
-@media(min-width:1000px){.mf-offer-card{flex-basis:320px;width:320px}}\n.mf-offer-track.is-auto{scrollbar-width:none}.mf-offer-track.is-auto::-webkit-scrollbar{display:none}.mf-offer-track:focus-visible{outline:2px solid #72e0dc88;outline-offset:3px}
+@media(min-width:1000px){.mf-offer-card{flex-basis:320px;width:320px}}
+.mf-offer-track.is-auto{scrollbar-width:none}.mf-offer-track.is-auto::-webkit-scrollbar{display:none}.mf-offer-track:focus-visible{outline:2px solid #72e0dc88;outline-offset:3px}
 
 .mf-hero-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;position:relative;z-index:1}
 .mf-hero-stats>div{min-width:112px;padding:11px 14px;border:1px solid #ffffff2b;border-radius:15px;background:linear-gradient(135deg,#ffffff17,#ffffff08);backdrop-filter:blur(9px);display:grid;gap:2px}

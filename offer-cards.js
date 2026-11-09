@@ -22,10 +22,10 @@
    track.dataset.mfAutoReady="1";
    const originals=[...track.children];
    if(originals.length<3||track.scrollWidth<=track.clientWidth+24||window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
-   originals.forEach(node=>{const clone=node.cloneNode(true);clone.setAttribute("aria-hidden","true");clone.querySelectorAll("a,button").forEach(el=>el.setAttribute("tabindex","-1"));track.appendChild(clone)});
+   originals.forEach(node=>{const clone=node.cloneNode(true);clone.setAttribute("aria-hidden","true");clone.querySelectorAll("a,button").forEach(el=>el.setAttribute("tabindex","-1"));clone.querySelectorAll("button[data-choose],button[data-free-join]").forEach(button=>button.addEventListener("click",event=>{event.preventDefault();const key=button.dataset.choose?"choose":"freeJoin",value=button.dataset.choose||button.dataset.freeJoin;const original=[...track.querySelectorAll(button.dataset.choose?"button[data-choose]":"button[data-free-join]")].find(item=>(item.dataset.choose||item.dataset.freeJoin)===value);original?.click()}));track.appendChild(clone)});
    track.classList.add("is-auto");
    let paused=false,last=0,raf=0,cycleWidth=0;
-   const measure=()=>{cycleWidth=track.scrollWidth/2};
+   const measure=()=>{const first=originals[0],last=originals[originals.length-1];cycleWidth=last.offsetLeft+last.offsetWidth-first.offsetLeft};
    measure();
    const pause=()=>{paused=true;clearTimeout(resumeTimer)};
    let resumeTimer;

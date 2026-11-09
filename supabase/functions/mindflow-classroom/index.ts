@@ -190,7 +190,7 @@ Deno.serve(async (req: Request) => {
     } catch (createError) {
       // Meeting IDs are deterministic per session, so an existing room is reusable.
       try {
-        const info = await bbbCall("getMeetingInfo", new URLSearchParams({ meetingID }));
+        const info = await bbbCall("getMeetingInfo", new URLSearchParams({ meetingID: meetingId }));
         if (xmlValue(info, "meetingID") !== meetingId) throw createError;
       } catch {
         throw createError;

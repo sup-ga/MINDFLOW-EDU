@@ -34,3 +34,7 @@ jobs:
         run: deno check supabase/functions/create-ebilling-payment/index.ts
       - name: Type-check payment callback
         run: deno check supabase/functions/ebilling-callback/index.ts
+      - name: Type-check classroom access
+        run: deno check supabase/functions/mindflow-classroom/index.ts
+      - name: Type-check attendance tracking
+        run: deno check supabase/functions/mindflow-session-attendance/index.ts

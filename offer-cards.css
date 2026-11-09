@@ -26,3 +26,8 @@
 .mf-offer-actions .mf-profile-link{display:inline-flex;align-items:center;justify-content:center;padding:8px 10px;border-radius:10px;border:1px solid #ffffff35;color:#e9efff;font-size:.76rem;font-weight:800}
 @media(max-width:600px){.mf-offer-card{flex-basis: min(82vw,304px);width:min(82vw,304px);height:472px}.mf-offer-media{height:178px;flex-basis:178px}.mf-offer-group-head h3{font-size:1rem}}
 @media(min-width:1000px){.mf-offer-card{flex-basis:320px;width:320px}}
+
+.mf-hero-stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;position:relative;z-index:1}
+.mf-hero-stats>div{min-width:112px;padding:11px 14px;border:1px solid #ffffff2b;border-radius:15px;background:linear-gradient(135deg,#ffffff17,#ffffff08);backdrop-filter:blur(9px);display:grid;gap:2px}
+.mf-hero-stats strong{font-size:1.35rem;line-height:1.1;color:#fff}
+.mf-hero-stats span{font-size:.72rem;color:#c6d1e7;font-weight:700}

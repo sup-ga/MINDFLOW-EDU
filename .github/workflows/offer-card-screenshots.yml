@@ -1,0 +1,37 @@
+name: MindFlow offer cards — responsive headless checks
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'integration-classes.html'
+      - 'tableau-de-bord-professionnel.html'
+      - 'offer-cards.*'
+      - 'scripts/offer-card-screenshots.mjs'
+      - '.github/workflows/offer-card-screenshots.yml'
+  push:
+    branches: [claude/refonte-fiches-offres]
+jobs:
+  responsive:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+      - name: Check shared renderer syntax
+        run: node --check offer-cards.js
+      - name: Capture mobile and desktop
+        run: |
+          mkdir -p artifacts
+          node scripts/offer-card-screenshots.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mindflow-offer-cards-responsive-captures
+          path: artifacts/*.png
+          if-no-files-found: warn

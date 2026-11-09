@@ -31,3 +31,5 @@
 .mf-hero-stats>div{min-width:112px;padding:11px 14px;border:1px solid #ffffff2b;border-radius:15px;background:linear-gradient(135deg,#ffffff17,#ffffff08);backdrop-filter:blur(9px);display:grid;gap:2px}
 .mf-hero-stats strong{font-size:1.35rem;line-height:1.1;color:#fff}
 .mf-hero-stats span{font-size:.72rem;color:#c6d1e7;font-weight:700}
+
+#offers{display:block;overflow:visible;max-width:100%;}

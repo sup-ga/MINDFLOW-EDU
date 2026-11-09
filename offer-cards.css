@@ -33,3 +33,6 @@
 .mf-hero-stats span{font-size:.72rem;color:#c6d1e7;font-weight:700}
 
 #offers{display:block;overflow:visible;max-width:100%;}
+
+/* Empêche les débordements de la page sur petits écrans ; les carrousels gardent leur scroll interne. */
+html,body{max-width:100%;overflow-x:clip}

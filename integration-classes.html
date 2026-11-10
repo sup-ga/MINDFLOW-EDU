@@ -6,11 +6,25 @@
 <meta name="description" content="Trouve ta classe MindFlow : explore les offres des enseignants, choisis ton mode de cours et envoie ta demande d’intégration.">
 <title>Intégrer une classe — MindFlow</title>
 <script>
-/* Adapte la taille de la page à l’écran.
-   - Sur un téléphone en « mode ordinateur » (page affichée sur ~980 px puis réduite), la taille de base est agrandie
-     pour que les textes restent lisibles et que les cartes se répartissent comme sur mobile.
-   - html.mf-wide active la mise en page large (≥ 58 rem de large). */
-(function(){var d=document.documentElement;function fit(){try{var iw=window.innerWidth,sw=screen.width||iw,small=Math.min(screen.width||iw,screen.height||iw)<=640,fs=16;if(small&&iw>=760){fs=Math.min(40,Math.max(16,Math.round(14*iw/sw*10)/10))}d.style.fontSize=fs===16?"":fs+"px";d.classList.toggle("mf-phone-desktop",fs!==16);d.classList.toggle("mf-wide",iw/fs>=58)}catch(e){}}fit();window.addEventListener("resize",fit);window.addEventListener("orientationchange",fit)})();
+/* Le mode de page dépend de la largeur CSS réellement fournie par le navigateur.
+   Chrome en « version pour ordinateur » expose généralement une fenêtre d’environ 980 px :
+   on affiche alors la vraie mise en page bureau, sans agrandir artificiellement la racine.
+   Sur un téléphone en affichage mobile (≈ 390 px), la mise en page reste mobile. */
+(function(){
+  var root=document.documentElement;
+  var desktopQuery=window.matchMedia("(min-width: 58rem)");
+  function syncLayout(){
+    root.classList.toggle("mf-wide",desktopQuery.matches);
+  }
+  syncLayout();
+  if(desktopQuery.addEventListener){
+    desktopQuery.addEventListener("change",syncLayout);
+  }else{
+    desktopQuery.addListener(syncLayout);
+  }
+  window.addEventListener("resize",syncLayout,{passive:true});
+  window.addEventListener("orientationchange",syncLayout,{passive:true});
+})();
 </script>
 <link rel="stylesheet" href="offer-cards.css?v=20261110-1">
 <link rel="stylesheet" href="integration-classes.css?v=20261110-1">

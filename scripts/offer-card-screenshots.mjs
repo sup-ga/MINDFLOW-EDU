@@ -18,7 +18,7 @@ const server = createServer(async (req,res) => {
 await new Promise(resolve => server.listen(4173,"127.0.0.1",resolve));
 const browser = await chromium.launch({ headless:true });
 try {
-  for (const width of [390,1280]) {
+  for (const width of [390,980,1280]) {
     const page = await browser.newPage({ viewport:{ width, height:900 }, deviceScaleFactor:1 });
     await page.goto("http://127.0.0.1:4173/integration-classes.html", { waitUntil:"networkidle", timeout:60000 }).catch(()=>{});
     await page.waitForTimeout(2500);
@@ -27,11 +27,14 @@ try {
       viewport: innerWidth,
       documentWidth: document.documentElement.scrollWidth,
       horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 2,
+      desktopLayout: document.documentElement.classList.contains("mf-wide"),
+      rootFontSize: getComputedStyle(document.documentElement).fontSize,
       cardCount: document.querySelectorAll(".mf-card:not(.mf-skel)").length,
       rendererLoaded: !!window.MFOfferCards
     }));
-    console.log(JSON.stringify({ width, ...result }));
-    if (!result.rendererLoaded || result.horizontalOverflow) process.exitCode = 1;
+    const expectedDesktop = width >= 928;
+    console.log(JSON.stringify({ width, expectedDesktop, ...result }));
+    if (!result.rendererLoaded || result.horizontalOverflow || result.desktopLayout !== expectedDesktop || result.rootFontSize !== "16px") process.exitCode = 1;
     await page.close();
   }
 } finally {

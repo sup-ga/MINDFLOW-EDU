@@ -27,8 +27,7 @@ try {
       viewport: innerWidth,
       documentWidth: document.documentElement.scrollWidth,
       horizontalOverflow: document.documentElement.scrollWidth > innerWidth + 2,
-      cardCount: document.querySelectorAll(".mf-offer-card").length,
-      groupCount: document.querySelectorAll(".mf-offer-group").length,
+      cardCount: document.querySelectorAll(".mf-card:not(.mf-skel)").length,
       rendererLoaded: !!window.MFOfferCards
     }));
     console.log(JSON.stringify({ width, ...result }));

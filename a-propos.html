@@ -73,7 +73,7 @@ function update(){
  const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);
  F.target=scrollY/max*(sections.length-1);
  progress.style.width=(scrollY/max*100)+'%';
- const a=Math.min(sections.length-1,Math.round(F.progress??F.target));
+ const a=Math.min(sections.length-1,Math.round(F.target));
  if(a!==F.active||!sections[a].classList.contains('active')){
   F.active=a;
   sections.forEach((s,i)=>s.classList.toggle('active',i===a));
@@ -179,7 +179,7 @@ const artefactKinds=[
  [{label:'ÉCOLES',glyph:'⌂'},{label:'RÉSEAU',glyph:'⌘'},{label:'PROJETS',glyph:'✧'}]
 ];
 function artefactTexture(label,glyph,color){
- const c=document.createElement('canvas');c.width=512;c.height=192;const x=c.getContext('2d);
+ const c=document.createElement('canvas');c.width=512;c.height=192;const x=c.getContext('2d');
  x.clearRect(0,0,512,192);x.shadowColor=color;x.shadowBlur=22;x.fillStyle='rgba(7,13,30,.78)';
  x.beginPath();x.roundRect(8,22,496,148,34);x.fill();x.shadowBlur=0;x.strokeStyle=color;x.globalAlpha=.72;x.lineWidth=3;
  x.beginPath();x.roundRect(8,22,496,148,34);x.stroke();x.globalAlpha=1;x.fillStyle=color;x.font='bold 76px system-ui';x.textAlign='center';x.textBaseline='middle';x.fillText(glyph,84,97);
@@ -209,7 +209,7 @@ const destinations=orbitalGroups.map((o,i)=>{
  const offset=[Math.cos(a)*Math.max(13,planetData[i].r*1.55),Math.max(8,planetData[i].r*.95),Math.sin(a)*Math.max(18,planetData[i].r*2.1)];
  return {p:[center[0]+offset[0],center[1]+offset[1],center[2]+offset[2]],look:center};
 });
-const route=[overview,origin,...destinations.slice(0,5),overview];
+const route=[overview,origin,...destinations];
 const lerp=(a,b,t)=>a+(b-a)*t;
 function catmull(a,b,c,d,t){return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t)}
 function sample(arr,t,key){
@@ -219,14 +219,13 @@ function sample(arr,t,key){
 }
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 fallback.style.opacity='0';
-let scrollNow=0;const bgNow=new THREE.Color(0x050814),bgTarget=new THREE.Color();
+const bgNow=new THREE.Color(0x050814),bgTarget=new THREE.Color();
 const bgTints=[0x050814,0x06141a,0x0d0a1e,0x160a14,0x0f1406,0x070e1d,0x0d0a1e,0x16120a];
 let last=performance.now();
 function animate(now){
  requestAnimationFrame(animate);
  const dt=Math.min(.04,(now-last)/1000);last=now;
- scrollNow=reduced?F.target:lerp(scrollNow,F.target,1-Math.pow(.001,dt));
- const p=Math.min(route.length-1,scrollNow);
+ const p=Math.min(route.length-1,F.target);
  const pos=sample(route,p,'p'),look=sample(route,p,'look');
  const boost=reduced?0:Math.min(1,(F.vel||0)/55);
  camera.fov=lerp(camera.fov,54+boost*13,.09);camera.updateProjectionMatrix();

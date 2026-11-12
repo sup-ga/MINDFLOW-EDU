@@ -115,7 +115,7 @@ requestAnimationFrame(frame);
 
 <script type="module">
 /* Scène 3D : si le chargement échoue, la page reste entièrement utilisable */
-let THREE;try{THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js')}catch(e){console.warn('3D indisponible',e)}
+let THREE;try{THREE=await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js')}catch(e){try{THREE=await import('https://unpkg.com/three@0.160.0/build/three.module.js')}catch(e2){console.warn('3D indisponible sur les deux CDN',e,e2)}}
 if(THREE){try{
 const F=window.F,canvas=document.querySelector('#flight'),fallback=document.querySelector('#fallback'),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,small=innerWidth<700;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:!small,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,small?1.3:1.65));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
@@ -155,12 +155,35 @@ planetData.forEach((d,i)=>{const group=new THREE.Group();group.position.set(...d
  const moon=new THREE.Mesh(new THREE.SphereGeometry(d.r*.16,24,20),new THREE.MeshStandardMaterial({color:i%2?0xbba5ff:0x9ef2d3,roughness:1}));moon.position.set(d.r*1.55,d.r*.55,d.r*.25);group.add(moon);
  let beacon=null;if(i===0){beacon=new THREE.Group();const dir=new THREE.Vector3(.1,.55,.83).normalize().multiplyScalar(d.r*1.02);beacon.position.copy(dir);beacon.lookAt(dir.clone().multiplyScalar(2));const core=new THREE.Mesh(new THREE.SphereGeometry(.28,16,12),new THREE.MeshBasicMaterial({color:0xffffff}));const pulse=new THREE.Mesh(new THREE.RingGeometry(.4,.55,48),new THREE.MeshBasicMaterial({color:0xa4f5d8,transparent:true,opacity:.9,side:THREE.DoubleSide,depthWrite:false}));beacon.add(core,pulse);beacon.userData.pulse=pulse;sphere.add(beacon)}
  scene.add(group);planets.push({group,sphere,clouds,moon,ring,beacon,baseY:d.pos[1]})});
-/* trajet */
-const route=[{p:[0,0,12],look:[0,0,-22]},{p:[-1,1,-29],look:[-5,0,-43]},{p:[-3,2,-92],look:[6,-1,-112]},{p:[2,1,-160],look:[-6,-2,-181]},{p:[-2,2,-229],look:[5,2,-250]},{p:[1,1,-304],look:[-4,0,-326]},{p:[-1,2,-382],look:[5,1,-405]},{p:[0,0,-470],look:[0,0,-510]}];
-const ship=new THREE.Group();const hull=new THREE.Mesh(new THREE.ConeGeometry(.72,2.8,7),new THREE.MeshStandardMaterial({color:0xc9d7ed,metalness:.8,roughness:.22}));hull.rotation.x=-Math.PI/2;ship.add(hull);const cockpit=new THREE.Mesh(new THREE.SphereGeometry(.39,24,18),new THREE.MeshPhysicalMaterial({color:0x75e7e4,metalness:.25,roughness:.08,transparent:true,opacity:.82,clearcoat:1}));cockpit.position.set(0,.24,.22);ship.add(cockpit);const wingMat=new THREE.MeshStandardMaterial({color:0x8f83cf,metalness:.72,roughness:.3});for(const side of [-1,1]){const wing=new THREE.Mesh(new THREE.BoxGeometry(1.5,.09,.7),wingMat);wing.position.set(side*.82,-.13,.15);wing.rotation.z=side*-.16;ship.add(wing);const lamp=new THREE.PointLight(side===1?0x9ef2d3:0xbba5ff,2,5);lamp.position.set(side*.9,0,.3);ship.add(lamp)}
-const engine=new THREE.PointLight(0x75e7ff,5,9);engine.position.set(0,0,1.35);ship.add(engine);
-const flame=new THREE.Mesh(new THREE.ConeGeometry(.28,1.6,12),new THREE.MeshBasicMaterial({color:0x8ff3ff,transparent:true,opacity:.7,blending:THREE.AdditiveBlending,depthWrite:false}));flame.rotation.x=Math.PI/2;flame.position.set(0,0,1.9);ship.add(flame);
-camera.add(ship);ship.position.set(0,-1.35,-4.4);ship.rotation.x=-.06;scene.add(camera);
+/* Soleil MindFlow : étoile centrale du système */
+function sunTexture(){const c=document.createElement('canvas');c.width=1024;c.height=512;const x=c.getContext('2d');const g=x.createLinearGradient(0,0,0,512);g.addColorStop(0,'#fff0b0');g.addColorStop(.24,'#ffc36d');g.addColorStop(.62,'#f47b43');g.addColorStop(1,'#9c3f68');x.fillStyle=g;x.fillRect(0,0,1024,512);const r=rand(771);for(let i=0;i<2400;i++){const px=r()*1024,py=r()*512,rad=2+r()*22;x.globalAlpha=.035+r()*.12;x.fillStyle=i%2?'#fff2c2':'#8f294d';x.beginPath();x.ellipse(px,py,rad*2,rad*.45,r()*Math.PI,0,Math.PI*2);x.fill()}x.globalAlpha=1;return new THREE.CanvasTexture(c)}
+const sunGroup=new THREE.Group();sunGroup.position.set(0,0,-82);scene.add(sunGroup);
+const sun=new THREE.Mesh(new THREE.SphereGeometry(11,small?48:96,small?36:72),new THREE.MeshBasicMaterial({map:sunTexture(),color:0xffe1a0}));sunGroup.add(sun);
+const corona=new THREE.Sprite(new THREE.SpriteMaterial({map:nebulaTex('#ff9b4b'),color:0xffc36d,transparent:true,opacity:.95,blending:THREE.AdditiveBlending,depthWrite:false}));corona.scale.set(58,58,1);sunGroup.add(corona);
+const corona2=new THREE.Sprite(new THREE.SpriteMaterial({map:nebulaTex('#ffdf9a'),color:0xffd18a,transparent:true,opacity:.58,blending:THREE.AdditiveBlending,depthWrite:false}));corona2.scale.set(34,34,1);sunGroup.add(corona2);
+const sunLight=new THREE.PointLight(0xffbd78,950,520,1.45);sunGroup.add(sunLight);
+const sunHalo=new THREE.Mesh(new THREE.SphereGeometry(13.1,48,36),new THREE.MeshBasicMaterial({color:0xffa04d,transparent:true,opacity:.12,side:THREE.BackSide,blending:THREE.AdditiveBlending,depthWrite:false}));sunGroup.add(sunHalo);
+/* Orbites elliptiques et planètes : les six mondes gravitent autour de MindFlow */
+const orbitRadii=[23,34,46,59,73,88];
+const orbitMats=[];
+orbitRadii.forEach((r,i)=>{const curve=new THREE.EllipseCurve(0,0,r,r*(.72+(i%3)*.08),0,Math.PI*2,false,0);const pts=curve.getPoints(180).map(v=>new THREE.Vector3(v.x,v.y,-82+(i-2)*.9));const geo=new THREE.BufferGeometry().setFromPoints(pts);const mat=new THREE.LineBasicMaterial({color:i%2?0x9d91e8:0x80cfc0,transparent:true,opacity:.2,depthWrite:false});scene.add(new THREE.LineLoop(geo,mat));orbitMats.push(mat)});
+/* Ceinture d'astéroïdes entre les mondes intérieurs et extérieurs */
+const beltGeo=new THREE.BufferGeometry(),beltPos=[],beltCols=[];for(let i=0;i<(small?850:1800);i++){const a=random()*Math.PI*2,r=48+random()*7,y=(random()-.5)*3.5;beltPos.push(Math.cos(a)*r,y-82,Math.sin(a)*r*.78);const cc=new THREE.Color().setHSL(.09+random()*.08,.25,.45+random()*.25);beltCols.push(cc.r,cc.g,cc.b)}beltGeo.setAttribute('position',new THREE.Float32BufferAttribute(beltPos,3));beltGeo.setAttribute('color',new THREE.Float32BufferAttribute(beltCols,3));const beltMat=new THREE.PointsMaterial({size:small?.2:.27,vertexColors:true,transparent:true,opacity:.8});const asteroidBelt=new THREE.Points(beltGeo,beltMat);scene.add(asteroidBelt);
+const orbitalGroups=[];
+planetData.forEach((d,i)=>{const pivot=new THREE.Group();pivot.position.copy(sunGroup.position);scene.add(pivot);const angle=[2.5,-.65,3.65,.35,2.9,-.25][i],radius=orbitRadii[i];const orbitNode=new THREE.Group();orbitNode.position.set(Math.cos(angle)*radius,Math.sin(angle)*radius*.76,(i-2)*.9);pivot.add(orbitNode);const planet=planets[i];scene.remove(planet.group);planet.group.position.set(0,0,0);orbitNode.add(planet.group);planet.group.rotation.z=(i%2?-.2:.16);planet.group.rotation.x=.08+(i%3)*.09;orbitalGroups.push({pivot,orbitNode,planet,angle,speed:(i%2?1:-1)*(.018/(1+i*.35))})});
+/* Caméra d'observation : vue d'ensemble puis approches cinématiques des planètes */
+const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,1500);camera.position.set(0,18,75);scene.add(camera);
+const targets=[[-5,9,15],[-4,4,-82],[-5,3,-82],[6,-1,-82],[-6,-2,-82],[5,2,-82],[-4,0,-82],[0,0,-82]];
+const route=[
+ {p:[0,18,75],look:[0,0,-82]},
+ {p:[-12,9,-52],look:[-18,5,-82]},
+ {p:[-13,8,-55],look:[-25,3,-82]},
+ {p:[19,5,-46],look:[-10,-15,-82]},
+ {p:[-21,7,-40],look:[10,20,-82]},
+ {p:[28,8,-34],look:[-25,0,-82]},
+ {p:[-26,12,-25],look:[20,0,-82]},
+ {p:[0,0,30],look:[0,0,-82]}
+];
 const lerp=(a,b,t)=>a+(b-a)*t;function catmull(a,b,c,d,t){return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t)}
 function sample(arr,t,key){const scaled=Math.max(0,Math.min(arr.length-1,t)),i=Math.min(arr.length-2,Math.floor(scaled)),f=scaled-i;const a=arr[Math.max(0,i-1)][key],b=arr[i][key],c=arr[i+1][key],d=arr[Math.min(arr.length-1,i+2)][key];return [0,1,2].map(k=>catmull(a[k],b[k],c[k],d[k],f))}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
@@ -172,12 +195,12 @@ function animate(now){requestAnimationFrame(animate);const dt=Math.min(.04,(now-
  const pos=sample(route,p,'p'),look=sample(route,p,'look'),v=Math.min(60,F.vel||0);
  const boost=reduced?0:v/60;
  camera.fov=lerp(camera.fov,56+boost*22,.12);camera.updateProjectionMatrix();
- camera.position.set(pos[0]+F.mx*.8,pos[1]-F.my*.45,pos[2]);camera.lookAt(look[0]+F.mx*1.2,look[1]-F.my*.65,look[2]);camera.rotation.z+=Math.sin(now*.00022)*.0015-F.mx*boost*.01;
+ camera.position.set(pos[0]+F.mx*.8,pos[1]-F.my*.45,pos[2]);camera.lookAt(look[0]+F.mx*1.2,look[1]-F.my*.65,look[2]);
  starMat.size=.72+boost*1.4;dustMat.size=.12+boost*.25;flame.scale.set(1,1+boost*2.4+Math.sin(now*.03)*.08,1);engine.intensity=5+boost*12;
- planets.forEach((o,i)=>{o.group.rotation.y=now*.000035*(i%2?1:-1);o.group.rotation.z=Math.sin(now*.00012+i)*.025;o.clouds.rotation.y=now*.00006;o.moon.position.x=Math.cos(now*.0002+i)*planetData[i].r*1.6;o.moon.position.z=Math.sin(now*.0002+i)*planetData[i].r*.5;o.group.position.y=o.baseY+Math.sin(now*.0004+i*1.7)*.35;if(o.ring)o.ring.rotation.z=now*.00005*(i%2?1:-1);if(o.beacon){const t=(now*.0009)%1;const pl=o.beacon.userData.pulse;pl.scale.setScalar(1+t*3.2);pl.material.opacity=.9*(1-t)}});
+ orbitalGroups.forEach((o,i)=>{o.pivot.rotation.y=now*.000025*o.speed*48;o.planet.group.rotation.y=now*.000035*(i%2?1:-1);o.planet.clouds.rotation.y=now*.00006;o.planet.moon.position.x=Math.cos(now*.0002+i)*planetData[i].r*1.6;o.planet.moon.position.z=Math.sin(now*.0002+i)*planetData[i].r*.5;if(o.planet.ring)o.planet.ring.rotation.z=now*.00005*(i%2?1:-1);if(o.planet.beacon){const t=(now*.0009)%1;const pl=o.planet.beacon.userData.pulse;pl.scale.setScalar(1+t*3.2);pl.material.opacity=.9*(1-t)}});sun.rotation.y=now*.000012;corona.material.rotation=now*.000015;corona2.material.rotation=-now*.00002;asteroidBelt.rotation.y=now*.000018;
  nebulae.forEach((s,i)=>{s.material.opacity=.42+Math.sin(now*.0003+i)*.1});
  bgTarget.setHex(bgTints[Math.min(bgTints.length-1,Math.round(p))]);bgNow.lerp(bgTarget,.02);scene.background.copy(bgNow);
- stars.rotation.z=now*.000003;dustCloud.position.z=(p*10)%40;ship.rotation.z=F.mx*-.035+Math.sin(now*.0007)*.008;ship.rotation.x=-.06+F.my*.018;
+ stars.rotation.z=now*.000003;dustCloud.position.z=(p*10)%40;camera.rotation.z+=Math.sin(now*.00022)*.0012-F.mx*boost*.006;
  renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 }catch(e){console.warn('Rendu 3D désactivé',e)}}

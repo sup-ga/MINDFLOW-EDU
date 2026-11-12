@@ -86,12 +86,12 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 .payment-cta .button{background:var(--mint);color:#14231f}
 .payment-visual{position:relative;min-height:430px;display:grid;place-items:center}
 .payment-visual:before{content:"";position:absolute;width:88%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#9d7bff35,transparent 68%)}
-.payment-photo{position:relative;z-index:1;display:block;width:min(100%,540px);height:430px;object-fit:cover;object-position:center;border-radius:44% 44% 18px 18px/18% 18% 18px 18px;box-shadow:0 28px 80px #08071370;border:1px solid #ffffff30}
+.payment-art{position:relative;z-index:1;display:block;width:min(100%,540px);height:auto;max-height:460px;overflow:visible;filter:drop-shadow(0 28px 38px #08071355)}
 .payment-photo-caption{position:absolute;z-index:2;left:0;bottom:8%;max-width:245px;padding:13px 17px;border-left:3px solid var(--mint);background:#171725e8;color:#fff;font-size:.78rem;line-height:1.5;box-shadow:0 12px 32px #08071340}
 .payment-chip{position:absolute;z-index:2;right:0;top:14%;padding:12px 16px;border:1px solid #ffffff2b;border-radius:16px;background:#24213bd9;backdrop-filter:blur(12px);box-shadow:0 14px 35px #08071345;font-size:.78rem;font-weight:800}
 .payment-chip small{display:block;color:var(--mint);font-size:.66rem;font-weight:600;margin-top:3px}
-@media(max-width:800px){.payment-grid{grid-template-columns:1fr}.payment-visual{min-height:320px;order:-1}.payment-photo{height:340px;max-width:100%}.payment-chip{right:5%;top:7%}}
-@media(max-width:520px){.payment-logos{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.payment-logo{min-height:52px;font-size:.74rem;padding:8px 6px}.payment-logo.visa{font-size:1.28rem}.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-photo{height:280px}.payment-photo-caption{left:2%;bottom:5%;max-width:210px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
+@media(max-width:800px){.payment-grid{grid-template-columns:1fr}.payment-visual{min-height:320px;order:-1}.payment-art{width:min(100%,520px);max-height:360px}.payment-chip{right:5%;top:7%}}
+@media(max-width:520px){.payment-logos{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.payment-logo{min-height:52px;font-size:.74rem;padding:8px 6px}.payment-logo.visa{font-size:1.28rem}.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-art{width:100%;max-height:300px}.payment-photo-caption{left:2%;bottom:5%;max-width:210px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
 
 /* Grande vitrine éditoriale des livres et ressources pédagogiques */
 .resource-showcase{position:relative;overflow:hidden;padding:clamp(76px,9vw,122px) 0;background:linear-gradient(120deg,#f4efe5 0%,#fbf8f1 55%,#e8e2d7 100%);color:#171820}
@@ -199,7 +199,57 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
       <div class="payment-cta"><a class="button" href="#ressources">Découvrir les ressources <span class="arrow">↗</span></a></div>
     </div>
     <div class="payment-visual">
-      <img class="payment-photo" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=85" alt="Une cliente effectue un paiement numérique par carte bancaire auprès d’un commerçant" loading="lazy">
+      <svg class="payment-art" viewBox="0 0 620 520" role="img" aria-labelledby="payment-art-title payment-art-desc" xmlns="http://www.w3.org/2000/svg">
+        <title id="payment-art-title">Une professionnelle règle une ressource sur MindFlow</title>
+        <desc id="payment-art-desc">Illustration originale d’une jeune professionnelle dans son espace de travail, utilisant son téléphone devant un ordinateur affichant une bibliothèque de ressources et une confirmation de paiement.</desc>
+        <defs>
+          <linearGradient id="pay-bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#29234b"/><stop offset="1" stop-color="#171b32"/></linearGradient>
+          <linearGradient id="pay-screen" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9c82ff"/><stop offset="1" stop-color="#62dfc0"/></linearGradient>
+          <linearGradient id="pay-shirt" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8d75e8"/><stop offset="1" stop-color="#5947a8"/></linearGradient>
+          <filter id="pay-shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#080713" flood-opacity=".35"/></filter>
+        </defs>
+        <rect x="28" y="24" width="564" height="472" rx="38" fill="url(#pay-bg)" stroke="#ffffff" stroke-opacity=".13"/>
+        <circle cx="500" cy="105" r="78" fill="#9d7bff" opacity=".12"/><circle cx="115" cy="390" r="90" fill="#62dfc0" opacity=".09"/>
+        <g filter="url(#pay-shadow)">
+          <rect x="278" y="100" width="258" height="190" rx="18" fill="#f7f5ff"/>
+          <rect x="292" y="114" width="230" height="160" rx="10" fill="#fff"/>
+          <rect x="292" y="114" width="230" height="31" rx="10" fill="#eeeaff"/>
+          <circle cx="307" cy="129" r="4" fill="#ff8b9b"/><circle cx="320" cy="129" r="4" fill="#ffc96b"/><circle cx="333" cy="129" r="4" fill="#62d8b6"/>
+          <rect x="308" y="158" width="88" height="9" rx="4.5" fill="#332d55"/>
+          <rect x="308" y="176" width="192" height="7" rx="3.5" fill="#e7e3f4"/>
+          <rect x="308" y="191" width="192" height="7" rx="3.5" fill="#e7e3f4"/>
+          <rect x="308" y="210" width="62" height="45" rx="8" fill="#eeeaff"/><rect x="379" y="210" width="62" height="45" rx="8" fill="#e2f7f1"/><rect x="450" y="210" width="50" height="45" rx="8" fill="#fff0e5"/>
+          <path d="M250 292h315l-25 18H275z" fill="#b9b4d0"/>
+          <path d="M288 310h241l-19 10H307z" fill="#85809f"/>
+        </g>
+        <g>
+          <path d="M100 450c8-91 51-141 127-141s119 50 127 141" fill="url(#pay-shirt)"/>
+          <path d="M167 317c14 27 30 42 59 42s48-16 61-42l-21-18h-78z" fill="#e8a77e"/>
+          <ellipse cx="226" cy="204" rx="77" ry="91" fill="#8b513b"/>
+          <path d="M151 210c-4-74 35-116 89-116 57 0 82 45 74 105-12-12-19-29-20-50-23 18-67 25-112 19-2 18-12 32-31 42z" fill="#211b2a"/>
+          <path d="M161 222c8 42 31 69 65 69 34 0 58-28 66-69-12 12-23 16-35 17-30 2-59-7-96-17z" fill="#995b42"/>
+          <path d="M190 211h13m42 0h13" stroke="#35212a" stroke-width="5" stroke-linecap="round"/>
+          <path d="M218 245c9 7 18 7 27 0" stroke="#6d302e" stroke-width="4" stroke-linecap="round" fill="none"/>
+          <path d="M165 188c16-17 37-22 58-18m25 0c17-5 32 0 43 11" stroke="#211b2a" stroke-width="13" stroke-linecap="round" fill="none"/>
+          <path d="M183 300l42 49 43-49 24 16-23 86h-88l-22-86z" fill="#f2b48b"/>
+          <path d="M151 326c-30 28-45 60-51 101l75 13 22-89z" fill="url(#pay-shirt)"/>
+          <path d="M297 329c28 27 42 58 48 97l-67 13-24-87z" fill="url(#pay-shirt)"/>
+        </g>
+        <g transform="translate(365 300) rotate(-9)" filter="url(#pay-shadow)">
+          <rect x="0" y="0" width="82" height="145" rx="15" fill="#17182b" stroke="#aaa4c7" stroke-width="2"/>
+          <rect x="7" y="12" width="68" height="119" rx="9" fill="#fbfaff"/>
+          <rect x="16" y="25" width="50" height="7" rx="3.5" fill="#332d55"/>
+          <circle cx="41" cy="66" r="23" fill="#dff8ef"/><path d="m30 66 8 8 15-18" fill="none" stroke="#159b78" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <rect x="19" y="99" width="44" height="6" rx="3" fill="#ded9ed"/><rect x="26" y="111" width="30" height="5" rx="2.5" fill="#ded9ed"/>
+          <circle cx="41" cy="138" r="3" fill="#8e88a7"/>
+        </g>
+        <g transform="translate(58 65)">
+          <rect width="142" height="62" rx="15" fill="#25223e" stroke="#ffffff" stroke-opacity=".2"/>
+          <circle cx="28" cy="31" r="15" fill="#dff8ef"/><path d="m21 31 5 5 10-12" fill="none" stroke="#159b78" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="52" y="27" fill="#fff" font-size="12" font-weight="700">Transaction</text><text x="52" y="43" fill="#62dfc0" font-size="11">confirmée</text>
+        </g>
+        <g transform="translate(75 455)"><rect width="184" height="25" rx="12.5" fill="#ffffff" opacity=".1"/><circle cx="15" cy="12.5" r="4" fill="#62dfc0"/><text x="28" y="17" fill="#e8e5f5" font-size="10" font-weight="600">Votre espace, vos ressources</text></g>
+      </svg>
       <div class="payment-chip">Paiement en ligne<small>Simple · pratique · sécurisé</small></div>
       <div class="payment-photo-caption">Un règlement simple, depuis votre quotidien.</div>
     </div>

@@ -62,16 +62,26 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 .payment-point{border-top:1px solid #ffffff30;padding-top:13px}
 .payment-point strong{display:block;font-size:.84rem;margin-bottom:4px}
 .payment-point span{display:block;color:#aaa6bd;font-size:.73rem;line-height:1.55}
-.payment-methods{padding:18px 0;border-top:1px solid #ffffff27;border-bottom:1px solid #ffffff27}
-.payment-methods-label{display:block;color:#bcb7d0;font-size:.68rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;margin-bottom:13px}
-.payment-logos{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
-.payment-logo{display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:8px 12px;border:1px solid #ffffff26;border-radius:10px;background:#ffffff0c;color:#fff;font-size:.76rem;font-weight:850;letter-spacing:-.025em}
-.payment-logo.visa{font-style:italic;font-size:1.02rem;letter-spacing:.02em;color:#a9c8ff}
-.payment-logo.mastercard{gap:0;font-size:.72rem}
-.payment-logo.mastercard:before,.payment-logo.mastercard:after{content:"";width:15px;height:15px;border-radius:50%;background:#ed4b42;display:inline-block}
-.payment-logo.mastercard:after{background:#f4a62a;margin-left:-5px;opacity:.95;margin-right:5px}
-.payment-logo.airtel{color:#ff9298}.payment-logo.moov{color:#72caff}.payment-logo.ebilling{color:#ffc66f}
-.payment-note{display:block;margin-top:11px;color:#aaa6bd;font-size:.68rem;line-height:1.6}
+.payment-methods{padding:21px 0 18px;border-top:1px solid #ffffff27;border-bottom:1px solid #ffffff27}
+.payment-methods-label{display:block;color:#c8c3d9;font-size:.68rem;font-weight:850;letter-spacing:.13em;text-transform:uppercase;margin-bottom:15px}
+.payment-logos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.payment-logo{min-height:58px;display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 8px;border:1px solid #e8e8f0;border-radius:13px;background:linear-gradient(145deg,#fff 0%,#f4f3fa 100%);color:#27263a;box-shadow:0 7px 18px #08071324;font-size:.78rem;font-weight:850;letter-spacing:-.025em;white-space:nowrap}
+.payment-logo .brand-word{display:inline-block;line-height:1}
+.payment-logo.visa{font-style:italic;font-size:1.42rem;letter-spacing:.025em;color:#173b83}
+.payment-logo.mastercard{font-size:.76rem;color:#252535;gap:7px}
+.mc-symbol{display:inline-flex;align-items:center}
+.mc-symbol i{display:block;width:21px;height:21px;border-radius:50%;background:#eb443b}
+.mc-symbol i+i{margin-left:-8px;background:#f4a629;mix-blend-mode:multiply}
+.payment-logo.airtel{color:#e32636;font-size:.84rem}
+.airtel-mark{width:19px;height:25px;border-radius:55% 45% 55% 45%;background:#e32636;display:inline-block;transform:rotate(-25deg);position:relative}
+.airtel-mark:after{content:"";position:absolute;inset:5px 6px 5px 8px;border-radius:50%;background:white}
+.payment-logo.moov{color:#1266aa;font-size:.9rem}
+.moov-mark{width:20px;height:20px;border:5px solid #24a9e8;border-right-color:#7048b9;border-radius:50%;display:inline-block}
+.payment-logo.mobile{color:#23836c;font-size:.75rem}
+.mobile-mark{width:22px;height:22px;border:2px solid #23836c;border-radius:6px;display:inline-grid;place-items:center;font-size:13px;line-height:1}
+.payment-logo.ebilling{color:#7547a8;font-size:.83rem}
+.payment-logo.card{color:#303247;font-size:.73rem}
+.payment-note{display:block;margin-top:13px;color:#aaa6bd;font-size:.68rem;line-height:1.6}
 .payment-cta{margin-top:25px}
 .payment-cta .button{background:var(--mint);color:#14231f}
 .payment-visual{position:relative;min-height:430px;display:grid;place-items:center}
@@ -80,7 +90,7 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 .payment-chip{position:absolute;z-index:2;right:0;top:14%;padding:12px 16px;border:1px solid #ffffff2b;border-radius:16px;background:#24213bd9;backdrop-filter:blur(12px);box-shadow:0 14px 35px #08071345;font-size:.78rem;font-weight:800}
 .payment-chip small{display:block;color:var(--mint);font-size:.66rem;font-weight:600;margin-top:3px}
 @media(max-width:800px){.payment-grid{grid-template-columns:1fr}.payment-visual{min-height:320px;order:-1}.payment-art{max-width:430px}.payment-chip{right:5%;top:7%}}
-@media(max-width:520px){.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
+@media(max-width:520px){.payment-logos{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.payment-logo{min-height:52px;font-size:.74rem;padding:8px 6px}.payment-logo.visa{font-size:1.28rem}.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
 </style>
 
 
@@ -111,14 +121,14 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
       </div>
       <div class="payment-methods">
         <span class="payment-methods-label">Les moyens de paiement prévus</span>
-        <div class="payment-logos" aria-label="Mobile Money, Airtel Money, Moov Money, Visa, Mastercard et eBilling">
-          <span class="payment-logo">Mobile Money</span>
-          <span class="payment-logo airtel">Airtel Money</span>
-          <span class="payment-logo moov">Moov Money</span>
-          <span class="payment-logo visa">VISA</span>
-          <span class="payment-logo mastercard">Mastercard</span>
-          <span class="payment-logo ebilling">eBilling</span>
-          <span class="payment-logo">Carte bancaire</span>
+        <div class="payment-logos" aria-label="Mobile Money, Airtel Money, Moov Money, Visa, Mastercard, carte bancaire et eBilling">
+          <span class="payment-logo mobile"><span class="mobile-mark">↗</span><span class="brand-word">Mobile Money</span></span>
+          <span class="payment-logo airtel"><span class="airtel-mark"></span><span class="brand-word">Airtel Money</span></span>
+          <span class="payment-logo moov"><span class="moov-mark"></span><span class="brand-word">Moov Money</span></span>
+          <span class="payment-logo visa"><span class="brand-word">VISA</span></span>
+          <span class="payment-logo mastercard"><span class="mc-symbol"><i></i><i></i></span><span class="brand-word">mastercard</span></span>
+          <span class="payment-logo card"><span class="brand-word">CARTE BANCAIRE</span></span>
+          <span class="payment-logo ebilling"><span class="brand-word">eBilling</span></span>
         </div>
         <small class="payment-note">Les options proposées au moment du règlement dépendront de l’activation des services de paiement et de leur disponibilité auprès de votre opérateur ou de votre banque.</small>
       </div>

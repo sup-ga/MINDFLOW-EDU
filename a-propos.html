@@ -120,7 +120,7 @@ if(THREE){try{
 const F=window.F,canvas=document.querySelector('#flight'),fallback=document.querySelector('#fallback'),reduced=matchMedia('(prefers-reduced-motion: reduce)').matches,small=innerWidth<700;
 const renderer=new THREE.WebGLRenderer({canvas,antialias:!small,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(devicePixelRatio,small?1.3:1.65));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.25;
 const scene=new THREE.Scene();scene.background=new THREE.Color(0x050814);scene.fog=new THREE.FogExp2(0x080d20,.0038);
-const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,1500);camera.position.set(0,0,12);
+// La caméra cinématique est initialisée après la construction des mondes.
 scene.add(new THREE.AmbientLight(0x8495d8,.72));const key=new THREE.PointLight(0xc5f5ff,150,420);key.position.set(-35,35,20);scene.add(key);
 const fill=new THREE.PointLight(0x9774ff,110,500);fill.position.set(35,-12,-120);scene.add(fill);
 function rand(seed){let x=seed;return()=>{x=(x*1664525+1013904223)>>>0;return x/4294967296}}
@@ -171,37 +171,60 @@ orbitRadii.forEach((r,i)=>{const curve=new THREE.EllipseCurve(0,0,r,r*(.72+(i%3)
 const beltGeo=new THREE.BufferGeometry(),beltPos=[],beltCols=[];for(let i=0;i<(small?850:1800);i++){const a=random()*Math.PI*2,r=48+random()*7,y=(random()-.5)*3.5;beltPos.push(Math.cos(a)*r,y-82,Math.sin(a)*r*.78);const cc=new THREE.Color().setHSL(.09+random()*.08,.25,.45+random()*.25);beltCols.push(cc.r,cc.g,cc.b)}beltGeo.setAttribute('position',new THREE.Float32BufferAttribute(beltPos,3));beltGeo.setAttribute('color',new THREE.Float32BufferAttribute(beltCols,3));const beltMat=new THREE.PointsMaterial({size:small?.2:.27,vertexColors:true,transparent:true,opacity:.8});const asteroidBelt=new THREE.Points(beltGeo,beltMat);scene.add(asteroidBelt);
 const orbitalGroups=[];
 planetData.forEach((d,i)=>{const pivot=new THREE.Group();pivot.position.copy(sunGroup.position);scene.add(pivot);const angle=[2.5,-.65,3.65,.35,2.9,-.25][i],radius=orbitRadii[i];const orbitNode=new THREE.Group();orbitNode.position.set(Math.cos(angle)*radius,Math.sin(angle)*radius*.76,(i-2)*.9);pivot.add(orbitNode);const planet=planets[i];scene.remove(planet.group);planet.group.position.set(0,0,0);orbitNode.add(planet.group);planet.group.rotation.z=(i%2?-.2:.16);planet.group.rotation.x=.08+(i%3)*.09;orbitalGroups.push({pivot,orbitNode,planet,angle,speed:(i%2?1:-1)*(.018/(1+i*.35))})});
-/* Caméra d'observation : vue d'ensemble puis approches cinématiques des planètes */
-const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,1500);camera.position.set(0,18,75);scene.add(camera);
-const targets=[[-5,9,15],[-4,4,-82],[-5,3,-82],[6,-1,-82],[-6,-2,-82],[5,2,-82],[-4,0,-82],[0,0,-82]];
-const route=[
- {p:[0,18,75],look:[0,0,-82]},
- {p:[-30,17,-55],look:[-18,10,-84]},
- {p:[42,-6,-56],look:[27,-16,-83]},
- {p:[-55,-6,-55],look:[-40,-17,-82]},
- {p:[72,25,-53],look:[55,15,-81]},
- {p:[-89,24,-52],look:[-71,13,-80]},
- {p:[102,-5,-50],look:[85,-17,-79]},
- {p:[0,0,40],look:[0,0,-82]}
-];
-const lerp=(a,b,t)=>a+(b-a)*t;function catmull(a,b,c,d,t){return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t)}
-function sample(arr,t,key){const scaled=Math.max(0,Math.min(arr.length-1,t)),i=Math.min(arr.length-2,Math.floor(scaled)),f=scaled-i;const a=arr[Math.max(0,i-1)][key],b=arr[i][key],c=arr[i+1][key],d=arr[Math.min(arr.length-1,i+2)][key];return [0,1,2].map(k=>catmull(a[k],b[k],c[k],d[k],f))}
+/* Caméra narrative : chaque chapitre devient une destination réelle dans le système */
+const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,1500);
+camera.position.set(0,18,75);scene.add(camera);
+const overview={p:[0,22,76],look:[0,0,-82]};
+const origin={p:[-24,11,-42],look:[0,0,-82]};
+const destinations=orbitalGroups.map((o,i)=>{
+ const r=orbitRadii[i],a=o.angle;
+ const center=[Math.cos(a)*r,Math.sin(a)*r*.76,-82+(i-2)*.9];
+ const offset=[Math.cos(a)*Math.max(13,planetData[i].r*1.55),Math.max(8,planetData[i].r*.95),Math.sin(a)*Math.max(18,planetData[i].r*2.1)];
+ return {p:[center[0]+offset[0],center[1]+offset[1],center[2]+offset[2]],look:center};
+});
+const route=[overview,origin,...destinations.slice(0,5),overview];
+const lerp=(a,b,t)=>a+(b-a)*t;
+function catmull(a,b,c,d,t){return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t)}
+function sample(arr,t,key){
+ const scaled=Math.max(0,Math.min(arr.length-1,t)),i=Math.min(arr.length-2,Math.floor(scaled)),f=scaled-i;
+ const a=arr[Math.max(0,i-1)][key],b=arr[i][key],c=arr[i+1][key],d=arr[Math.min(arr.length-1,i+2)][key];
+ return [0,1,2].map(k=>catmull(a[k],b[k],c[k],d[k],f));
+}
 addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
 fallback.style.opacity='0';
-let scrollNow=0;const bgNow=new THREE.Color(0x050814),bgTarget=new THREE.Color();const bgTints=[0x050814,0x06141a,0x0d0a1e,0x160a14,0x0f1406,0x070e1d,0x0d0a1e,0x16120a];
+let scrollNow=0;const bgNow=new THREE.Color(0x050814),bgTarget=new THREE.Color();
+const bgTints=[0x050814,0x06141a,0x0d0a1e,0x160a14,0x0f1406,0x070e1d,0x0d0a1e,0x16120a];
 let last=performance.now();
-function animate(now){requestAnimationFrame(animate);const dt=Math.min(.04,(now-last)/1000);last=now;
- scrollNow=reduced?F.target:lerp(scrollNow,F.target,1-Math.pow(.001,dt));const p=scrollNow;
- const pos=sample(route,p,'p'),look=sample(route,p,'look'),v=Math.min(60,F.vel||0);
- const boost=reduced?0:v/60;
- camera.fov=lerp(camera.fov,56+boost*22,.12);camera.updateProjectionMatrix();
- camera.position.set(pos[0]+F.mx*.8,pos[1]-F.my*.45,pos[2]);camera.lookAt(look[0]+F.mx*1.2,look[1]-F.my*.65,look[2]);
- starMat.size=.72+boost*1.4;dustMat.size=.12+boost*.25;flame.scale.set(1,1+boost*2.4+Math.sin(now*.03)*.08,1);engine.intensity=5+boost*12;
- orbitalGroups.forEach((o,i)=>{o.pivot.rotation.y=now*.000025*o.speed*48;o.planet.group.rotation.y=now*.000035*(i%2?1:-1);o.planet.clouds.rotation.y=now*.00006;o.planet.moon.position.x=Math.cos(now*.0002+i)*planetData[i].r*1.6;o.planet.moon.position.z=Math.sin(now*.0002+i)*planetData[i].r*.5;if(o.planet.ring)o.planet.ring.rotation.z=now*.00005*(i%2?1:-1);if(o.planet.beacon){const t=(now*.0009)%1;const pl=o.planet.beacon.userData.pulse;pl.scale.setScalar(1+t*3.2);pl.material.opacity=.9*(1-t)}});sun.rotation.y=now*.000012;corona.material.rotation=now*.000015;corona2.material.rotation=-now*.00002;asteroidBelt.rotation.y=now*.000018;
- nebulae.forEach((s,i)=>{s.material.opacity=.42+Math.sin(now*.0003+i)*.1});
- bgTarget.setHex(bgTints[Math.min(bgTints.length-1,Math.round(p))]);bgNow.lerp(bgTarget,.02);scene.background.copy(bgNow);
+function animate(now){
+ requestAnimationFrame(animate);
+ const dt=Math.min(.04,(now-last)/1000);last=now;
+ scrollNow=reduced?F.target:lerp(scrollNow,F.target,1-Math.pow(.001,dt));
+ const p=Math.min(route.length-1,scrollNow);
+ const pos=sample(route,p,'p'),look=sample(route,p,'look');
+ const boost=reduced?0:Math.min(1,(F.vel||0)/55);
+ camera.fov=lerp(camera.fov,54+boost*13,.09);camera.updateProjectionMatrix();
+ camera.position.set(pos[0]+F.mx*1.3,pos[1]-F.my*.8,pos[2]);
+ camera.lookAt(look[0]+F.mx*1.8,look[1]-F.my,.0+look[2]);
+ orbitalGroups.forEach((o,i)=>{
+  o.pivot.rotation.y=now*.000025*o.speed*48;
+  o.planet.group.rotation.y=now*.000035*(i%2?1:-1);
+  o.planet.clouds.rotation.y=now*.00006;
+  o.planet.moon.position.x=Math.cos(now*.0002+i)*planetData[i].r*1.6;
+  o.planet.moon.position.z=Math.sin(now*.0002+i)*planetData[i].r*.5;
+  if(o.planet.ring)o.planet.ring.rotation.z=now*.00005*(i%2?1:-1);
+  if(o.planet.beacon){
+   const t=(now*.0009)%1,pl=o.planet.beacon.userData.pulse;
+   pl.scale.setScalar(1+t*3.2);pl.material.opacity=.9*(1-t);
+  }
+ });
+ sun.rotation.y=now*.000012;corona.material.rotation=now*.000015;corona2.material.rotation=-now*.00002;
+ asteroidBelt.rotation.y=now*.000018;
+ nebulae.forEach((n,i)=>{n.material.opacity=.42+Math.sin(now*.0003+i)*.1});
+ bgTarget.setHex(bgTints[Math.min(bgTints.length-1,Math.round(p))]);bgNow.lerp(bgTarget,.025);scene.background.copy(bgNow);
  stars.rotation.z=now*.000003;dustCloud.position.z=(p*10)%40;
- renderer.render(scene,camera)}
+ starMat.size=.72+boost*.65;dustMat.size=.12+boost*.12;
+ renderer.render(scene,camera);
+}
 requestAnimationFrame(animate);
 }catch(e){console.warn('Rendu 3D désactivé',e)}}
 </script>

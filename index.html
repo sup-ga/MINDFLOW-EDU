@@ -91,6 +91,44 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 .payment-chip small{display:block;color:var(--mint);font-size:.66rem;font-weight:600;margin-top:3px}
 @media(max-width:800px){.payment-grid{grid-template-columns:1fr}.payment-visual{min-height:320px;order:-1}.payment-art{max-width:430px}.payment-chip{right:5%;top:7%}}
 @media(max-width:520px){.payment-logos{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.payment-logo{min-height:52px;font-size:.74rem;padding:8px 6px}.payment-logo.visa{font-size:1.28rem}.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
+
+/* Grande vitrine éditoriale des livres et ressources pédagogiques */
+.resource-showcase{position:relative;overflow:hidden;padding:clamp(76px,9vw,122px) 0;background:linear-gradient(120deg,#f4efe5 0%,#fbf8f1 55%,#e8e2d7 100%);color:#171820}
+.resource-showcase:before{content:"";position:absolute;width:520px;height:520px;left:-310px;top:-230px;border:1px solid #4d847322;border-radius:50%;box-shadow:0 0 0 38px #4d84720a,0 0 0 82px #4d847208}
+.resource-showcase-grid{position:relative;display:grid;grid-template-columns:1.02fr .98fr;align-items:center;gap:clamp(45px,7vw,100px)}
+.resource-showcase .eyebrow{color:#477e70}
+.resource-showcase h2{max-width:650px;margin:18px 0 20px;font-size:clamp(2.8rem,5.4vw,5.25rem);line-height:.94;letter-spacing:-.085em}
+.resource-showcase h2 em{font:italic 1em Georgia,serif;color:#548c7d}
+.resource-showcase-copy>p{max-width:560px;color:#6d6a73;font-size:.94rem;line-height:1.85}
+.resource-showcase-points{display:grid;gap:0;margin:29px 0 25px;border-top:1px solid #d7d0c4}
+.resource-point{display:grid;grid-template-columns:44px 1fr 20px;align-items:center;gap:13px;padding:15px 2px;border-bottom:1px solid #d7d0c4;transition:padding .22s ease}
+.resource-point:hover{padding-inline:9px}
+.resource-point-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;font-size:1.2rem;background:#dff1e8;color:#367b68}
+.resource-point.books .resource-point-icon{background:#ece5fa;color:#7858aa}
+.resource-point.paid .resource-point-icon{background:#f8e5dc;color:#a45e43}
+.resource-point strong,.resource-point small{display:block}
+.resource-point strong{font-size:.92rem;letter-spacing:-.02em}
+.resource-point small{margin-top:3px;color:#77737b;font-size:.77rem;line-height:1.5}
+.resource-point>b{color:#477e70;font-size:1.05rem}
+.resource-showcase-actions{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.resource-showcase .button.primary{background:#171820;color:#fff}
+.resource-secondary-link{font-size:.8rem;font-weight:800;color:#477e70}
+.resource-showcase-note{font-size:.72rem!important;color:#89848b!important;margin-top:17px}
+.resource-showcase-visual{position:relative;min-height:570px}
+.resource-photo{position:absolute;overflow:hidden;margin:0;background:#d9d1c5;box-shadow:0 22px 55px #24201825}
+.resource-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.75,.25,1)}
+.resource-photo:hover img{transform:scale(1.045)}
+.resource-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:35px 17px 15px;background:linear-gradient(transparent,#101019b8);color:white;font-size:.78rem;font-weight:750}
+.resource-photo-main{top:2%;right:2%;width:72%;height:77%;border-radius:48% 48% 8px 8px/12% 12% 8px 8px}
+.resource-photo-notes{left:0;bottom:2%;width:48%;height:43%;border:7px solid #f4efe5;border-radius:7px;transform:rotate(-5deg)}
+.resource-photo-books{right:0;bottom:0;width:42%;height:37%;border:7px solid #f4efe5;border-radius:7px;transform:rotate(4deg)}
+.resource-sticker{position:absolute;z-index:2;left:4%;top:9%;width:112px;height:112px;display:flex;flex-direction:column;justify-content:center;align-items:center;border-radius:50%;background:#d7f36b;color:#20221b;box-shadow:0 12px 30px #2222;transform:rotate(-12deg)}
+.resource-sticker span{font-size:.52rem;font-weight:900;letter-spacing:.13em}
+.resource-sticker strong{font-size:1.25rem;line-height:.92;text-align:center;letter-spacing:-.06em}
+.resource-sticker i{font-style:normal;font-size:.9rem;margin-top:4px}
+@media(max-width:850px){.resource-showcase-grid{grid-template-columns:1fr;gap:32px}.resource-showcase-visual{min-height:490px;max-width:650px;width:100%;margin-inline:auto}}
+@media(max-width:560px){.resource-showcase{padding:68px 0}.resource-showcase h2{font-size:clamp(2.7rem,12vw,4rem)}.resource-showcase-copy>p{font-size:.87rem}.resource-point{grid-template-columns:39px 1fr 16px;gap:10px;padding:13px 0}.resource-point-icon{width:36px;height:36px}.resource-point small{font-size:.72rem}.resource-showcase-actions{align-items:flex-start;flex-direction:column;gap:15px}.resource-showcase-actions .button{width:100%;justify-content:center}.resource-showcase-visual{min-height:370px}.resource-photo-main{width:77%;height:74%}.resource-photo-notes{width:50%;height:42%;border-width:5px}.resource-photo-books{width:42%;height:35%;border-width:5px}.resource-sticker{width:88px;height:88px;left:1%;top:8%}.resource-sticker strong{font-size:1rem}}
+
 </style>
 
 
@@ -103,6 +141,31 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 <section class="hero"><div class="wrap hero-grid"><div class="hero-copy"><span class="eyebrow">L’apprentissage en mouvement</span><h1>Le plaisir<br>du <span class="soft">déclic.</span><br><span class="under">À ton rythme.</span></h1><p class="hero-lede">MindFlow transforme les ressources en points de départ : pour éclaircir une notion, dépasser un blocage et retrouver le plaisir de comprendre.</p><div class="hero-actions"><a class="button primary" href="#matieres">Trouver mon prochain déclic <span class="arrow">↗</span></a><a class="button secondary" href="#approche">Découvrir MindFlow <span class="arrow">↓</span></a></div><div class="micro-proof"><span class="micro-dots"><span></span><span></span><span></span></span>Des ressources utiles. Un apprentissage qui te ressemble.</div></div><div class="hero-art" aria-label="Univers visuel abstrait évoquant les idées en mouvement"><div class="glow"></div><div class="ribbon"></div><div class="planet"><span class="planet-word">mindflow</span></div><span class="orbit-dot"></span><span class="orbit-dot two"></span><div class="note note-a"><span class="note-mark">✳</span><strong>Une idée s’éclaire.</strong><small>Une notion devient plus simple.</small></div><div class="note note-b"><span class="note-mark">↗</span><strong>Tu avances.</strong><small>À ta manière, à ton rythme.</small></div></div></div></section>
 <div class="ribbon-strip" aria-hidden="true"><div class="wrap ribbon-track"><span>Curiosité <i>✳</i></span><span>Compréhension <i>✳</i></span><span>Confiance <i>✳</i></span><span>Progression <i>✳</i></span><span>Curiosité <i>✳</i></span></div></div>
 <section class="section section-light" id="matieres"><div class="wrap"><div class="section-head"><div><span class="eyebrow">Choisis ton point de départ</span><h2>Ce que tu veux<br>comprendre.</h2></div><p>Des mathématiques aux sciences humaines, trouve la matière qui t’intéresse. La bibliothèque s’enrichit progressivement, une ressource après l’autre.</p></div><form class="search" id="searchForm" role="search"><span class="search-icon" aria-hidden="true">⌕</span><label class="sr-only" for="searchInput">Rechercher une matière ou une ressource</label><input id="searchInput" type="search" placeholder="Une notion, une matière, une question…"><button type="submit">Rechercher ↗</button></form><div class="subjects" id="subjectsGrid"><a class="subject" href="#ressources" data-subject="Mathématiques"><div class="subject-top"><span class="subject-number">01</span><span class="subject-symbol">∑</span></div><h3>Mathématiques</h3><p>Relier les étapes, voir la logique.</p><span class="subject-arrow">↗</span></a><a class="subject" href="#ressources" data-subject="Physique"><div class="subject-top"><span class="subject-number">02</span><span class="subject-symbol">⌁</span></div><h3>Physique & chimie</h3><p>Comprendre les lois du réel.</p><span class="subject-arrow">↗</span></a><a class="subject" href="#ressources" data-subject="Biologie"><div class="subject-top"><span class="subject-number">03</span><span class="subject-symbol">◉</span></div><h3>Biologie & SVT</h3><p>Explorer le vivant et ses mécanismes.</p><span class="subject-arrow">↗</span></a><a class="subject" href="#ressources" data-subject="Informatique"><div class="subject-top"><span class="subject-number">04</span><span class="subject-symbol">⌘</span></div><h3>Informatique</h3><p>Décomposer, créer, résoudre.</p><span class="subject-arrow">↗</span></a></div><div style="margin-top:24px"><a class="text-link" style="color:#477e70" href="catalogue.html">Explorer toutes les matières <span>↗</span></a></div></div></section>
+<section class="resource-showcase" id="bibliotheque-ressources" aria-labelledby="resourceShowcaseTitle">
+  <div class="wrap resource-showcase-grid">
+    <div class="resource-showcase-copy">
+      <span class="eyebrow">La connaissance à portée de main</span>
+      <h2 id="resourceShowcaseTitle">Des milliers de pages à explorer. <em>Des idées pour aller plus loin.</em></h2>
+      <p>Livres, fiches de révision, exercices, cours et supports pratiques : un univers de ressources pour apprendre à ton rythme, approfondir tes connaissances et préparer tes examens.</p>
+      <div class="resource-showcase-points">
+        <a href="catalogue.html" class="resource-point free"><span class="resource-point-icon">✳</span><span><strong>Des fiches gratuites</strong><small>Pour réviser, s’entraîner et progresser sans attendre.</small></span><b>↗</b></a>
+        <a href="bibliotheque.html" class="resource-point books"><span class="resource-point-icon">▤</span><span><strong>Des livres à découvrir</strong><small>Des ouvrages numériques à consulter et à retrouver dans ta bibliothèque.</small></span><b>↗</b></a>
+        <a href="catalogue.html" class="resource-point paid"><span class="resource-point-icon">✦</span><span><strong>Des ressources à télécharger</strong><small>Des contenus gratuits ou payants, selon tes besoins.</small></span><b>↗</b></a>
+      </div>
+      <div class="resource-showcase-actions">
+        <a class="button primary" href="bibliotheque.html">Explorer la bibliothèque <span class="arrow">↗</span></a>
+        <a class="resource-secondary-link" href="catalogue.html">Voir toutes les ressources <span>↗</span></a>
+      </div>
+      <p class="resource-showcase-note">Un fonds qui s’enrichit progressivement pour ouvrir toujours plus de possibilités d’apprentissage.</p>
+    </div>
+    <div class="resource-showcase-visual" aria-label="Livres, espace de lecture et fiches de travail">
+      <figure class="resource-photo resource-photo-main"><img src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=1100&q=85" alt="Grande bibliothèque remplie de livres" loading="lazy"><figcaption>Lire. Découvrir. Comprendre.</figcaption></figure>
+      <figure class="resource-photo resource-photo-notes"><img src="https://images.unsplash.com/photo-1455390582262-044c国?auto=format&fit=crop&w=700&q=85" alt="Carnet et notes de travail pour apprendre" loading="lazy"><figcaption>Fiches & révisions</figcaption></figure>
+      <figure class="resource-photo resource-photo-books"><img src="https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=700&q=85" alt="Livres ouverts et empilés" loading="lazy"><figcaption>Des livres à portée de main</figcaption></figure>
+      <div class="resource-sticker"><span>LE SAVOIR</span><strong>en<br>liberté</strong><i>✳</i></div>
+    </div>
+  </div>
+</section>
 <section class="section library" id="ressources"><div class="wrap"><div class="section-head"><div><span class="eyebrow">La bibliothèque MindFlow</span><h2>Le bon support.<br>Au bon moment.</h2></div><p>Fiches, cours, exercices et autres supports pédagogiques pour t’aider à passer de « je ne comprends pas » à « j’ai compris ».</p></div><div class="products" id="productsGrid" aria-live="polite"><div class="state">Ouverture de la bibliothèque…</div></div><div class="catalogue-cta"><a class="button" href="catalogue.html">Voir les ressources <span class="arrow">↗</span></a></div></div></section>
 <section class="section section-light philosophy" id="approche"><div class="wrap philosophy-grid"><div class="philosophy-intro"><span class="eyebrow">L’esprit MindFlow</span><h2>Apprendre, c’est faire <em>des liens.</em></h2><p>Une bonne ressource ne donne pas seulement une réponse. Elle aide à voir le chemin, à connecter les idées et à se sentir capable d’aller plus loin.</p></div><div class="steps"><article class="step"><span class="step-num">01</span><div><h3>Pars de ta question</h3><p>Choisis une matière, une notion ou un exercice qui te résiste. Pas besoin de tout maîtriser pour commencer.</p></div></article><article class="step"><span class="step-num">02</span><div><h3>Éclaire ce qui bloque</h3><p>Retrouve les notions essentielles et avance étape par étape, sans te perdre dans le superflu.</p></div></article><article class="step"><span class="step-num">03</span><div><h3>Transforme la compréhension en progrès</h3><p>Reviens sur les idées importantes, pratique et consolide ce que tu as appris.</p></div></article></div></div></section>
 <section class="section future" id="avenir"><div class="wrap"><div class="future-head"><div><span class="eyebrow">L’univers grandit</span><h2>Et ce n’est que<br>le commencement.</h2></div><p>De nouvelles expériences sont en préparation. Nous les présenterons ici avec transparence, dès qu’elles seront réellement prêtes à être utilisées.</p></div><div class="future-list"><article class="future-item"><span class="future-icon">◎</span><h3>Ton espace apprenant</h3><p>Crée ton compte pour retrouver ton espace personnel et préparer la suite de ton parcours.</p><a class="status" href="espace-apprenant.html">Créer mon compte ↗</a></article><article class="future-item"><span class="future-icon">✳</span><h3>Intégrer une classe</h3><p>Rejoins une classe, retrouve ton parcours et accède aux activités proposées par ton professionnel.</p><a class="status" href="integration-classes.html">Intégrer une classe ↗</a></article><article class="future-item"><span class="future-icon">⌘</span><h3>Assistant pédagogique</h3><p>Découvrir notre espace professionnel et les principes de contribution aux ressources pédagogiques MindFlow.</p><a class="status" href="assistant-pedagogique.html">Découvrir l’espace contributeur ↗</a><a class="status" href="espace-professionnel.html">Devenir professionnel ↗</a></article></div></div></section>

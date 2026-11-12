@@ -192,12 +192,13 @@ planetData.forEach((d,i)=>{
  const cluster=new THREE.Group();const themeColors=['#9ef2d3','#c0aaff','#ffb3a5','#d9ed91','#8ac9ff','#c0aaff'];
  artefactKinds[i].forEach((item,j)=>{
   const material=new THREE.SpriteMaterial({map:artefactTexture(item.label,item.glyph,themeColors[i]),transparent:true,depthWrite:false,opacity:.94});
-  const sprite=new THREE.Sprite(material);const angle=(j/3)*Math.PI*2+i*.48;const distance=d.r*(1.35+(j%2)*.22);
-  sprite.position.set(Math.cos(angle)*distance,Math.sin(angle)*distance*.7,(j-1)*d.r*.2);
-  sprite.scale.set(small?7.2:9.5,small?2.7:3.55,1);cluster.add(sprite);
+  const sprite=new THREE.Sprite(material);
+  const ux=[-.34,.02,.34][j],uy=[.2,-.24,.18][j],uz=Math.sqrt(Math.max(.12,1-ux*ux-uy*uy));
+  sprite.position.set(ux*d.r*1.018,uy*d.r*1.018,uz*d.r*1.018);
+  sprite.scale.set(small?3.5:4.6,small?1.32:1.72,1);cluster.add(sprite);
  });
  artefacts.push(cluster);
- const pivot=new THREE.Group();pivot.position.copy(sunGroup.position);scene.add(pivot);const angle=[2.5,-.65,3.65,.35,2.9,-.25][i],radius=orbitRadii[i];const orbitNode=new THREE.Group();orbitNode.position.set(Math.cos(angle)*radius,Math.sin(angle)*radius*.76,(i-2)*.9);pivot.add(orbitNode);const planet=planets[i];scene.remove(planet.group);planet.group.position.set(0,0,0);orbitNode.add(planet.group);orbitNode.add(cluster);planet.group.rotation.z=(i%2?-.2:.16);planet.group.rotation.x=.08+(i%3)*.09;orbitalGroups.push({pivot,orbitNode,planet,angle,speed:(i%2?1:-1)*(.018/(1+i*.35))})});
+ const pivot=new THREE.Group();pivot.position.copy(sunGroup.position);scene.add(pivot);const angle=[2.5,-.65,3.65,.35,2.9,-.25][i],radius=orbitRadii[i];const orbitNode=new THREE.Group();orbitNode.position.set(Math.cos(angle)*radius,Math.sin(angle)*radius*.76,(i-2)*.9);pivot.add(orbitNode);const planet=planets[i];scene.remove(planet.group);planet.group.position.set(0,0,0);orbitNode.add(planet.group);planet.group.add(cluster);planet.group.rotation.z=(i%2?-.2:.16);planet.group.rotation.x=.08+(i%3)*.09;orbitalGroups.push({pivot,orbitNode,planet,angle,speed:(i%2?1:-1)*(.018/(1+i*.35))})});
 /* Caméra narrative : chaque chapitre devient une destination réelle dans le système */
 const camera=new THREE.PerspectiveCamera(54,innerWidth/innerHeight,.1,1500);
 camera.position.set(0,18,75);scene.add(camera);
@@ -233,7 +234,7 @@ function animate(now){
  camera.lookAt(look[0]+F.mx*1.8,look[1]-F.my,.0+look[2]);
  orbitalGroups.forEach((o,i)=>{
   o.pivot.rotation.y=now*.000025*o.speed*48;
-  o.planet.group.rotation.y=now*.000035*(i%2?1:-1);artefacts[i].rotation.y=-now*.000045*(i%2?1:-1);
+  o.planet.group.rotation.y=now*.000035*(i%2?1:-1);
   o.planet.clouds.rotation.y=now*.00006;
   o.planet.moon.position.x=Math.cos(now*.0002+i)*planetData[i].r*1.6;
   o.planet.moon.position.z=Math.sin(now*.0002+i)*planetData[i].r*.5;

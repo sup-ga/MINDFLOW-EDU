@@ -176,13 +176,13 @@ const camera=new THREE.PerspectiveCamera(56,innerWidth/innerHeight,.1,1500);came
 const targets=[[-5,9,15],[-4,4,-82],[-5,3,-82],[6,-1,-82],[-6,-2,-82],[5,2,-82],[-4,0,-82],[0,0,-82]];
 const route=[
  {p:[0,18,75],look:[0,0,-82]},
- {p:[-12,9,-52],look:[-18,5,-82]},
- {p:[-13,8,-55],look:[-25,3,-82]},
- {p:[19,5,-46],look:[-10,-15,-82]},
- {p:[-21,7,-40],look:[10,20,-82]},
- {p:[28,8,-34],look:[-25,0,-82]},
- {p:[-26,12,-25],look:[20,0,-82]},
- {p:[0,0,30],look:[0,0,-82]}
+ {p:[-30,17,-55],look:[-18,10,-84]},
+ {p:[42,-6,-56],look:[27,-16,-83]},
+ {p:[-55,-6,-55],look:[-40,-17,-82]},
+ {p:[72,25,-53],look:[55,15,-81]},
+ {p:[-89,24,-52],look:[-71,13,-80]},
+ {p:[102,-5,-50],look:[85,-17,-79]},
+ {p:[0,0,40],look:[0,0,-82]}
 ];
 const lerp=(a,b,t)=>a+(b-a)*t;function catmull(a,b,c,d,t){return .5*((2*b)+(-a+c)*t+(2*a-5*b+4*c-d)*t*t+(-a+3*b-3*c+d)*t*t*t)}
 function sample(arr,t,key){const scaled=Math.max(0,Math.min(arr.length-1,t)),i=Math.min(arr.length-2,Math.floor(scaled)),f=scaled-i;const a=arr[Math.max(0,i-1)][key],b=arr[i][key],c=arr[i+1][key],d=arr[Math.min(arr.length-1,i+2)][key];return [0,1,2].map(k=>catmull(a[k],b[k],c[k],d[k],f))}
@@ -200,7 +200,7 @@ function animate(now){requestAnimationFrame(animate);const dt=Math.min(.04,(now-
  orbitalGroups.forEach((o,i)=>{o.pivot.rotation.y=now*.000025*o.speed*48;o.planet.group.rotation.y=now*.000035*(i%2?1:-1);o.planet.clouds.rotation.y=now*.00006;o.planet.moon.position.x=Math.cos(now*.0002+i)*planetData[i].r*1.6;o.planet.moon.position.z=Math.sin(now*.0002+i)*planetData[i].r*.5;if(o.planet.ring)o.planet.ring.rotation.z=now*.00005*(i%2?1:-1);if(o.planet.beacon){const t=(now*.0009)%1;const pl=o.planet.beacon.userData.pulse;pl.scale.setScalar(1+t*3.2);pl.material.opacity=.9*(1-t)}});sun.rotation.y=now*.000012;corona.material.rotation=now*.000015;corona2.material.rotation=-now*.00002;asteroidBelt.rotation.y=now*.000018;
  nebulae.forEach((s,i)=>{s.material.opacity=.42+Math.sin(now*.0003+i)*.1});
  bgTarget.setHex(bgTints[Math.min(bgTints.length-1,Math.round(p))]);bgNow.lerp(bgTarget,.02);scene.background.copy(bgNow);
- stars.rotation.z=now*.000003;dustCloud.position.z=(p*10)%40;camera.rotation.z+=Math.sin(now*.00022)*.0012-F.mx*boost*.006;
+ stars.rotation.z=now*.000003;dustCloud.position.z=(p*10)%40;
  renderer.render(scene,camera)}
 requestAnimationFrame(animate);
 }catch(e){console.warn('Rendu 3D désactivé',e)}}

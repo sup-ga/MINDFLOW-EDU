@@ -50,6 +50,37 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 @media(max-width:950px){.products .product{flex-basis:calc((100% - 52px)/3)}}
 @media(max-width:680px){.products{gap:16px;padding-bottom:20px}.products .product{flex:0 0 min(47%,260px);display:block}.product-visual,.product:nth-child(3n+2) .product-visual,.product:nth-child(3n+3) .product-visual{height:auto;min-height:0;aspect-ratio:2/3;border-radius:4px 11px 11px 4px}.product-body{padding:12px 1px 0}.product h3{font-size:.98rem}.product p{font-size:.76rem;line-height:1.5}.product-foot{align-items:center;flex-direction:row}}
 @media(max-width:380px){.products .product{display:block;flex:0 0 min(47%,230px)}.product-visual{min-height:0}.product h3{font-size:.92rem}.product p{font-size:.72rem}}
+
+/* Paiements : une section éditoriale, claire et chaleureuse */
+.payment-section{position:relative;overflow:hidden;background:linear-gradient(125deg,#211d38 0%,#191827 52%,#252044 100%);color:#fff}
+.payment-section:before{content:"";position:absolute;width:540px;height:540px;right:-240px;top:-260px;border-radius:50%;background:#9d7bff20;filter:blur(30px);pointer-events:none}
+.payment-grid{position:relative;display:grid;grid-template-columns:1.02fr .98fr;align-items:center;gap:clamp(28px,5vw,70px)}
+.payment-copy .eyebrow{color:var(--mint)}
+.payment-copy h2{font-size:clamp(2.5rem,5.2vw,4.7rem);line-height:.96;letter-spacing:-.085em;margin:18px 0}
+.payment-copy>p{max-width:570px;color:#c5c1d5;font-size:.94rem;line-height:1.85}
+.payment-points{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:28px 0}
+.payment-point{border-top:1px solid #ffffff30;padding-top:13px}
+.payment-point strong{display:block;font-size:.84rem;margin-bottom:4px}
+.payment-point span{display:block;color:#aaa6bd;font-size:.73rem;line-height:1.55}
+.payment-methods{padding:18px 0;border-top:1px solid #ffffff27;border-bottom:1px solid #ffffff27}
+.payment-methods-label{display:block;color:#bcb7d0;font-size:.68rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase;margin-bottom:13px}
+.payment-logos{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
+.payment-logo{display:inline-flex;align-items:center;justify-content:center;min-height:39px;padding:8px 12px;border:1px solid #ffffff26;border-radius:10px;background:#ffffff0c;color:#fff;font-size:.76rem;font-weight:850;letter-spacing:-.025em}
+.payment-logo.visa{font-style:italic;font-size:1.02rem;letter-spacing:.02em;color:#a9c8ff}
+.payment-logo.mastercard{gap:0;font-size:.72rem}
+.payment-logo.mastercard:before,.payment-logo.mastercard:after{content:"";width:15px;height:15px;border-radius:50%;background:#ed4b42;display:inline-block}
+.payment-logo.mastercard:after{background:#f4a62a;margin-left:-5px;opacity:.95;margin-right:5px}
+.payment-logo.airtel{color:#ff9298}.payment-logo.moov{color:#72caff}.payment-logo.ebilling{color:#ffc66f}
+.payment-note{display:block;margin-top:11px;color:#aaa6bd;font-size:.68rem;line-height:1.6}
+.payment-cta{margin-top:25px}
+.payment-cta .button{background:var(--mint);color:#14231f}
+.payment-visual{position:relative;min-height:430px;display:grid;place-items:center}
+.payment-visual:before{content:"";position:absolute;width:88%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#9d7bff35,transparent 68%)}
+.payment-art{position:relative;z-index:1;width:100%;max-width:540px;filter:drop-shadow(0 24px 45px #08071355)}
+.payment-chip{position:absolute;z-index:2;right:0;top:14%;padding:12px 16px;border:1px solid #ffffff2b;border-radius:16px;background:#24213bd9;backdrop-filter:blur(12px);box-shadow:0 14px 35px #08071345;font-size:.78rem;font-weight:800}
+.payment-chip small{display:block;color:var(--mint);font-size:.66rem;font-weight:600;margin-top:3px}
+@media(max-width:800px){.payment-grid{grid-template-columns:1fr}.payment-visual{min-height:320px;order:-1}.payment-art{max-width:430px}.payment-chip{right:5%;top:7%}}
+@media(max-width:520px){.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
 </style>
 
 
@@ -66,6 +97,79 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 <section class="section section-light philosophy" id="approche"><div class="wrap philosophy-grid"><div class="philosophy-intro"><span class="eyebrow">L’esprit MindFlow</span><h2>Apprendre, c’est faire <em>des liens.</em></h2><p>Une bonne ressource ne donne pas seulement une réponse. Elle aide à voir le chemin, à connecter les idées et à se sentir capable d’aller plus loin.</p></div><div class="steps"><article class="step"><span class="step-num">01</span><div><h3>Pars de ta question</h3><p>Choisis une matière, une notion ou un exercice qui te résiste. Pas besoin de tout maîtriser pour commencer.</p></div></article><article class="step"><span class="step-num">02</span><div><h3>Éclaire ce qui bloque</h3><p>Retrouve les notions essentielles et avance étape par étape, sans te perdre dans le superflu.</p></div></article><article class="step"><span class="step-num">03</span><div><h3>Transforme la compréhension en progrès</h3><p>Reviens sur les idées importantes, pratique et consolide ce que tu as appris.</p></div></article></div></div></section>
 <section class="section future" id="avenir"><div class="wrap"><div class="future-head"><div><span class="eyebrow">L’univers grandit</span><h2>Et ce n’est que<br>le commencement.</h2></div><p>De nouvelles expériences sont en préparation. Nous les présenterons ici avec transparence, dès qu’elles seront réellement prêtes à être utilisées.</p></div><div class="future-list"><article class="future-item"><span class="future-icon">◎</span><h3>Ton espace apprenant</h3><p>Crée ton compte pour retrouver ton espace personnel et préparer la suite de ton parcours.</p><a class="status" href="espace-apprenant.html">Créer mon compte ↗</a></article><article class="future-item"><span class="future-icon">✳</span><h3>Intégrer une classe</h3><p>Rejoins une classe, retrouve ton parcours et accède aux activités proposées par ton professionnel.</p><a class="status" href="integration-classes.html">Intégrer une classe ↗</a></article><article class="future-item"><span class="future-icon">⌘</span><h3>Assistant pédagogique</h3><p>Découvrir notre espace professionnel et les principes de contribution aux ressources pédagogiques MindFlow.</p><a class="status" href="assistant-pedagogique.html">Découvrir l’espace contributeur ↗</a><a class="status" href="espace-professionnel.html">Devenir professionnel ↗</a></article></div></div></section>
 <section class="section testimonials" id="temoignages"><div class="wrap"><div class="testimonials-head"><div><span class="eyebrow">Vos mots, vos déclics</span><h2>Ils avancent<br>avec MindFlow.</h2></div><p>Les expériences partagées par les apprenants de la communauté, publiées après validation.</p></div><div class="testimonial-track" id="testimonialTrack" aria-live="polite"><p class="testimonial-empty">Les premiers témoignages arriveront ici.</p></div><div class="testimonial-cta"><a class="button" href="commentaires.html">Laisser un commentaire <span class="arrow">↗</span></a></div></div></section>
+
+<section class="section payment-section" id="paiements" aria-labelledby="paymentTitle">
+  <div class="wrap payment-grid">
+    <div class="payment-copy">
+      <span class="eyebrow">Des achats en toute confiance</span>
+      <h2 id="paymentTitle">Payez comme<br>vous le souhaitez.</h2>
+      <p>Sur MindFlow, vous pourrez régler vos ressources, vos cours et vos services avec les moyens de paiement adaptés à votre quotidien, depuis votre téléphone ou avec votre carte bancaire.</p>
+      <div class="payment-points">
+        <div class="payment-point"><strong>Simple et rapide</strong><span>Choisissez votre moyen de paiement et suivez les étapes affichées.</span></div>
+        <div class="payment-point"><strong>Paiement suivi</strong><span>Votre commande est mise à jour après confirmation du paiement.</span></div>
+        <div class="payment-point"><strong>Accès après validation</strong><span>Retrouvez votre achat dans votre espace MindFlow.</span></div>
+      </div>
+      <div class="payment-methods">
+        <span class="payment-methods-label">Les moyens de paiement prévus</span>
+        <div class="payment-logos" aria-label="Mobile Money, Airtel Money, Moov Money, Visa, Mastercard et eBilling">
+          <span class="payment-logo">Mobile Money</span>
+          <span class="payment-logo airtel">Airtel Money</span>
+          <span class="payment-logo moov">Moov Money</span>
+          <span class="payment-logo visa">VISA</span>
+          <span class="payment-logo mastercard">Mastercard</span>
+          <span class="payment-logo ebilling">eBilling</span>
+          <span class="payment-logo">Carte bancaire</span>
+        </div>
+        <small class="payment-note">Les options proposées au moment du règlement dépendront de l’activation des services de paiement et de leur disponibilité auprès de votre opérateur ou de votre banque.</small>
+      </div>
+      <div class="payment-cta"><a class="button" href="#ressources">Découvrir les ressources <span class="arrow">↗</span></a></div>
+    </div>
+    <div class="payment-visual" aria-hidden="true">
+      <div class="payment-chip">Paiement en ligne<small>Simple · pratique · sécurisé</small></div>
+      <svg class="payment-art" viewBox="0 0 560 470" role="img" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="payBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a58cff"/><stop offset="1" stop-color="#5b50a8"/></linearGradient>
+          <linearGradient id="payPhone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#32334d"/><stop offset="1" stop-color="#111522"/></linearGradient>
+          <linearGradient id="payCard" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8ff0d1"/><stop offset="1" stop-color="#5c8edc"/></linearGradient>
+        </defs>
+        <path d="M71 236C40 130 130 35 247 40c106 5 196 69 218 166 23 103-40 194-151 210C194 433 103 347 71 236Z" fill="url(#payBg)" opacity=".28"/>
+        <circle cx="420" cy="105" r="48" fill="#9ef2d3" opacity=".13"/><circle cx="112" cy="350" r="24" fill="#ff8d9b" opacity=".25"/>
+        <path d="M55 389c70-21 140-17 207-2 88 20 157 16 243-11" fill="none" stroke="#9ef2d3" stroke-width="2" opacity=".5"/>
+        <g transform="translate(102 56)">
+          <path d="M30 314c-3-50 10-93 39-120 19-18 39-24 62-19l54 11 32 127H30Z" fill="#6e66a9"/>
+          <path d="M70 186c-13-26-12-66 2-92 14-27 44-39 72-29 28 10 39 40 32 71-7 31-32 56-61 61-19 3-35-1-45-11Z" fill="#9a5e49"/>
+          <path d="M67 104c-4-44 24-75 66-75 37 0 63 26 60 63-18-9-34-26-40-42-12 23-43 38-86 54Z" fill="#171923"/>
+          <path d="M83 129c8 7 17 10 27 10" stroke="#472b2a" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M58 218c-14 21-22 56-19 96h129l-10-88c-22-18-70-27-100-8Z" fill="#b38cff"/>
+          <path d="M58 226c-20 14-36 38-42 69l35 14 29-49" fill="#9a5e49"/>
+          <path d="M164 223c21 8 37 25 45 48l-27 17-35-38" fill="#9a5e49"/>
+          <path d="M79 194c18 13 46 16 68 2l11 28c-24 21-61 23-88 3l9-33Z" fill="#f2b69a"/>
+        </g>
+        <g transform="translate(288 105) rotate(7)">
+          <rect x="0" y="0" width="132" height="245" rx="23" fill="url(#payPhone)" stroke="#bdb6e9" stroke-width="3"/>
+          <rect x="9" y="17" width="114" height="211" rx="15" fill="#f4f0ff"/>
+          <rect x="47" y="8" width="38" height="5" rx="3" fill="#8b89a4"/>
+          <circle cx="66" cy="48" r="19" fill="#d8f7eb"/><path d="m57 48 7 7 13-15" fill="none" stroke="#26896d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="66" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#292744">Paiement validé</text>
+          <text x="66" y="117" text-anchor="middle" font-size="19" font-weight="800" fill="#292744">15 000</text>
+          <text x="66" y="133" text-anchor="middle" font-size="9" fill="#77748e">FCFA</text>
+          <rect x="25" y="151" width="82" height="27" rx="13" fill="#6e55cf"/>
+          <text x="66" y="169" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Continuer</text>
+          <circle cx="66" cy="213" r="4" fill="#b4b0c9"/>
+        </g>
+        <g transform="translate(355 300) rotate(-12)">
+          <rect x="0" y="0" width="145" height="91" rx="12" fill="url(#payCard)" stroke="#d5fff0" stroke-width="2"/>
+          <rect x="16" y="19" width="24" height="18" rx="4" fill="#f2d18a"/>
+          <path d="M16 52h112" stroke="#fff" stroke-width="3" opacity=".45"/>
+          <text x="16" y="77" font-size="13" font-weight="800" fill="#18344a">MIND FLOW</text>
+        </g>
+        <g fill="#9ef2d3"><circle cx="455" cy="214" r="5"/><circle cx="79" cy="140" r="4"/><circle cx="240" cy="72" r="6"/></g>
+        <path d="m444 250 9 9 18-22" fill="none" stroke="#9ef2d3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
 <section class="closing"><div class="wrap closing-grid"><div><span class="eyebrow">Le prochain déclic est peut-être tout proche</span><h2>La curiosité te fait commencer. La compréhension te fait avancer.</h2><p>Choisis une matière et découvre ce que tu peux éclaircir aujourd’hui.</p></div><a class="button" href="#matieres">Je commence <span class="arrow">↗</span></a></div></section>
 </main><footer><div class="wrap footer-row"><a class="wordmark" href="#accueil">Mind<span class="flow">Flow</span></a><p>MindFlow, apprendre autrement.</p><nav class="footer-links" aria-label="Navigation de pied de page"><a href="#matieres">Matières</a><a href="#ressources">Ressources</a><a href="#avenir">La suite</a><a href="reseau.html">Collaborer</a><a href="a-propos.html">À propos</a></nav></div></footer>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

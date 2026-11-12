@@ -86,11 +86,12 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
 .payment-cta .button{background:var(--mint);color:#14231f}
 .payment-visual{position:relative;min-height:430px;display:grid;place-items:center}
 .payment-visual:before{content:"";position:absolute;width:88%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#9d7bff35,transparent 68%)}
-.payment-art{position:relative;z-index:1;width:100%;max-width:540px;filter:drop-shadow(0 24px 45px #08071355)}
+.payment-photo{position:relative;z-index:1;display:block;width:min(100%,540px);height:430px;object-fit:cover;object-position:center;border-radius:44% 44% 18px 18px/18% 18% 18px 18px;box-shadow:0 28px 80px #08071370;border:1px solid #ffffff30}
+.payment-photo-caption{position:absolute;z-index:2;left:0;bottom:8%;max-width:245px;padding:13px 17px;border-left:3px solid var(--mint);background:#171725e8;color:#fff;font-size:.78rem;line-height:1.5;box-shadow:0 12px 32px #08071340}
 .payment-chip{position:absolute;z-index:2;right:0;top:14%;padding:12px 16px;border:1px solid #ffffff2b;border-radius:16px;background:#24213bd9;backdrop-filter:blur(12px);box-shadow:0 14px 35px #08071345;font-size:.78rem;font-weight:800}
 .payment-chip small{display:block;color:var(--mint);font-size:.66rem;font-weight:600;margin-top:3px}
-@media(max-width:800px){.payment-grid{grid-template-columns:1fr}.payment-visual{min-height:320px;order:-1}.payment-art{max-width:430px}.payment-chip{right:5%;top:7%}}
-@media(max-width:520px){.payment-logos{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.payment-logo{min-height:52px;font-size:.74rem;padding:8px 6px}.payment-logo.visa{font-size:1.28rem}.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
+@media(max-width:800px){.payment-grid{grid-template-columns:1fr}.payment-visual{min-height:320px;order:-1}.payment-photo{height:340px;max-width:100%}.payment-chip{right:5%;top:7%}}
+@media(max-width:520px){.payment-logos{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.payment-logo{min-height:52px;font-size:.74rem;padding:8px 6px}.payment-logo.visa{font-size:1.28rem}.payment-points{gap:12px}.payment-point strong{font-size:.77rem}.payment-point span{font-size:.68rem}.payment-visual{min-height:260px}.payment-photo{height:280px}.payment-photo-caption{left:2%;bottom:5%;max-width:210px}.payment-logo{font-size:.69rem;padding:7px 9px;min-height:35px}.payment-chip{font-size:.7rem}}
 
 /* Grande vitrine éditoriale des livres et ressources pédagogiques */
 .resource-showcase{position:relative;overflow:hidden;padding:clamp(76px,9vw,122px) 0;background:linear-gradient(120deg,#f4efe5 0%,#fbf8f1 55%,#e8e2d7 100%);color:#171820}
@@ -197,48 +198,10 @@ header{position:sticky;top:0;z-index:20;background:rgba(16,16,25,.82);backdrop-f
       </div>
       <div class="payment-cta"><a class="button" href="#ressources">Découvrir les ressources <span class="arrow">↗</span></a></div>
     </div>
-    <div class="payment-visual" aria-hidden="true">
+    <div class="payment-visual">
+      <img class="payment-photo" src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1400&q=85" alt="Une cliente effectue un paiement numérique depuis son téléphone auprès d’un commerçant" loading="lazy">
       <div class="payment-chip">Paiement en ligne<small>Simple · pratique · sécurisé</small></div>
-      <svg class="payment-art" viewBox="0 0 560 470" role="img" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="payBg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#a58cff"/><stop offset="1" stop-color="#5b50a8"/></linearGradient>
-          <linearGradient id="payPhone" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#32334d"/><stop offset="1" stop-color="#111522"/></linearGradient>
-          <linearGradient id="payCard" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#8ff0d1"/><stop offset="1" stop-color="#5c8edc"/></linearGradient>
-        </defs>
-        <path d="M71 236C40 130 130 35 247 40c106 5 196 69 218 166 23 103-40 194-151 210C194 433 103 347 71 236Z" fill="url(#payBg)" opacity=".28"/>
-        <circle cx="420" cy="105" r="48" fill="#9ef2d3" opacity=".13"/><circle cx="112" cy="350" r="24" fill="#ff8d9b" opacity=".25"/>
-        <path d="M55 389c70-21 140-17 207-2 88 20 157 16 243-11" fill="none" stroke="#9ef2d3" stroke-width="2" opacity=".5"/>
-        <g transform="translate(102 56)">
-          <path d="M30 314c-3-50 10-93 39-120 19-18 39-24 62-19l54 11 32 127H30Z" fill="#6e66a9"/>
-          <path d="M70 186c-13-26-12-66 2-92 14-27 44-39 72-29 28 10 39 40 32 71-7 31-32 56-61 61-19 3-35-1-45-11Z" fill="#9a5e49"/>
-          <path d="M67 104c-4-44 24-75 66-75 37 0 63 26 60 63-18-9-34-26-40-42-12 23-43 38-86 54Z" fill="#171923"/>
-          <path d="M83 129c8 7 17 10 27 10" stroke="#472b2a" stroke-width="3" fill="none" stroke-linecap="round"/>
-          <path d="M58 218c-14 21-22 56-19 96h129l-10-88c-22-18-70-27-100-8Z" fill="#b38cff"/>
-          <path d="M58 226c-20 14-36 38-42 69l35 14 29-49" fill="#9a5e49"/>
-          <path d="M164 223c21 8 37 25 45 48l-27 17-35-38" fill="#9a5e49"/>
-          <path d="M79 194c18 13 46 16 68 2l11 28c-24 21-61 23-88 3l9-33Z" fill="#f2b69a"/>
-        </g>
-        <g transform="translate(288 105) rotate(7)">
-          <rect x="0" y="0" width="132" height="245" rx="23" fill="url(#payPhone)" stroke="#bdb6e9" stroke-width="3"/>
-          <rect x="9" y="17" width="114" height="211" rx="15" fill="#f4f0ff"/>
-          <rect x="47" y="8" width="38" height="5" rx="3" fill="#8b89a4"/>
-          <circle cx="66" cy="48" r="19" fill="#d8f7eb"/><path d="m57 48 7 7 13-15" fill="none" stroke="#26896d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <text x="66" y="88" text-anchor="middle" font-size="11" font-weight="700" fill="#292744">Paiement validé</text>
-          <text x="66" y="117" text-anchor="middle" font-size="19" font-weight="800" fill="#292744">15 000</text>
-          <text x="66" y="133" text-anchor="middle" font-size="9" fill="#77748e">FCFA</text>
-          <rect x="25" y="151" width="82" height="27" rx="13" fill="#6e55cf"/>
-          <text x="66" y="169" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Continuer</text>
-          <circle cx="66" cy="213" r="4" fill="#b4b0c9"/>
-        </g>
-        <g transform="translate(355 300) rotate(-12)">
-          <rect x="0" y="0" width="145" height="91" rx="12" fill="url(#payCard)" stroke="#d5fff0" stroke-width="2"/>
-          <rect x="16" y="19" width="24" height="18" rx="4" fill="#f2d18a"/>
-          <path d="M16 52h112" stroke="#fff" stroke-width="3" opacity=".45"/>
-          <text x="16" y="77" font-size="13" font-weight="800" fill="#18344a">MIND FLOW</text>
-        </g>
-        <g fill="#9ef2d3"><circle cx="455" cy="214" r="5"/><circle cx="79" cy="140" r="4"/><circle cx="240" cy="72" r="6"/></g>
-        <path d="m444 250 9 9 18-22" fill="none" stroke="#9ef2d3" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <div class="payment-photo-caption">Un règlement simple, depuis votre quotidien.</div>
     </div>
   </div>
 </section>
